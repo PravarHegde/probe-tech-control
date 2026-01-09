@@ -4,7 +4,27 @@
 # A simple interactive installer similar to KIAUH
 
 # Paths
-CONFIG_DIR="${HOME}/printer_data/config"
+# Auto-detect config directory
+CONFIG_DIR=""
+POSSIBLE_DIRS=(
+  "${HOME}/printer_data/config"
+  "${HOME}/printer_c_data/config"
+  "${HOME}/klipper_config"
+)
+
+for dir in "${POSSIBLE_DIRS[@]}"; do
+  if [ -d "$dir" ]; then
+    CONFIG_DIR="$dir"
+    break
+  fi
+done
+
+if [ -z "$CONFIG_DIR" ]; then
+    echo -e "\033[0;31mError: Could not find a valid Klipper configuration directory.\033[0m"
+    echo "Checked: ${POSSIBLE_DIRS[*]}"
+    exit 1
+fi
+
 MOONRAKER_CONF="${CONFIG_DIR}/moonraker.conf"
 PRINTER_CFG="${CONFIG_DIR}/printer.cfg"
 PROBE_TECH_CFG="${CONFIG_DIR}/probe_tech.cfg"
@@ -22,6 +42,7 @@ print_header() {
     echo -e "${CYAN}=================================================${NC}"
     echo -e "${CYAN}           PROBE TECH CONTROL INSTALLER          ${NC}"
     echo -e "${CYAN}=================================================${NC}"
+    echo -e "Config Dir: ${CYAN}${CONFIG_DIR}${NC}"
     echo ""
 }
 
@@ -75,6 +96,8 @@ EOF
 
     echo ""
     echo -e "${GREEN}Installation Complete!${NC}"
+    # Detect if user is running from ~/probe-tech-control which is the deployment path
+    # If so, the repo path in moonraker.conf is correct.
     read -p "Press Enter to continue..."
 }
 

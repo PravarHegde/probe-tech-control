@@ -19,7 +19,7 @@ export default function buildReleaseInfo(): PluginOption {
                 )
                 await releaseInfoFile.writeFile(
                     JSON.stringify({
-                        project_name: 'Probe Tech Control',
+                        project_name: 'probe-tech-control',
                         project_owner: 'PravarHegde',
                         version: `v${versionIdentifier}`,
                     })

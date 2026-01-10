@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Probe Tech Control Advanced Installer and Manager
-# Version 10: The Factory Edition (Batch Multi-Instance, Auto-Sanitize)
+# Version 11: The Factory Production Suite (Auto-Port, Batch Mode, Auto-Sanitize)
 
 # --- VARIABLES ---
 HOME_DIR="${HOME}"
@@ -18,6 +18,7 @@ GOLD='\033[1;33m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 MAGENTA='\033[1;35m'
+CYAN='\033[1;36m'
 NC='\033[0m'
 
 # Global to track created instance path
@@ -41,6 +42,30 @@ get_ip() {
 get_instances() {
     find "${HOME}" -maxdepth 4 -name "printer.cfg" -print0 | xargs -0 -I {} dirname {} | sort | uniq
 }
+
+# Scan existing configs to find the highest used port
+get_next_port() {
+    local max_port=7124
+    
+    # Get all config directories
+    mapfile -t instances < <(get_instances)
+    
+    for inst in "${instances[@]}"; do
+        local mconf="${inst}/moonraker.conf"
+        if [ -f "$mconf" ]; then
+            # Extract port number. Matches "port: 7125" or "port:7125"
+            local p=$(grep -E "^\s*port:\s*[0-9]+" "$mconf" | awk -F: '{print $2}' | tr -d ' ')
+            if [[ "$p" =~ ^[0-9]+$ ]]; then
+                if [ "$p" -gt "$max_port" ]; then
+                    max_port=$p
+                fi
+            fi
+        fi
+    done
+    
+    echo $((max_port + 1))
+}
+
 
 # Shows a list of valid config directories to pick from
 select_instance() {
@@ -349,17 +374,14 @@ EOF
     fi
     
     if [ ! -f "${CONF_DIR}/moonraker.conf" ]; then
+        # AUTO PORT LOGIC
+        NEXT_PORT=$(get_next_port)
         cat <<EOF > "${CONF_DIR}/moonraker.conf"
 [server]
 host: 0.0.0.0
-# Automatic port increment logic possible but keeping standard port for now.
-# Note: Multiple instances need UNIQUE ports. 
-# Simple hash-based port increment or random? 
-# For now, warns user.
-port: 7125
+port: ${NEXT_PORT}
 EOF
-        echo -e "${GREEN}✓ Created moonraker.conf${NC}"
-        echo -e "${RED}IMPORTANT: You MUST manually change the 'port' in ${CONF_DIR}/moonraker.conf to be unique (e.g. 7126, 7127)!${NC}"
+        echo -e "${GREEN}✓ Created moonraker.conf (Auto-Assigned Port: ${CYAN}${NEXT_PORT}${GREEN})${NC}"
     fi
 
     echo -e "${GOLD}Creating Systemd Services...${NC}"

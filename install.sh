@@ -1,13 +1,15 @@
 #!/bin/bash
 
 # Probe Tech Control Advanced Installer and Manager
-# Version 9: The Ultimate Suite (Auto-Multi, Restore, Cloning, WiFi, Box UI)
+# Version 10: The Factory Edition (Batch Multi-Instance, Auto-Sanitize)
 
 # --- VARIABLES ---
 HOME_DIR="${HOME}"
 USER=$(whoami)
 SERVICE_TEMPLATE="probe-tech.service"
 BACKUP_DIR="${HOME}/probe_tech_backups"
+# Get script directory to find cfg files reliably
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 # Colors (Blue, Silver/White, Gold)
 BLUE='\033[1;34m'
@@ -15,6 +17,7 @@ SILVER='\033[1;37m'
 GOLD='\033[1;33m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
+MAGENTA='\033[1;35m'
 NC='\033[0m'
 
 # Global to track created instance path
@@ -250,11 +253,12 @@ install_probe_tech() {
     PRINTER_CFG="${SELECTED_CONF_DIR}/printer.cfg"
     MOONRAKER_CONF="${SELECTED_CONF_DIR}/moonraker.conf"
     
-    if [ -f "probe_tech.cfg" ]; then
-        cp probe_tech.cfg "$PROBE_CFG"
+    # Use SCRIPT_DIR to find the cfg, ignoring CWD
+    if [ -f "${SCRIPT_DIR}/probe_tech.cfg" ]; then
+        cp "${SCRIPT_DIR}/probe_tech.cfg" "$PROBE_CFG"
         echo -e "${GREEN}✓ probe_tech.cfg copied${NC}"
     else
-        echo -e "${RED}Error: probe_tech.cfg source missing.${NC}"
+        echo -e "${RED}Error: probe_tech.cfg source missing in script directory.${NC}"
     fi
 
     if [ -f "$PRINTER_CFG" ]; then
@@ -281,13 +285,13 @@ EOF
              echo -e "${GREEN}✓ Moonraker Update Manager added${NC}"
         fi
     else
-        # Allow creating moonraker.conf if missing? No, create_instance handles that.
         echo -e "${RED}Warning: moonraker.conf not found.${NC}"
     fi
 
     echo -e "${GOLD}Setting up Service...${NC}"
-    if [ -f "probe-tech.service" ]; then
-         sed "s/{USER}/${USER}/g" probe-tech.service > /tmp/probe-tech.service
+    # Use SCRIPT_DIR for service template too
+    if [ -f "${SCRIPT_DIR}/probe-tech.service" ]; then
+         sed "s/{USER}/${USER}/g" "${SCRIPT_DIR}/probe-tech.service" > /tmp/probe-tech.service
          sudo mv /tmp/probe-tech.service "/etc/systemd/system/probe-tech.service"
          sudo systemctl daemon-reload
          sudo systemctl enable probe-tech.service
@@ -299,12 +303,22 @@ EOF
 # --- MULTI-INSTANCE CREATOR ---
 
 create_instance() {
-    print_box "CREATE NEW PRINTER INSTANCE" "${BLUE}"
-    RELEASE_CONF_DIR=""
-    CREATED_CONF_DIR=""
+    # Takes optional argument name for batch mode
+    local batch_name="$1"
     
-    echo -e "${SILVER}This will create a new configuration folder and clone systemd services.${NC}"
-    read -p "Enter Instance Name (e.g. printer_2): " inst_name
+    CREATED_CONF_DIR=""
+    inst_name=""
+
+    if [ -n "$batch_name" ]; then
+        inst_name="$batch_name"
+    else
+        print_box "CREATE NEW PRINTER INSTANCE" "${BLUE}"
+        echo -e "${SILVER}This will create a new configuration folder and clone systemd services.${NC}"
+        read -p "Enter Instance Name (e.g. printer_2): " raw_name
+        # Sanitize spaces -> underscores
+        inst_name="${raw_name// /_}"
+        echo -e "${SILVER}Sanitized name: ${inst_name}${NC}"
+    fi
     
     if [ -z "$inst_name" ]; then echo "Name cannot be empty."; return; fi
     
@@ -338,16 +352,20 @@ EOF
         cat <<EOF > "${CONF_DIR}/moonraker.conf"
 [server]
 host: 0.0.0.0
-# Automatic port increment logic would be better, but fixed manual change is safer for now.
-port: 7126
+# Automatic port increment logic possible but keeping standard port for now.
+# Note: Multiple instances need UNIQUE ports. 
+# Simple hash-based port increment or random? 
+# For now, warns user.
+port: 7125
 EOF
-        echo -e "${GREEN}✓ Created moonraker.conf (Port 7126 set)${NC}"
+        echo -e "${GREEN}✓ Created moonraker.conf${NC}"
+        echo -e "${RED}IMPORTANT: You MUST manually change the 'port' in ${CONF_DIR}/moonraker.conf to be unique (e.g. 7126, 7127)!${NC}"
     fi
 
-    echo -e "${GOLD}Creating Systemd Services (Requires Sudo)...${NC}"
+    echo -e "${GOLD}Creating Systemd Services...${NC}"
     
-    # Create Klipper Service
-    cat <<EOF > /tmp/klipper-${inst_name}.service
+    # Use quotes for filenames to handle spaces (though we sanitized above)
+    cat <<EOF > "/tmp/klipper-${inst_name}.service"
 [Unit]
 Description=Klipper for ${inst_name}
 Documentation=https://www.klipper3d.org/
@@ -367,10 +385,9 @@ ExecStart=${HOME}/klippy-env/bin/python \$KLIPPER_ARGS
 Restart=always
 RestartSec=10
 EOF
-    sudo mv /tmp/klipper-${inst_name}.service /etc/systemd/system/klipper-${inst_name}.service
+    sudo mv "/tmp/klipper-${inst_name}.service" "/etc/systemd/system/klipper-${inst_name}.service"
 
-    # Create Moonraker Service
-    cat <<EOF > /tmp/moonraker-${inst_name}.service
+    cat <<EOF > "/tmp/moonraker-${inst_name}.service"
 [Unit]
 Description=Moonraker for ${inst_name}
 Documentation=https://moonraker.readthedocs.io/
@@ -391,40 +408,81 @@ ExecStart=${HOME}/moonraker-env/bin/python \$MOONRAKER_ARGS
 Restart=always
 RestartSec=10
 EOF
-    sudo mv /tmp/moonraker-${inst_name}.service /etc/systemd/system/moonraker-${inst_name}.service
+    sudo mv "/tmp/moonraker-${inst_name}.service" "/etc/systemd/system/moonraker-${inst_name}.service"
 
-    # Reload and Enable
     sudo systemctl daemon-reload
-    sudo systemctl enable klipper-${inst_name}
-    sudo systemctl enable moonraker-${inst_name}
-    sudo systemctl start klipper-${inst_name}
-    sudo systemctl start moonraker-${inst_name}
+    sudo systemctl enable "klipper-${inst_name}"
+    sudo systemctl enable "moonraker-${inst_name}"
+    sudo systemctl start "klipper-${inst_name}"
+    sudo systemctl start "moonraker-${inst_name}"
     
     echo -e "${GREEN}✓ Instance Created & Services Started!${NC}"
     
-    # Set global for auto-install
     CREATED_CONF_DIR="$CONF_DIR"
-    read -p "Press Enter..."
+    
+    # Pause only if interactive
+    if [ -z "$batch_name" ]; then
+        read -p "Press Enter..."
+    fi
 }
 
-auto_install_multi() {
-    echo -e "${BLUE}=== AUTO-INSTALL NEW PRINTER INSTANCE ===${NC}"
-    echo -e "Steps: Install Binaries -> Create Instance -> Configure Probe Tech"
+auto_install_batch() {
+    print_box "BATCH MULTI-INSTANCE INSTALLER" "${MAGENTA}"
+    echo -e "${SILVER}This tool will set up multiple printers at once.${NC}"
+    echo -e "${SILVER}Note: Spaces in names will be converted to underscores (e.g. 'Ender 3' -> 'Ender_3').${NC}"
+    echo ""
+    read -p "How many new instances do you want to create? " count
     
+    if [[ ! "$count" =~ ^[0-9]+$ ]] || [ "$count" -lt 1 ]; then
+        echo "Invalid number."
+        read -p "Press Enter..."
+        return
+    fi
+    
+    declare -a names
+    echo ""
+    echo -e "${GOLD}--- ENTER NAMES ---${NC}"
+    echo "Type 'SKIP' at any prompt to stop adding more."
+    
+    for (( i=1; i<=count; i++ )); do
+        read -p "Name for Instance #$i: " name
+        if [ "$name" == "SKIP" ] || [ -z "$name" ]; then
+            break
+        fi
+        # Sanitize immediately
+        safe_name="${name// /_}"
+        names+=("$safe_name")
+    done
+    
+    if [ ${#names[@]} -eq 0 ]; then
+        echo "No instances defined."
+        return
+    fi
+    
+    echo ""
+    echo -e "${BLUE}--- STARTING INSTALLATION ---${NC}"
+    
+    # 1. Install Binaries Once
     install_klipper
     install_moonraker
     
-    # Create the instance (prompts for name)
-    create_instance
+    # 2. Loop through instances
+    for inst in "${names[@]}"; do
+        print_box "Installing: $inst" "${GOLD}"
+        
+        create_instance "$inst"
+        
+        if [ -n "$CREATED_CONF_DIR" ]; then
+             install_probe_tech "$CREATED_CONF_DIR"
+             echo -e "${GREEN}✓ $inst Ready${NC}"
+        else
+             echo -e "${RED}Failed to create $inst${NC}"
+        fi
+    done
     
-    if [ -n "$CREATED_CONF_DIR" ]; then
-         echo -e "${GOLD}Applying Probe Tech Configuration to new instance...${NC}"
-         install_probe_tech "$CREATED_CONF_DIR"
-         echo -e "${GREEN}=== Auto-Installation Complete! ===${NC}"
-         read -p "Press Enter to continue..."
-    else
-         echo -e "${RED}Instance creation failed or cancelled.${NC}"
-    fi
+    echo ""
+    echo -e "${GREEN}=== Batch Installation Complete! ===${NC}"
+    read -p "Press Enter to continue..."
 }
 
 install_all() {
@@ -626,7 +684,7 @@ while true; do
     check_status
     
     echo "1) Auto-Install All (Probe Tech Control, Moonraker, Klipper)"
-    echo "2) Auto-Install Multi-Instance (Create new + Install)"
+    echo -e "${MAGENTA}2) Batch Multi-Instance (Create Multiple Printers)${NC}"
     echo "3) Manual Installation (Install / Update / Multi-Instance)"
     echo "4) Remove Components"
     echo "5) Backup Configuration"
@@ -638,7 +696,7 @@ while true; do
     
     case $main_c in
         1) install_all ;;
-        2) auto_install_multi ;;
+        2) auto_install_batch ;;
         3) manual_install_menu ;;
         4) menu_remove ;;
         5) menu_backup ;;

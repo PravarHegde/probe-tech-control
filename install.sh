@@ -267,6 +267,36 @@ install_moonraker() {
 install_probe_tech() {
     local target_dir="$1"
     
+    # --- WEB INTERFACE DEPLOYMENT (NEW) ---
+    echo -e "${GOLD}Deploying Web Interface...${NC}"
+    WEB_DIR="${HOME}/probe-tech-control"
+    
+    # Check if we have a release zip in the script directory
+    if [ -f "${SCRIPT_DIR}/probe-tech-control.zip" ]; then
+        echo -e "${BLUE}Found probe-tech-control.zip, extracting...${NC}"
+        
+        # Create directory if missing
+        mkdir -p "$WEB_DIR"
+        
+        # Clear old files (safety check: make sure we are not deleting root)
+        if [ "$WEB_DIR" != "/" ]; then
+            rm -rf "${WEB_DIR:?}/"*
+        fi
+        
+        # Unzip
+        unzip -o -q "${SCRIPT_DIR}/probe-tech-control.zip" -d "$WEB_DIR"
+        
+        # Check if unzip succeeded
+        if [ -f "${WEB_DIR}/index.html" ]; then
+             echo -e "${GREEN}✓ Web Interface Installed to ${WEB_DIR}${NC}"
+        else
+             echo -e "${RED}Extraction failed or index.html missing.${NC}"
+        fi
+    else
+        echo -e "${SILVER}No probe-tech-control.zip found. Skipping web file deployment.${NC}"
+        echo -e "${SILVER}(If developing, ensure files are in $WEB_DIR)${NC}"
+    fi
+
     if [ -n "$target_dir" ]; then
         SELECTED_CONF_DIR="$target_dir"
         echo -e "${GOLD}Auto-configuring instance at: $SELECTED_CONF_DIR${NC}"
@@ -298,6 +328,11 @@ install_probe_tech() {
     fi
 
     if [ -f "$MOONRAKER_CONF" ]; then
+        # Check if update_manager exists, if not add it
+        if ! grep -q "\[update_manager\]" "$MOONRAKER_CONF"; then
+            echo -e "\n[update_manager]" >> "$MOONRAKER_CONF"
+        fi
+
         if ! grep -q "\[update_manager client probe_tech\]" "$MOONRAKER_CONF"; then
              cat <<EOF >> "$MOONRAKER_CONF"
 

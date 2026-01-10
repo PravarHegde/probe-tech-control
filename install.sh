@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Probe Tech Control Advanced Installer and Manager
-# Version 8.1: Full Suite (UI Tweaks: Remove All Option)
+# Version 9: The Ultimate Suite (Auto-Multi, Restore, Cloning, WiFi, Box UI)
 
 # --- VARIABLES ---
 HOME_DIR="${HOME}"
@@ -16,6 +16,9 @@ GOLD='\033[1;33m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
+
+# Global to track created instance path
+CREATED_CONF_DIR=""
 
 # --- UTILS ---
 
@@ -234,14 +237,19 @@ install_moonraker() {
 }
 
 install_probe_tech() {
-    if ! select_instance; then return; fi
+    local target_dir="$1"
+    
+    if [ -n "$target_dir" ]; then
+        SELECTED_CONF_DIR="$target_dir"
+        echo -e "${GOLD}Auto-configuring instance at: $SELECTED_CONF_DIR${NC}"
+    else
+        if ! select_instance; then return; fi
+    fi
     
     PROBE_CFG="${SELECTED_CONF_DIR}/probe_tech.cfg"
     PRINTER_CFG="${SELECTED_CONF_DIR}/printer.cfg"
     MOONRAKER_CONF="${SELECTED_CONF_DIR}/moonraker.conf"
     
-    echo -e "${GOLD}Configuring instance at: $SELECTED_CONF_DIR${NC}"
-
     if [ -f "probe_tech.cfg" ]; then
         cp probe_tech.cfg "$PROBE_CFG"
         echo -e "${GREEN}✓ probe_tech.cfg copied${NC}"
@@ -273,7 +281,8 @@ EOF
              echo -e "${GREEN}✓ Moonraker Update Manager added${NC}"
         fi
     else
-        echo -e "${RED}Warning: moonraker.conf not found in ${SELECTED_CONF_DIR}${NC}"
+        # Allow creating moonraker.conf if missing? No, create_instance handles that.
+        echo -e "${RED}Warning: moonraker.conf not found.${NC}"
     fi
 
     echo -e "${GOLD}Setting up Service...${NC}"
@@ -291,7 +300,10 @@ EOF
 
 create_instance() {
     print_box "CREATE NEW PRINTER INSTANCE" "${BLUE}"
-    echo -e "${SILVER}This will create a new config folder and clone systemd services.${NC}"
+    RELEASE_CONF_DIR=""
+    CREATED_CONF_DIR=""
+    
+    echo -e "${SILVER}This will create a new configuration folder and clone systemd services.${NC}"
     read -p "Enter Instance Name (e.g. printer_2): " inst_name
     
     if [ -z "$inst_name" ]; then echo "Name cannot be empty."; return; fi
@@ -389,7 +401,30 @@ EOF
     sudo systemctl start moonraker-${inst_name}
     
     echo -e "${GREEN}✓ Instance Created & Services Started!${NC}"
+    
+    # Set global for auto-install
+    CREATED_CONF_DIR="$CONF_DIR"
     read -p "Press Enter..."
+}
+
+auto_install_multi() {
+    echo -e "${BLUE}=== AUTO-INSTALL NEW PRINTER INSTANCE ===${NC}"
+    echo -e "Steps: Install Binaries -> Create Instance -> Configure Probe Tech"
+    
+    install_klipper
+    install_moonraker
+    
+    # Create the instance (prompts for name)
+    create_instance
+    
+    if [ -n "$CREATED_CONF_DIR" ]; then
+         echo -e "${GOLD}Applying Probe Tech Configuration to new instance...${NC}"
+         install_probe_tech "$CREATED_CONF_DIR"
+         echo -e "${GREEN}=== Auto-Installation Complete! ===${NC}"
+         read -p "Press Enter to continue..."
+    else
+         echo -e "${RED}Instance creation failed or cancelled.${NC}"
+    fi
 }
 
 install_all() {
@@ -508,11 +543,8 @@ do_remove_all() {
     read -p "Are you sure? (y/n): " confirm
     if [[ "$confirm" == "y" ]]; then
         echo -e "${GOLD}Removing Probe Tech Config...${NC}"
-        # For remove all, we might want to clean all instances, but for now let's just do base components + specific instance config if requested. 
-        # Actually standard practice is remove the big services and maybe the config files.
         do_remove_moonraker
         do_remove_klipper
-        # Optional: remove probe tech service
          sudo systemctl stop probe-tech 2>/dev/null
          sudo systemctl disable probe-tech 2>/dev/null
          rm -rf "${HOME}/probe-tech-control"
@@ -527,7 +559,7 @@ menu_remove() {
         clear
         print_box "REMOVE COMPONENTS" "${RED}"
         echo "1) Uninstall EVERYTHING (Probe Tech + Moonraker + Klipper)"
-        echo "2) Remove Probe Tech Config (Single Instance)"
+        echo "2) Remove Probe Tech Control (Complete)"
         echo "3) Uninstall Moonraker (Destructive)"
         echo "4) Uninstall Klipper (Destructive)"
         echo "5) Back"
@@ -594,23 +626,25 @@ while true; do
     check_status
     
     echo "1) Auto-Install All (Probe Tech Control, Moonraker, Klipper)"
-    echo "2) Manual Installation (Install / Update / Multi-Instance)"
-    echo "3) Remove Components"
-    echo "4) Backup Configuration"
-    echo "5) Service Control"
-    echo "6) WiFi Config (WiFi, Hotspot, Info)"
-    echo "7) Quit"
+    echo "2) Auto-Install Multi-Instance (Create new + Install)"
+    echo "3) Manual Installation (Install / Update / Multi-Instance)"
+    echo "4) Remove Components"
+    echo "5) Backup Configuration"
+    echo "6) Service Control"
+    echo "7) WiFi Config (WiFi, Hotspot, Info)"
+    echo "8) Quit"
     echo ""
     read -p "Select option: " main_c
     
     case $main_c in
         1) install_all ;;
-        2) manual_install_menu ;;
-        3) menu_remove ;;
-        4) menu_backup ;;
-        5) menu_service ;;
-        6) menu_wifi ;;
-        7) exit 0 ;;
+        2) auto_install_multi ;;
+        3) manual_install_menu ;;
+        4) menu_remove ;;
+        5) menu_backup ;;
+        6) menu_service ;;
+        7) menu_wifi ;;
+        8) exit 0 ;;
         *) ;;
     esac
 done

@@ -30,7 +30,7 @@ cd ptc
 chmod +x install.sh
 ./install.sh
 ```
-Follow the on-screen menu to "Auto-Install All" for a fresh setup.
+Follow the on-screen menu to choose "Auto-Setup" for a fresh setup.
 
 ### Option 2: Manual Setup
 For detailed manual configuration, requirements, and advanced setups, please refer to the:

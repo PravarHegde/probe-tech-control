@@ -107,20 +107,25 @@ select_instance() {
 check_status() {
     print_box "PROBE TECH CONTROL - ADVANCED MANAGER" "${BLUE}"
     
+    local ptc_dir_exists=0
+    [ -d "${HOME}/probe-tech-control" ] && ptc_dir_exists=1
+
     # Check Probe Tech Config
-    local installed=0
+    local config_installed=0
     mapfile -t instances < <(get_instances)
     for inst in "${instances[@]}"; do
         if [ -f "$inst/probe_tech.cfg" ]; then
-            installed=1
+            config_installed=1
             break
         fi
     done
 
-    if [ $installed -eq 1 ]; then
+    if [ $ptc_dir_exists -eq 1 ] && [ $config_installed -eq 1 ]; then
          echo -e "Probe Tech Control: ${GREEN}Installed${NC}"
+    elif [ $ptc_dir_exists -eq 1 ]; then
+         echo -e "Probe Tech Control: ${GOLD}Partially Installed (Missing Config)${NC}"
     else
-         echo -e "Probe Tech Control: ${SILVER}Not Detected (Need Config)${NC}"
+         echo -e "Probe Tech Control: ${SILVER}Not Installed${NC}"
     fi
 
     # Check Moonraker
@@ -260,11 +265,35 @@ install_klipper() {
 
     # Run original install script for system integration (optional but helpful)
     if [ -f "${HOME}/klipper/scripts/install-ubuntu-22.04.sh" ]; then
-         # We've already done most work, this is for udev/etc.
          echo -e "${BLUE}Running Klipper system integration...${NC}"
          # Pipe "n" to avoid overwriting our managed service if it prompts
          yes n | "${HOME}/klipper/scripts/install-ubuntu-22.04.sh" || true
     fi
+
+    # OVERRIDE FIX: Ensure the service uses modern printer_data paths and socket
+    echo -e "${BLUE}Standardizing Klipper service configuration...${NC}"
+    sudo tee /etc/systemd/system/klipper.service <<EOF > /dev/null
+[Unit]
+Description=Klipper 3D Printer Firmware SV1
+Documentation=https://www.klipper3d.org/
+After=network-online.target
+Wants=udev.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+User=$USER
+RemainAfterExit=yes
+WorkingDirectory=${HOME}/klipper
+ExecStart=${HOME}/klippy-env/bin/python ${HOME}/klipper/klippy/klippy.py ${HOME}/printer_data/config/printer.cfg -I ${HOME}/printer_data/comms/klippy.serial -l ${HOME}/printer_data/logs/klippy.log -a ${HOME}/printer_data/comms/klippy.sock
+Restart=always
+RestartSec=10
+EOF
+    sudo systemctl daemon-reload
+    sudo systemctl enable klipper
+    sudo systemctl start klipper
 
     sudo usermod -a -G tty,dialout $USER
     echo -e "${GREEN}✓ Klipper Environment Ready${NC}"
@@ -640,17 +669,59 @@ auto_install_batch() {
     
     echo ""
     echo -e "${GREEN}=== Batch Installation Complete! ===${NC}"
-    read -p "Press Enter to continue..."
+    
+    verify_health
 }
 
-install_all() {
-    echo -e "${BLUE}=== AUTO-INSTALL ALL ===${NC}"
+auto_install_single() {
+    echo -e "${BLUE}=== AUTO-SETUP: SINGLE INSTANCE ===${NC}"
     install_klipper
     install_moonraker
     install_probe_tech
     
-    echo -e "${GREEN}Installation Complete!${NC}"
-    read -p "Press Enter..."
+    verify_health
+}
+
+verify_health() {
+    echo -e "${GOLD}Verifying installation health...${NC}"
+    sleep 5
+    
+    PTC_STATUS=$(systemctl is-active probe-tech)
+    MOON_STATUS=$(systemctl is-active moonraker)
+    KLIP_STATUS=$(systemctl is-active klipper)
+    
+    # Check Web Interface
+    if [ "$PTC_STATUS" == "active" ]; then
+        echo -e "${GREEN}✓ Web Interface Service: Running${NC}"
+    else
+        echo -e "${RED}✗ Web Interface Service: $PTC_STATUS${NC}"
+    fi
+
+    # Check Moonraker
+    if [ "$MOON_STATUS" == "active" ]; then
+        echo -e "${GREEN}✓ Moonraker Service: Running${NC}"
+    else
+        echo -e "${RED}✗ Moonraker Service: $MOON_STATUS${NC}"
+    fi
+
+    # Check Klipper
+    if [ "$KLIP_STATUS" == "active" ]; then
+        echo -e "${GREEN}✓ Klipper Service: Running${NC}"
+    else
+        echo -e "${RED}✗ Klipper Service: $KLIP_STATUS${NC}"
+    fi
+
+    # Check Connection Web -> Moonraker
+    echo -e "${BLUE}Testing API connectivity...${NC}"
+    if curl -s http://localhost:7125/printer/info > /dev/null; then
+         echo -e "${GREEN}✓ Moonraker API accessible on port 7125${NC}"
+    else
+         echo -e "${RED}✗ Moonraker API NOT accessible on port 7125${NC}"
+    fi
+
+    echo ""
+    echo -e "${CYAN}Installation process finished.${NC}"
+    read -p "Press Enter to return to menu..."
 }
 
 # --- BACKUP & RESTORE ---
@@ -740,8 +811,12 @@ do_remove_moonraker() {
     read -p "Uninstall Moonraker? (y/n): " y
     if [ "$y" = "y" ]; then
         sudo systemctl stop moonraker 2>/dev/null
+        sudo systemctl disable moonraker 2>/dev/null
         rm -rf "${HOME}/moonraker"
-        echo "Moonraker removed."
+        rm -rf "${HOME}/moonraker-env"
+        sudo rm -f "/etc/systemd/system/moonraker.service"
+        sudo systemctl daemon-reload
+        echo "Moonraker and environment removed."
     fi
 }
 
@@ -749,8 +824,12 @@ do_remove_klipper() {
     read -p "Uninstall Klipper? (y/n): " y
     if [ "$y" = "y" ]; then
         sudo systemctl stop klipper 2>/dev/null
+        sudo systemctl disable klipper 2>/dev/null
         rm -rf "${HOME}/klipper"
-        echo "Klipper removed."
+        rm -rf "${HOME}/klippy-env"
+        sudo rm -f "/etc/systemd/system/klipper.service"
+        sudo systemctl daemon-reload
+        echo "Klipper and environment removed."
     fi
 }
 
@@ -758,14 +837,32 @@ do_remove_all() {
     echo -e "${RED}WARNING: This will remove ALL components!${NC}"
     read -p "Are you sure? (y/n): " confirm
     if [[ "$confirm" == "y" ]]; then
-        echo -e "${GOLD}Removing Probe Tech Config...${NC}"
+        echo -e "${GOLD}Removing All Components...${NC}"
+        
+        # 1. Clean up Klipper & Moonraker environments/binaries
         do_remove_moonraker
         do_remove_klipper
-         sudo systemctl stop probe-tech 2>/dev/null
-         sudo systemctl disable probe-tech 2>/dev/null
-         rm -rf "${HOME}/probe-tech-control"
-         echo "Probe Tech Control removed."
-         echo -e "${GREEN}Complete Uninstallation Finished.${NC}"
+        
+        # 2. Stop and Clean up Probe Tech Control Web Interface
+        sudo systemctl stop probe-tech 2>/dev/null
+        sudo systemctl disable probe-tech 2>/dev/null
+        sudo rm -f "/etc/systemd/system/probe-tech.service"
+        sudo systemctl daemon-reload
+        rm -rf "${HOME}/probe-tech-control"
+        
+        # 3. Clean up probe_tech.cfg from ALL instances
+        echo -e "${GOLD}Cleaning up leftover configuration files...${NC}"
+        mapfile -t instances < <(get_instances)
+        for inst in "${instances[@]}"; do
+            if [ -f "$inst/probe_tech.cfg" ]; then
+                rm -f "$inst/probe_tech.cfg"
+                sed -i '/\[include probe_tech.cfg\]/d' "$inst/printer.cfg" 2>/dev/null
+                echo "Removed config from: $inst"
+            fi
+        done
+
+        echo "Probe Tech Control removed."
+        echo -e "${GREEN}Complete Uninstallation Finished.${NC}"
     fi
     read -p "Press Enter..."
 }
@@ -795,21 +892,52 @@ menu_service() {
     while true; do
         clear
         print_box "SERVICE CONTROL" "${BLUE}"
-        echo "1) Start"
-        echo "2) Stop"
-        echo "3) Restart"
-        echo "4) Enable on Boot"
-        echo "5) Disable on Boot"
-        echo "6) Back"
+        echo "1) Restart ALL Services (Probe Tech + Moonraker + Klipper)"
+        echo "2) Probe Tech Control: [Restart] [Stop] [Start]"
+        echo "3) Moonraker:          [Restart] [Stop] [Start]"
+        echo "4) Klipper:            [Restart] [Stop] [Start]"
+        echo "5) Enable All on Boot"
+        echo "6) Disable All on Boot"
+        echo "7) Back"
         echo ""
         read -p "Select: " c
         case $c in
-            1) sudo systemctl start probe-tech ;;
-            2) sudo systemctl stop probe-tech ;;
-            3) sudo systemctl restart probe-tech ;;
-            4) sudo systemctl enable probe-tech ;;
-            5) sudo systemctl disable probe-tech ;;
-            6) return ;;
+            1) 
+                echo -e "${GOLD}Restarting all services...${NC}"
+                sudo systemctl restart klipper moonraker probe-tech
+                echo -e "${GREEN}Done.${NC}"
+                read -p "Press Enter..."
+                ;;
+            2) 
+                echo "1) Restart  2) Stop  3) Start"
+                read -p "Action: " a
+                [ "$a" == "1" ] && sudo systemctl restart probe-tech
+                [ "$a" == "2" ] && sudo systemctl stop probe-tech
+                [ "$a" == "3" ] && sudo systemctl start probe-tech
+                ;;
+            3) 
+                echo "1) Restart  2) Stop  3) Start"
+                read -p "Action: " a
+                [ "$a" == "1" ] && sudo systemctl restart moonraker
+                [ "$a" == "2" ] && sudo systemctl stop moonraker
+                [ "$a" == "3" ] && sudo systemctl start moonraker
+                ;;
+            4) 
+                echo "1) Restart  2) Stop  3) Start"
+                read -p "Action: " a
+                [ "$a" == "1" ] && sudo systemctl restart klipper
+                [ "$a" == "2" ] && sudo systemctl stop klipper
+                [ "$a" == "3" ] && sudo systemctl start klipper
+                ;;
+            5) 
+                sudo systemctl enable klipper moonraker probe-tech
+                read -p "Enabled on boot. Press Enter..."
+                ;;
+            6) 
+                sudo systemctl disable klipper moonraker probe-tech
+                read -p "Disabled on boot. Press Enter..."
+                ;;
+            7) return ;;
         esac
     done
 }
@@ -841,24 +969,24 @@ while true; do
     clear
     check_status
     
-    echo "1) Auto-Install All (Probe Tech Control, Moonraker, Klipper)"
-    echo -e "${MAGENTA}2) Batch Multi-Instance (Create Multiple Printers)${NC}"
-    echo "3) Manual Installation (Install / Update / Multi-Instance)"
-    echo "4) Remove Components"
-    echo "5) Backup Configuration"
-    echo "6) Service Control"
-    echo "7) WiFi Config (WiFi, Hotspot, Info)"
+    echo "1) Auto-Setup: Single Instance (All-in-One)"
+    echo -e "${MAGENTA}2) Auto-Setup: Multi-Instance (Batch Installer)${NC}"
+    echo "3) Manual Installation & Updates"
+    echo "4) Service Control (Status / Restart)"
+    echo "5) Remove Components"
+    echo "6) Backup & Restore"
+    echo "7) WiFi Config"
     echo "8) Quit"
     echo ""
     read -p "Select option: " main_c
     
     case $main_c in
-        1) install_all ;;
+        1) auto_install_single ;;
         2) auto_install_batch ;;
         3) manual_install_menu ;;
-        4) menu_remove ;;
-        5) menu_backup ;;
-        6) menu_service ;;
+        4) menu_service ;;
+        5) menu_remove ;;
+        6) menu_backup ;;
         7) menu_wifi ;;
         8) exit 0 ;;
         *) ;;

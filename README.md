@@ -32,7 +32,14 @@ chmod +x install.sh
 ```
 Follow the on-screen menu to choose "Auto-Setup" for a fresh setup.
 
-### Option 2: Manual Setup
+### Option 2: Clear Previous / Start New (Fresh Install)
+If you have an existing installation or a failed attempt, use this command to wipe the old directory and start 100% fresh:
+
+```bash
+cd ~ && rm -rf ptc && git clone https://github.com/PravarHegde/probe-tech-control ptc && cd ptc && chmod +x install.sh && ./install.sh
+```
+
+### Option 3: Manual Setup
 For detailed manual configuration, requirements, and advanced setups, please refer to the:
 👉 **[INSTALL.md](INSTALL.md)**
 

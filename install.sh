@@ -377,9 +377,19 @@ install_probe_tech() {
     PRINTER_CFG="${SELECTED_CONF_DIR}/printer.cfg"
     MOONRAKER_CONF="${SELECTED_CONF_DIR}/moonraker.conf"
     # Use SCRIPT_DIR to find the cfg, ignoring CWD
-    if [ -f "${SCRIPT_DIR}/probe_tech.cfg" ]; then
-        cp "${SCRIPT_DIR}/probe_tech.cfg" "$PROBE_CFG"
+    if [ -f "${SCRIPT_DIR}/scripts/probe_tech.cfg" ]; then
+        # Create scripts dir in target config folder if missing (Klipper usually wants includes relative to root or full path)
+        # Actually, standard practice for Klipper includes is relative to printer.cfg
+        # So we should put probe_tech.cfg in a 'scripts' subfolder inside config? 
+        # User requested "in github too many files showing in root", implying source repo cleanup.
+        # But for the INSTALLED config, keeping it organized is also good.
+        # Let's mirror the structure: Copy to ${SELECTED_CONF_DIR}/scripts/probe_tech.cfg
         
+        mkdir -p "${SELECTED_CONF_DIR}/scripts"
+        cp "${SCRIPT_DIR}/scripts/probe_tech.cfg" "${SELECTED_CONF_DIR}/scripts/probe_tech.cfg"
+        
+        PROBE_CFG="${SELECTED_CONF_DIR}/scripts/probe_tech.cfg"
+
         # DYNAMIC PATCHING: Update virtual_sdcard path for this instance
         # Get the actual instance data directory (one level up from /config)
         local inst_data_dir=$(dirname "$SELECTED_CONF_DIR")
@@ -392,8 +402,12 @@ install_probe_tech() {
     fi
 
     if [ -f "$PRINTER_CFG" ]; then
-        if ! grep -q "include probe_tech.cfg" "$PRINTER_CFG"; then
-            sed -i '1s/^/[include probe_tech.cfg]\n/' "$PRINTER_CFG"
+        if ! grep -q "include scripts/probe_tech.cfg" "$PRINTER_CFG"; then
+            # Check if old include exists and remove it
+             sed -i '/\[include probe_tech.cfg\]/d' "$PRINTER_CFG"
+             
+             # Add new include
+            sed -i '1s/^/[include scripts\/probe_tech.cfg]\n/' "$PRINTER_CFG"
             echo -e "${GREEN}✓ Linked in printer.cfg${NC}"
         else
             echo -e "${SILVER}Link already exists.${NC}"
@@ -515,8 +529,8 @@ EOF
 
     echo -e "${GOLD}Setting up Service...${NC}"
     # Use SCRIPT_DIR for service template too
-    if [ -f "${SCRIPT_DIR}/probe-tech.service" ]; then
-         sed "s/{USER}/${USER}/g" "${SCRIPT_DIR}/probe-tech.service" > /tmp/probe-tech.service
+    if [ -f "${SCRIPT_DIR}/scripts/probe-tech.service" ]; then
+         sed "s/{USER}/${USER}/g" "${SCRIPT_DIR}/scripts/probe-tech.service" > /tmp/probe-tech.service
          sudo mv /tmp/probe-tech.service "/etc/systemd/system/probe-tech.service"
          sudo systemctl daemon-reload
          sudo systemctl enable probe-tech.service
@@ -570,7 +584,7 @@ EOF
     # Create Basic Configs
     if [ ! -f "${CONF_DIR}/printer.cfg" ]; then
         cat <<EOF > "${CONF_DIR}/printer.cfg"
-[include probe_tech.cfg]
+[include scripts/probe_tech.cfg]
 
 [mcu]
 serial: /dev/serial/by-id/PLEASE_UPDATE_ME
@@ -760,10 +774,10 @@ auto_install_single() {
     install_probe_tech
     
     # Run Fix Scripts
-    if [ -f "${SCRIPT_DIR}/fix_printer_cfg.sh" ]; then
+    if [ -f "${SCRIPT_DIR}/scripts/fix_printer_cfg.sh" ]; then
         echo -e "${GOLD}Running Config Auto-Fixers...${NC}"
-        bash "${SCRIPT_DIR}/fix_printer_cfg.sh"
-        bash "${SCRIPT_DIR}/fix_moonraker_config.sh"
+        bash "${SCRIPT_DIR}/scripts/fix_printer_cfg.sh"
+        bash "${SCRIPT_DIR}/scripts/fix_moonraker_config.sh"
     fi
     
     verify_health
@@ -888,8 +902,8 @@ menu_backup() {
 
 do_remove_probe() {
     if select_instance; then
-        rm -f "${SELECTED_CONF_DIR}/probe_tech.cfg"
-        sed -i '/\[include probe_tech.cfg\]/d' "${SELECTED_CONF_DIR}/printer.cfg" 2>/dev/null
+        rm -f "${SELECTED_CONF_DIR}/scripts/probe_tech.cfg"
+        sed -i '/\[include scripts\/probe_tech.cfg\]/d' "${SELECTED_CONF_DIR}/printer.cfg" 2>/dev/null
         echo -e "${GREEN}Removed config links.${NC}"
     fi
 }
@@ -1063,14 +1077,15 @@ repair_install() {
         sudo -v
         
         # 1. Run Config Fixers
-        if [ -f "${SCRIPT_DIR}/fix_printer_cfg.sh" ]; then
+        # 1. Run Config Fixers
+        if [ -f "${SCRIPT_DIR}/scripts/fix_printer_cfg.sh" ]; then
             echo -e "${BLUE}Running Printer Config Fixer...${NC}"
-            bash "${SCRIPT_DIR}/fix_printer_cfg.sh"
+            bash "${SCRIPT_DIR}/scripts/fix_printer_cfg.sh"
         fi
         
-        if [ -f "${SCRIPT_DIR}/fix_moonraker_config.sh" ]; then
+        if [ -f "${SCRIPT_DIR}/scripts/fix_moonraker_config.sh" ]; then
              echo -e "${BLUE}Running Moonraker Config Fixer...${NC}"
-             bash "${SCRIPT_DIR}/fix_moonraker_config.sh"
+             bash "${SCRIPT_DIR}/scripts/fix_moonraker_config.sh"
         fi
         
         # 2. Restart Services

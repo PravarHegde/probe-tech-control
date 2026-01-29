@@ -126,11 +126,11 @@ export default class WebrtcGo2rtc extends Mixins(BaseMixin, WebcamMixin) {
 
     log(msg: string, obj?: any) {
         if (obj) {
-            window.console.log(`[WebRTC go2rtc] ${msg}`, obj)
+            // window.console.log(`[WebRTC go2rtc] ${msg}`, obj)
             return
         }
 
-        window.console.log(`[WebRTC go2rtc] ${msg}`)
+        // window.console.log(`[WebRTC go2rtc] ${msg}`)
     }
 
     // webrtc player methods

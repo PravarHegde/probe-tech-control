@@ -111,11 +111,11 @@ export default class WebrtcMediaMTX extends Mixins(BaseMixin, WebcamMixin) {
 
     log(msg: string, obj?: any) {
         if (obj) {
-            window.console.log(`[WebRTC mediamtx] ${msg}`, obj)
+            // window.console.log(`[WebRTC mediamtx] ${msg}`, obj)
             return
         }
 
-        window.console.log(`[WebRTC mediamtx] ${msg}`)
+        // window.console.log(`[WebRTC mediamtx] ${msg}`)
     }
 
     // webrtc player methods

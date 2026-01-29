@@ -114,11 +114,11 @@ export default class Mjpegstreamer extends Mixins(BaseMixin, WebcamMixin) {
 
     log(msg: string, obj?: any) {
         if (obj) {
-            window.console.log(`[MJPEG streamer] ${msg}`, obj)
+            // window.console.log(`[MJPEG streamer] ${msg}`, obj)
             return
         }
 
-        window.console.log(`[MJPEG streamer] ${msg}`)
+        // window.console.log(`[MJPEG streamer] ${msg}`)
     }
 
     getLength(headers: any) {

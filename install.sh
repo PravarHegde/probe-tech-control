@@ -459,7 +459,50 @@ EOF
              fi
         fi
     else
-        echo -e "${RED}Warning: moonraker.conf not found.${NC}"
+        # MOONRAKER_CONF not found - Create it!
+        echo -e "${GOLD}Creating default moonraker.conf...${NC}"
+        # AUTO PORT LOGIC (Reused)
+        NEXT_PORT=$(get_next_port)
+        # Ensure comms dir exists for UDS
+        COMMS_DIR="$(dirname "$SELECTED_CONF_DIR")/comms"
+        mkdir -p "$COMMS_DIR"
+        
+        cat <<EOF > "$MOONRAKER_CONF"
+[server]
+host: 0.0.0.0
+port: ${NEXT_PORT}
+klippy_uds_address: ${COMMS_DIR}/klippy.sock
+
+[authorization]
+cors_domains:
+    *
+    *.lan
+    *.local
+trusted_clients:
+    127.0.0.1
+    10.0.0.0/8
+    127.0.0.0/8
+    169.254.0.0/16
+    172.16.0.0/12
+    192.168.0.0/16
+    FE80::/10
+    ::1/128
+
+[update_manager]
+
+EOF
+        # Conditionally add probe_tech update manager
+        if [ -d "$WEB_DIR" ]; then
+            cat <<EOF >> "$MOONRAKER_CONF"
+
+[update_manager probe_tech]
+type: web
+channel: stable
+repo: PravarHegde/probe-tech-control
+path: ~/probe-tech-control
+EOF
+        fi
+        echo -e "${GREEN}✓ Created default moonraker.conf${NC}"
     fi
 
     echo -e "${GOLD}Setting up Service...${NC}"
@@ -701,9 +744,19 @@ auto_install_batch() {
 
 auto_install_single() {
     echo -e "${BLUE}=== AUTO-SETUP: SINGLE INSTANCE ===${NC}"
+    # Refresh sudo early
+    sudo -v
+
     install_klipper
     install_moonraker
     install_probe_tech
+    
+    # Run Fix Scripts
+    if [ -f "${SCRIPT_DIR}/fix_printer_cfg.sh" ]; then
+        echo -e "${GOLD}Running Config Auto-Fixers...${NC}"
+        bash "${SCRIPT_DIR}/fix_printer_cfg.sh"
+        bash "${SCRIPT_DIR}/fix_moonraker_config.sh"
+    fi
     
     verify_health
 }

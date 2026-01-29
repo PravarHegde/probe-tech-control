@@ -50,6 +50,18 @@ EOF
              # We won't touch it if we are not sure, to avoid breaking includes.
              echo "  - check: 'serial:' keyword not found in $cfg (might be in include)"
         fi
+
+        # FIX: z_offset commented out (Common issue)
+        if grep -q "#z_offset:" "$cfg"; then
+            echo "  - FIXING: Found commented out z_offset. Enabling default (1.75)..."
+            sed -i 's/#z_offset:/z_offset:/' "$cfg"
+        elif ! grep -q "z_offset" "$cfg"; then
+             # Only add if [probe] section exists but z_offset is missing entirely
+             if grep -q "\[probe\]" "$cfg"; then
+                 echo "  - FIXING: [probe] exists but z_offset missing. Adding..."
+                 sed -i '/\[probe\]/a z_offset: 1.75' "$cfg"
+             fi
+        fi
     fi
 done
 

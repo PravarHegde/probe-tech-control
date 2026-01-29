@@ -15,7 +15,7 @@
         "format:check": "npm run format:base -- --check",
         "lint": "eslint --ignore-path .gitignore src",
         "lint:fix": "npm run lint -- --fix",
-        "build.zip": "cd ./dist && zip -r mainsail.zip ./ -x '**.DS_Store' ./ && cd ..",
+        "build.zip": "cp spa_server.py dist/ && cd ./dist && zip -r ../probe-tech-control.zip ./ -x '**.DS_Store' ./ && cd ..",
         "i18n-extract": "vue-i18n-extract --vueFiles './src/**/{*.?(js|ts|vue),.i18nignore}' --languageFiles './src/locales/*.json'",
         "preview": "vite preview",
         "start": "vite build && vite preview",

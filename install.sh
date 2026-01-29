@@ -1042,6 +1042,38 @@ manual_install_menu() {
     done
 }
 
+# --- REPAIR UTILS ---
+
+
+repair_install() {
+    print_box "AUTO-FIX / REPAIR CONFIGURATION" "${GOLD}"
+    echo -e "${SILVER}This will scan and repair common configuration issues (z_offset, moonraker.conf, services).${NC}"
+    echo ""
+    read -p "Start Repair? (y/n): " confirm
+    if [[ "$confirm" == "y" ]]; then
+        # Refresh Sudo
+        sudo -v
+        
+        # 1. Run Config Fixers
+        if [ -f "${SCRIPT_DIR}/fix_printer_cfg.sh" ]; then
+            echo -e "${BLUE}Running Printer Config Fixer...${NC}"
+            bash "${SCRIPT_DIR}/fix_printer_cfg.sh"
+        fi
+        
+        if [ -f "${SCRIPT_DIR}/fix_moonraker_config.sh" ]; then
+             echo -e "${BLUE}Running Moonraker Config Fixer...${NC}"
+             bash "${SCRIPT_DIR}/fix_moonraker_config.sh"
+        fi
+        
+        # 2. Restart Services
+        echo -e "${GOLD}Restarting Services to apply fixes...${NC}"
+        sudo systemctl restart klipper moonraker probe-tech
+        
+        # 3. Verify
+        verify_health
+    fi
+}
+
 # --- MAIN LOOP ---
 
 menu_network() {
@@ -1112,7 +1144,8 @@ while true; do
     echo "5) Remove Components"
     echo "6) Backup & Restore"
     echo "7) WiFi Config & Port Configuration"
-    echo "8) Quit"
+    echo "8) Auto-Fix / Repair Configuration"
+    echo "9) Quit"
     echo ""
     read -p "Select option: " main_c
     
@@ -1124,7 +1157,8 @@ while true; do
         5) menu_remove ;;
         6) menu_backup ;;
         7) menu_network ;;
-        8) exit 0 ;;
+        8) repair_install ;;
+        9) exit 0 ;;
         *) ;;
     esac
 done

@@ -1141,20 +1141,33 @@ if [ $# -eq 0 ]; then
         print_box "FRESH INSTALLATION DETECTED" "${GOLD}"
         echo -e "${GREEN}System appears clean.${NC}"
         echo -e "${GREEN}Starting Seamless Automatic Installation in 30 seconds...${NC}"
-        echo -e "${SILVER}Press ANY KEY to cancel and enter the Main Menu.${NC}"
+        echo -e "${SILVER}Press ENTER to Start Immediately, or ANY OTHER KEY to Cancel/Menu.${NC}"
         echo ""
         
         # Wait 30 seconds for input
-        if read -t 30 -N 1 -s; then
-            echo -e "\n${YELLOW}Auto-Install Cancelled. Opening Menu...${NC}"
-            sleep 1
+        # We read 1 character. If it is empty (Enter), we proceed. 
+        # If it is not empty, we cancel.
+        # Note: read -t returns >128 on timeout. 0 on success.
+        
+        read -t 30 -n 1 key
+        input_status=$?
+        
+        if [ $input_status -gt 128 ]; then
+             # Timeout - Start Auto Install
+             echo -e "\n${GREEN}Timeout Reached. Starting Auto-Setup...${NC}"
+             auto_install_single
+             echo -e "${GREEN}Seamless Install Complete.${NC}"
+             exit 0
+        elif [ "$key" == "" ]; then
+             # Enter Pressed - Start Auto Install
+             echo -e "\n${GREEN}Starting Auto-Setup...${NC}"
+             auto_install_single
+             echo -e "${GREEN}Seamless Install Complete.${NC}"
+             exit 0
         else
-            echo -e "\n${GREEN}Timeout Reached. Starting Auto-Setup...${NC}"
-            auto_install_single
-            
-            # If we reach here, install finished
-            echo -e "${GREEN}Seamless Install Complete.${NC}"
-            exit 0
+             # Other Key Pressed - Cancel
+             echo -e "\n${YELLOW}Auto-Install Cancelled. Opening Menu...${NC}"
+             sleep 1
         fi
     fi
 fi

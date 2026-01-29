@@ -21,24 +21,21 @@
 
 Choose the method that best suits your needs:
 
-### Option 1: Automated Installer
-Run one of the following commands on your Raspberry Pi or Linux server (Ubuntu/Debian):
+### Option 1: Quick Install (Recommended)
+Run this single command to download and install automatically:
+```bash
+wget -O - https://raw.githubusercontent.com/PravarHegde/probe-tech-control/master/bootstrap.sh | bash
+```
+*Supports seamless auto-installation on fresh systems.*
 
-**Standard Installation:**
+### Option 2: Manual / Developer Install
+If you prefer to clone the repository manually:
 ```bash
 git clone https://github.com/PravarHegde/probe-tech-control ptc
 cd ptc
 chmod +x install.sh
 ./install.sh
 ```
-
-**Clear Previous / Start New (Fresh Install):**
-*(Use this if you have an existing installation or a failed attempt)*
-```bash
-cd ~ && rm -rf ptc && git clone https://github.com/PravarHegde/probe-tech-control ptc && cd ptc && chmod +x install.sh && ./install.sh
-```
-
-Follow the on-screen menu to choose "Auto-Setup" for a fresh setup.
 
 ### Option 2: Manual Setup
 For detailed manual configuration, requirements, and advanced setups, please refer to the:

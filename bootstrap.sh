@@ -32,4 +32,6 @@ fi
 # 3. Launch Installer
 echo -e "${BLUE}Launching Installer...${NC}"
 chmod +x install.sh
-./install.sh
+# Fix: Redirect /dev/tty to stdin so the installer becomes interactive
+# even when the bootstrap script itself is piped to bash.
+./install.sh < /dev/tty

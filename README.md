@@ -49,4 +49,4 @@ For detailed manual configuration, requirements, and advanced setups, please ref
 If you find a bug or have a feature request, please create an [Issue](https://github.com/PravarHegde/probe-tech-control/issues).
 
 ---
-*Probe Tech Control is a branded fork of Mainsail. Special thanks to the original authors and the Klipper community.*
+*Probe Tech Control is a branded fork of Probe Tech Control. Special thanks to the original authors and the Klipper community.*

@@ -12,7 +12,7 @@ temp
 .changelog
 .idea
 .vscode
-package-lock.json
+# package-lock.json
 *.local
 .env
 

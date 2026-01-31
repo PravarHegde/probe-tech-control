@@ -83,9 +83,9 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Move build out of dist
+      - name: Verify build artifact
         shell: bash
-        run: mv ./dist/mainsail.zip ./mainsail.zip
+        run: ls -l probe-tech-control.zip
 
       - name: Get latest tag
         id: latest_tag
@@ -106,7 +106,7 @@ jobs:
         with:
           name: v${{ github.event.inputs.version }}
           tag_name: v${{ github.event.inputs.version }}
-          files: ./mainsail.zip
+          files: ./probe-tech-control.zip
           body: ${{ steps.generate-changelog.outputs.content }}
 
       - name: Copy remote configs to dist

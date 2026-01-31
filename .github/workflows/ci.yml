@@ -29,8 +29,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v5
         with:
-          name: mainsail-latest.zip
-          path: dist/mainsail.zip
+          name: probe-tech-control.zip
+          path: probe-tech-control.zip
 
   test:
     name: Cypress Tests

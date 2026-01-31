@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import { backgroundSets } from '@/store/variables'
 
 @Component
 export default class ThemeMixin extends Vue {
@@ -66,7 +67,17 @@ export default class ThemeMixin extends Vue {
 
     get sidebarLogo(): string {
         const url = this.$store.getters['files/getSidebarLogo']
-        if (url !== '' || this.themeName === 'mainsail') return url
+        if (url !== '') return url
+
+        // Special handling for Futuristic (mainsail) theme variants
+        if (this.themeName === 'mainsail') {
+            const variant = (this.$store.state.gui.uiSettings.backgroundVariant ?? 'standard') as keyof typeof backgroundSets
+            const set = backgroundSets[variant] || backgroundSets['standard']
+
+            return this.themeMode === 'light'
+                ? `/img/themes/${set.logoLight}`
+                : `/img/themes/${set.logoDark}`
+        }
 
         // if no theme is set, return empty string to load the default logo
         if (!(this.theme.logo?.show ?? false)) return ''
@@ -81,10 +92,19 @@ export default class ThemeMixin extends Vue {
 
     get mainBgImage() {
         // Only use uploaded background if the current theme is 'custom'
-        // This prevents uploaded backgrounds from overwriting preset themes
         if (this.themeName === 'custom') {
             const url = this.$store.getters['files/getMainBackground']
             if (url) return url
+        }
+
+        // Special handling for Futuristic (mainsail) theme variants
+        if (this.themeName === 'mainsail') {
+            const variant = (this.$store.state.gui.uiSettings.backgroundVariant ?? 'standard') as keyof typeof backgroundSets
+            const set = backgroundSets[variant] || backgroundSets['standard']
+
+            return this.themeMode === 'light'
+                ? `/img/themes/${set.light}`
+                : `/img/themes/${set.dark}`
         }
 
         if (!this.theme.mainBackground?.show) return null

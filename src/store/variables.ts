@@ -156,27 +156,43 @@ export const rolloverLogfiles = ['klipper', 'moonraker']
 /*
  * List of all Themes
  */
+/*
+ * List of background sets
+ */
+export const backgroundSets = {
+    standard: {
+        name: 'Standard',
+        dark: 'mainBackground-futuristic.png',
+        light: 'mainBackground-futuristic-light.png',
+        logoDark: 'sidebarLogo-futuristic.svg',
+        logoLight: 'sidebarLogo-futuristic-light.svg',
+    },
+    royal: {
+        name: 'Royal & Thunder (New)',
+        dark: 'bg-royal-dark.png',
+        light: 'bg-royal-light.png',
+        logoDark: 'logo-royal-dark.png',
+        logoLight: 'logo-royal-light.png',
+    },
+    industrial: {
+        name: 'Industrial (Classic)',
+        dark: 'mainBackground-industrial.png',
+        light: 'mainBackground-industrial.png', // Fallback as no light version exists yet
+        logoDark: 'sidebarLogo-voron.svg', // Defaulting to Voron as generic industrial
+        logoLight: 'sidebarLogo-voron.svg',
+    },
+}
+
+/*
+ * List of all Themes
+ */
 export const themes: Theme[] = [
     {
-        name: 'futuristic',
+        name: 'mainsail',
         displayName: 'Futuristic (Default)',
-        colorLogo: '#00FFFF', // Cyan
+        colorLogo: '#00FFFF',
         mainBackground: { show: true, light: true },
         sidebarBackground: { show: true, light: true },
-    },
-    {
-        name: 'industrial',
-        displayName: 'Industrial (Heavy)',
-        colorLogo: '#FFA500', // Orange
-        mainBackground: { show: true, light: false },
-        sidebarBackground: { show: true, light: false },
-    },
-    {
-        name: 'industrial_plain',
-        displayName: 'Industrial (Plain)',
-        colorLogo: '#FFA500', // Orange
-        mainBackground: { show: false, light: false },
-        sidebarBackground: { show: true, light: false },
     },
     {
         name: 'classic',

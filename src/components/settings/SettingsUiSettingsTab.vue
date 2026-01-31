@@ -13,6 +13,22 @@
                     :sub-title="$t('Settings.UiSettingsTab.ThemeDescription')">
                     <v-select v-model="themeName" :items="themes" class="mt-0" hide-details outlined dense />
                 </settings-row>
+                <v-expand-transition>
+                    <div v-if="themeName === 'mainsail'">
+                        <v-divider class="my-2" />
+                        <settings-row
+                            title="Background Style"
+                            sub-title="Select the background aesthetic for the Futuristic theme.">
+                            <v-select
+                                v-model="backgroundVariant"
+                                :items="backgroundVariants"
+                                class="mt-0"
+                                hide-details
+                                outlined
+                                dense />
+                        </settings-row>
+                    </div>
+                </v-expand-transition>
 
                 <v-divider class="my-2" />
                 <settings-row :title="$t('Settings.UiSettingsTab.Logo')">
@@ -445,6 +461,22 @@ export default class SettingsUiSettingsTab extends Mixins(BaseMixin, ThemeMixin)
                 text: this.$t('Settings.UiSettingsTab.ThemeLight'),
                 value: 'light',
             },
+        ]
+    }
+
+    get backgroundVariant() {
+        return this.$store.state.gui.uiSettings.backgroundVariant ?? 'standard'
+    }
+
+    set backgroundVariant(newVal) {
+        this.$store.dispatch('gui/saveSetting', { name: 'uiSettings.backgroundVariant', value: newVal })
+    }
+
+    get backgroundVariants() {
+        return [
+            { text: 'Standard (Neon)', value: 'standard' },
+            { text: 'Royal (Gold)', value: 'royal' },
+            { text: 'Industrial (Classic)', value: 'industrial' },
         ]
     }
 

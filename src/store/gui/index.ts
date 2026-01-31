@@ -156,6 +156,7 @@ export const getDefaultState = (): GuiState => {
         uiSettings: {
             mode: defaultMode,
             theme: defaultTheme,
+            backgroundVariant: 'standard', // 'standard' | 'royal'
             logo: defaultLogoColor,
             primary: defaultPrimaryColor,
             displayCancelPrint: false,

@@ -10,6 +10,16 @@
   --neo-purple: #d500f9;
 }
 
+/* Light Mode Overrides */
+.theme--light {
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-blur: 25px;
+  --neo-cyan: #0097a7;
+  /* Darker for contrast on light */
+  --neo-purple: #7b1fa2;
+}
+
 .theme--dark.v-application {
   /* background image is set dynamically via App.vue from user config */
   background-color: #1a1a1a !important;

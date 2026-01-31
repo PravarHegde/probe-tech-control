@@ -161,8 +161,8 @@ export const themes: Theme[] = [
         name: 'futuristic',
         displayName: 'Futuristic (Default)',
         colorLogo: '#00FFFF', // Cyan
-        mainBackground: { show: true, light: false },
-        sidebarBackground: { show: true, light: false },
+        mainBackground: { show: true, light: true },
+        sidebarBackground: { show: true, light: true },
     },
     {
         name: 'industrial',

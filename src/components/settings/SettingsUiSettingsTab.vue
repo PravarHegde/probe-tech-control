@@ -117,11 +117,14 @@
                     <v-file-input
                         v-model="backgroundFile"
                         accept="image/*"
-                        label="Upload Image (Auto-Applies)"
-                        prepend-icon=""
-                        outlined
+                        label="Select Background Image (Click)"
+                        prepend-icon="mdi-image"
+                        color="amber darken-3"
+                        filled
                         dense
+                        show-size
                         hide-details
+                        class="mt-1"
                         :loading="uploadingBackground"
                         @change="uploadMainBackground" />
                 </settings-row>
@@ -355,7 +358,7 @@ import BaseMixin from '@/components/mixins/base'
 import SettingsRow from '@/components/settings/SettingsRow.vue'
 import { defaultLogoColor, defaultPrimaryColor, defaultBigThumbnailBackground, themes } from '@/store/variables'
 import { Debounce } from 'vue-debounce-decorator'
-import { mdiRestart, mdiTimerOutline } from '@mdi/js'
+import { mdiRestart, mdiTimerOutline, mdiImage } from '@mdi/js'
 import { ServerPowerStateDevice } from '@/store/server/power/types'
 import ThemeMixin from '@/components/mixins/theme'
 
@@ -365,6 +368,7 @@ import ThemeMixin from '@/components/mixins/theme'
 export default class SettingsUiSettingsTab extends Mixins(BaseMixin, ThemeMixin) {
     mdiRestart = mdiRestart
     mdiTimerOutline = mdiTimerOutline
+    mdiImage = mdiImage
 
     backgroundFile: File | null = null
     uploadingBackground = false

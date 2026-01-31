@@ -41,8 +41,23 @@
 .theme--light .v-card__text,
 .theme--light .v-btn__content,
 .theme--light .v-icon {
-  text-shadow: 0 0 2px rgba(212, 175, 55, 0.3) !important;
-  /* Subtle Gold Glow */
+  text-shadow: none !important;
+  /* Clean text for better readability on busy BG */
+  color: rgba(40, 25, 5, 0.95) !important;
+  font-weight: 600 !important;
+}
+
+/* Ensure Inputs pop against the Royal Background */
+.theme--light .v-input--is-focused .v-input__slot,
+.theme--light .v-file-input .v-input__control {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 4px;
+}
+
+.theme--light .v-label {
+  color: rgba(120, 80, 0, 1) !important;
+  /* Gold/Brown Label */
+  font-weight: 600 !important;
 }
 
 #content {

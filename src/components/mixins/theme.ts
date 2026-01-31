@@ -80,8 +80,12 @@ export default class ThemeMixin extends Vue {
     }
 
     get mainBgImage() {
-        const url = this.$store.getters['files/getMainBackground']
-        if (url) return url
+        // Only use uploaded background if the current theme is 'custom'
+        // This prevents uploaded backgrounds from overwriting preset themes
+        if (this.themeName === 'custom') {
+            const url = this.$store.getters['files/getMainBackground']
+            if (url) return url
+        }
 
         if (!this.theme.mainBackground?.show) return null
 

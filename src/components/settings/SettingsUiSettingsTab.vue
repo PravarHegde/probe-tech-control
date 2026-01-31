@@ -394,6 +394,11 @@ export default class SettingsUiSettingsTab extends Mixins(BaseMixin, ThemeMixin)
             
             // Notify user (simple toast if available, or just rely on store success toast)
             // The action already shows a toast on success/fail.
+
+            // Switch to Custom theme if not already selected
+            if (this.themeName !== 'custom') {
+                await this.$store.dispatch('gui/saveSetting', { name: 'uiSettings.theme', value: 'custom' })
+            }
             
             // Force a reload to apply the new background immediately if needed
             window.location.reload()

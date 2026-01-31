@@ -185,6 +185,13 @@ export const themes: Theme[] = [
         mainBackground: { show: false, light: false },
         sidebarBackground: { show: false, light: false },
     },
+    {
+        name: 'custom',
+        displayName: 'Custom (User Uploaded)',
+        colorLogo: defaultLogoColor,
+        mainBackground: { show: true, light: true },
+        sidebarBackground: { show: true, light: true },
+    },
 ]
 
 /*

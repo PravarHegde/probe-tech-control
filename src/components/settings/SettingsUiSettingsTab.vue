@@ -113,6 +113,19 @@
                     </settings-row>
                 </template>
                 <v-divider class="my-2" />
+                <settings-row :title="'Main Background'">
+                    <v-file-input
+                        v-model="backgroundFile"
+                        accept="image/*"
+                        label="Upload Image (Auto-Applies)"
+                        prepend-icon=""
+                        outlined
+                        dense
+                        hide-details
+                        :loading="uploadingBackground"
+                        @change="uploadMainBackground" />
+                </settings-row>
+                <v-divider class="my-2" />
                 <settings-row
                     :title="$t('Settings.UiSettingsTab.DisplayCANCEL_PRINT')"
                     :sub-title="$t('Settings.UiSettingsTab.DisplayCANCEL_PRINTDescription')"
@@ -352,6 +365,40 @@ import ThemeMixin from '@/components/mixins/theme'
 export default class SettingsUiSettingsTab extends Mixins(BaseMixin, ThemeMixin) {
     mdiRestart = mdiRestart
     mdiTimerOutline = mdiTimerOutline
+
+    backgroundFile: File | null = null
+    uploadingBackground = false
+
+    async uploadMainBackground(file: File) {
+        if (!file) return
+
+        this.uploadingBackground = true
+        try {
+            // Rename to main-background.[ext] to match ThemeMixin expectation
+            const extension = file.name.split('.').pop()
+            const newName = `main-background.${extension}`
+            const renamedFile = new File([file], newName, { type: file.type })
+
+            await this.$store.dispatch('files/uploadFile', {
+                file: renamedFile,
+                path: 'theme',
+                root: 'config',
+            })
+
+            // Reset input
+            this.backgroundFile = null
+            
+            // Notify user (simple toast if available, or just rely on store success toast)
+            // The action already shows a toast on success/fail.
+            
+            // Force a reload to apply the new background immediately if needed
+            window.location.reload()
+        } catch (e) {
+            console.error(e)
+        } finally {
+            this.uploadingBackground = false
+        }
+    }
 
     defaultBigThumbnailBackground = defaultBigThumbnailBackground
 

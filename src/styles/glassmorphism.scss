@@ -28,9 +28,10 @@
 }
 
 .theme--light.v-application {
-  background: linear-gradient(135deg, #ffffff 0%, #fff8e1 100%) !important;
-  color: rgba(60, 40, 0, 0.87) !important;
-  /* Warmer dark text */
+  /* Royal Luxury Radial Gradient: White -> Cream -> Soft Gold */
+  background: radial-gradient(circle at 0% 0%, #ffffff 0%, #fffbf0 50%, #f7e8c6 100%) !important;
+  color: rgba(60, 40, 0, 0.9) !important;
+  /* Deep warm brown for readablity */
   background-attachment: fixed !important;
   background-size: cover !important;
 }
@@ -38,9 +39,10 @@
 /* Light Mode Golden Shadows */
 .theme--light .v-card__title,
 .theme--light .v-card__text,
-.theme--light .v-btn__content {
-  text-shadow: 0 0 3px rgba(212, 175, 55, 0.5) !important;
-  /* Soft Gold Glow */
+.theme--light .v-btn__content,
+.theme--light .v-icon {
+  text-shadow: 0 0 2px rgba(212, 175, 55, 0.3) !important;
+  /* Subtle Gold Glow */
 }
 
 #content {

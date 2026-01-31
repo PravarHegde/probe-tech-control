@@ -28,10 +28,19 @@
 }
 
 .theme--light.v-application {
-  background-color: #f0f2f5 !important;
-  color: rgba(0, 0, 0, 0.87) !important;
+  background: linear-gradient(135deg, #ffffff 0%, #fff8e1 100%) !important;
+  color: rgba(60, 40, 0, 0.87) !important;
+  /* Warmer dark text */
   background-attachment: fixed !important;
   background-size: cover !important;
+}
+
+/* Light Mode Golden Shadows */
+.theme--light .v-card__title,
+.theme--light .v-card__text,
+.theme--light .v-btn__content {
+  text-shadow: 0 0 3px rgba(212, 175, 55, 0.5) !important;
+  /* Soft Gold Glow */
 }
 
 #content {

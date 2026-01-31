@@ -27,6 +27,13 @@
   background-size: cover !important;
 }
 
+.theme--light.v-application {
+  background-color: #f0f2f5 !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+  background-attachment: fixed !important;
+  background-size: cover !important;
+}
+
 #content {
   background-color: transparent !important;
   /* Allow body bg to show through */

@@ -198,7 +198,7 @@ export default class TheTopbar extends Mixins(BaseMixin, ThemeMixin) {
     }
 
     get logoClasses() {
-        return ['nav-logo', 'ml-2', 'mr-1', 'd-none', 'd-sm-flex']
+        return ['nav-logo', 'ml-2', 'mr-1', 'd-flex']
     }
 
     get boolShowUploadAndPrint() {

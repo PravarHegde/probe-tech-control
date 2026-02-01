@@ -171,8 +171,8 @@ export const backgroundSets = {
         name: 'Royal & Thunder (New)',
         dark: 'bg-royal-dark.png',
         light: 'bg-royal-light-pcb.png', // Golden PCB
-        logoDark: 'logo-royal-dark.png',
-        logoLight: 'logo-royal-dark.png', // Use same golden logo for light mode
+        logoDark: 'sidebarLogo-silver.svg', // Silver logo (Single instance)
+        logoLight: 'sidebarLogo-silver.svg', // Silver logo (Single instance)
     },
     industrial: {
         name: 'Industrial (Classic)',

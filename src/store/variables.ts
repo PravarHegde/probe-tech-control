@@ -164,21 +164,21 @@ export const backgroundSets = {
         name: 'Standard',
         dark: 'mainBackground-futuristic.png',
         light: 'mainBackground-futuristic-light.png',
-        logoDark: 'sidebarLogo-futuristic.svg',
-        logoLight: 'sidebarLogo-futuristic-light.svg',
+        logoDark: 'sidebarLogo-voron.svg', // Silver logo
+        logoLight: 'sidebarLogo-voron.svg', // Silver logo
     },
     royal: {
         name: 'Royal & Thunder (New)',
         dark: 'bg-royal-dark.png',
-        light: 'bg-royal-light.png',
+        light: 'bg-royal-light-pcb.png', // Golden PCB
         logoDark: 'logo-royal-dark.png',
-        logoLight: 'logo-royal-light.png',
+        logoLight: 'logo-royal-dark.png', // Use same golden logo for light mode
     },
     industrial: {
         name: 'Industrial (Classic)',
         dark: 'mainBackground-industrial.png',
-        light: 'mainBackground-industrial.png', // Fallback as no light version exists yet
-        logoDark: 'sidebarLogo-voron.svg', // Defaulting to Voron as generic industrial
+        light: 'mainBackground-industrial.png',
+        logoDark: 'sidebarLogo-voron.svg', // Silver logo
         logoLight: 'sidebarLogo-voron.svg',
     },
 }

@@ -55,6 +55,15 @@ export default class ThemeMixin extends Vue {
     }
 
     get sidebarBgImage() {
+        // Special handling for Royal variant (should be transparent/null)
+        if (this.themeName === 'mainsail') {
+            const variant = (this.$store.state.gui.uiSettings.backgroundVariant ?? 'standard')
+            if (variant === 'royal') return null
+        }
+
+        // Special handling for Classic (should be clean/transparent)
+        if (this.themeName === 'classic') return null
+
         if (this.theme.sidebarBackground?.show) {
             if (this.theme.sidebarBackground?.light && this.themeMode === 'light')
                 return `/img/themes/sidebarBackground-${this.themeName}-light.png`

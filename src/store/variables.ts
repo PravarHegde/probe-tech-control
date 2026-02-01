@@ -164,8 +164,8 @@ export const backgroundSets = {
         name: 'Standard',
         dark: 'mainBackground-futuristic.png',
         light: 'mainBackground-futuristic-light.png',
-        logoDark: 'sidebarLogo-voron.svg', // Silver logo
-        logoLight: 'sidebarLogo-voron.svg', // Silver logo
+        logoDark: 'sidebarLogo-silver.svg', // Silver logo (User provided)
+        logoLight: 'sidebarLogo-silver.svg', // Silver logo (User provided)
     },
     royal: {
         name: 'Royal & Thunder (New)',
@@ -178,8 +178,8 @@ export const backgroundSets = {
         name: 'Industrial (Classic)',
         dark: 'mainBackground-industrial.png',
         light: 'mainBackground-industrial.png',
-        logoDark: 'sidebarLogo-voron.svg', // Silver logo
-        logoLight: 'sidebarLogo-voron.svg',
+        logoDark: 'sidebarLogo-silver.svg', // Silver logo (User provided)
+        logoLight: 'sidebarLogo-silver.svg',
     },
 }
 

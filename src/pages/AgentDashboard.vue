@@ -9,19 +9,27 @@
                     </v-card-title>
                     <v-card-text>
                         <div class="chat-interface pa-4" style="height: 400px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 8px;">
-                            <div class="d-flex mb-2">
-                                <v-avatar size="32" color="primary" class="mr-2">AI</v-avatar>
-                                <div class="glass-card pa-2 rounded-lg">
-                                    Hello! I am your intelligent print agent. I can help you optimize your print settings, debug issues, or schedule jobs. How can I assist you today?
+                            <div v-for="msg in messages" :key="msg.id" class="d-flex mb-2" :class="{ 'justify-end': msg.sender === 'user' }">
+                                <v-avatar v-if="msg.sender === 'ai'" size="32" color="primary" class="mr-2">AI</v-avatar>
+                                <div
+                                    class="pa-2 rounded-lg"
+                                    :class="msg.sender === 'user' ? 'primary white--text' : 'glass-card'"
+                                    style="max-width: 80%"
+                                >
+                                    {{ msg.text }}
                                 </div>
+                                <v-avatar v-if="msg.sender === 'user'" size="32" color="grey darken-3" class="ml-2">Me</v-avatar>
                             </div>
                         </div>
                         <v-text-field
+                            v-model="newMessage"
                             placeholder="Ask me anything about your 3D printing tasks..."
                             outlined
                             dense
                             class="mt-4"
                             append-icon="mdi-send"
+                            @click:append="sendMessage"
+                            @keydown.enter="sendMessage"
                         ></v-text-field>
                     </v-card-text>
                 </v-card>
@@ -79,7 +87,47 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component
-export default class AgentDashboard extends Vue {}
+export default class AgentDashboard extends Vue {
+    newMessage = ''
+    messages = [
+        {
+            id: 1,
+            text: 'Hello! I am your intelligent print agent. I can help you optimize your print settings, debug issues, or schedule jobs. How can I assist you today?',
+            sender: 'ai',
+        },
+    ]
+
+    sendMessage() {
+        if (!this.newMessage.trim()) return
+
+        // Add user message
+        this.messages.push({
+            id: Date.now(),
+            text: this.newMessage,
+            sender: 'user',
+        })
+
+        // Simulate AI response (placeholder)
+        setTimeout(() => {
+            this.messages.push({
+                id: Date.now() + 1,
+                text: "I'm processing your request... (AI Agent functionality is currently in demo mode)",
+                sender: 'ai',
+            })
+            this.scrollToBottom()
+        }, 1000)
+
+        this.newMessage = ''
+        this.scrollToBottom()
+    }
+
+    scrollToBottom() {
+        this.$nextTick(() => {
+            const container = this.$el.querySelector('.chat-interface')
+            if (container) container.scrollTop = container.scrollHeight
+        })
+    }
+}
 </script>
 
 <style scoped>

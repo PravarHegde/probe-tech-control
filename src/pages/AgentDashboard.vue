@@ -4,7 +4,7 @@
             <v-col cols="12" md="8">
                 <v-card class="glass-panel mb-4">
                     <v-card-title class="headline primary--text">
-                        <v-icon left color="primary">mdi-robot</v-icon>
+                        <v-icon left color="primary">{{ mdiRobot }}</v-icon>
                         AI Job Planner
                     </v-card-title>
                     <v-card-text>
@@ -27,7 +27,7 @@
                             outlined
                             dense
                             class="mt-4"
-                            append-icon="mdi-send"
+                            :append-icon="mdiSend"
                             @click:append="sendMessage"
                             @keydown.enter="sendMessage"
                         ></v-text-field>
@@ -38,7 +38,7 @@
             <v-col cols="12" md="4">
                 <v-card class="glass-panel mb-4">
                     <v-card-title class="headline secondary--text">
-                        <v-icon left color="secondary">mdi-heart-pulse</v-icon>
+                        <v-icon left color="secondary">{{ mdiHeartPulse }}</v-icon>
                         System Health
                     </v-card-title>
                     <v-card-text>
@@ -67,12 +67,12 @@
 
                 <v-card class="glass-panel">
                     <v-card-title class="headline accent--text">
-                        <v-icon left color="accent">mdi-flash</v-icon>
+                        <v-icon left color="accent">{{ mdiFlash }}</v-icon>
                         Optimization
                     </v-card-title>
                     <v-card-text>
                         <div class="text-center">
-                            <v-icon size="64" color="grey darken-2">mdi-check-circle-outline</v-icon>
+                            <v-icon size="64" color="grey darken-2">{{ mdiCheckCircleOutline }}</v-icon>
                             <div class="mt-2">System Running Optimally</div>
                              <v-btn text color="primary" class="mt-2">Run Diagnostics</v-btn>
                         </div>
@@ -85,9 +85,16 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import { mdiRobot, mdiSend, mdiHeartPulse, mdiFlash, mdiCheckCircleOutline } from '@mdi/js'
 
 @Component
 export default class AgentDashboard extends Vue {
+    mdiRobot = mdiRobot
+    mdiSend = mdiSend
+    mdiHeartPulse = mdiHeartPulse
+    mdiFlash = mdiFlash
+    mdiCheckCircleOutline = mdiCheckCircleOutline
+    
     newMessage = ''
     messages = [
         {
@@ -128,6 +135,7 @@ export default class AgentDashboard extends Vue {
         })
     }
 }
+
 </script>
 
 <style scoped>

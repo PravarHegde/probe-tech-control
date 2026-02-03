@@ -23,13 +23,24 @@ fi
 # Clone the repository
 echo -e "${BLUE}Cloning repository (Shallow)...${NC}"
 # Clone the repository
-echo -e "${BLUE}Cloning repository (Shallow)...${NC}"
-git clone --depth 1 https://github.com/PravarHegde/probe-tech-control.git "$TARGET_DIR"
+# Clone repository (Sparse Checkout for speed <1MB)
+echo -e "${BLUE}Fetching installer...${NC}"
+mkdir -p "$TARGET_DIR"
+cd "$TARGET_DIR" || exit 1
 
-if [ ! -d "$TARGET_DIR" ]; then
-    echo "Error: Failed to clone repository."
-    exit 1
+# Initialize and pull only install.sh + scripts
+if [ ! -d ".git" ]; then
+    git init -q
+    git remote add origin https://github.com/PravarHegde/probe-tech-control.git
 fi
+
+git config core.sparseCheckout true
+echo "install.sh" > .git/info/sparse-checkout
+echo "scripts/" >> .git/info/sparse-checkout
+echo "requirements.txt" >> .git/info/sparse-checkout
+
+echo -e "${BLUE}Downloading files...${NC}"
+git pull --depth 1 origin master
 
 # Run the installer
 cd "$TARGET_DIR"

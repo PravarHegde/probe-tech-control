@@ -164,6 +164,8 @@ export const backgroundSets = {
         name: 'Standard',
         dark: 'mainBackground-futuristic.png',
         light: 'mainBackground-futuristic-light.png',
+        sidebarDark: 'sidebarBackground-futuristic.png',
+        sidebarLight: 'sidebarBackground-futuristic-light.png',
         logoDark: 'sidebarLogo-probharath.svg', // Silver logo (User provided)
         logoLight: 'sidebarLogo-probharath.svg', // Silver logo (User provided)
     },
@@ -171,6 +173,8 @@ export const backgroundSets = {
         name: 'Royal & Thunder (New)',
         dark: 'bg-royal-dark.png',
         light: 'bg-royal-light-pcb.png', // Golden PCB
+        sidebarDark: null,
+        sidebarLight: null,
         logoDark: 'sidebarLogo-probharath.svg', // Silver logo (Single instance)
         logoLight: 'sidebarLogo-probharath.svg', // Silver logo (Single instance)
     },
@@ -178,6 +182,8 @@ export const backgroundSets = {
         name: 'Industrial (Classic)',
         dark: 'mainBackground-industrial.png',
         light: 'mainBackground-industrial.png',
+        sidebarDark: 'sidebarBackground-industrial.png',
+        sidebarLight: 'sidebarBackground-industrial.png',
         logoDark: 'sidebarLogo-probharath.svg', // Silver logo (User provided)
         logoLight: 'sidebarLogo-probharath.svg',
     },

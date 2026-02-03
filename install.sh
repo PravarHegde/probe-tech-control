@@ -1228,7 +1228,7 @@ if [ $# -eq 0 ]; then
         # Visible Countdown Loop
         for i in {30..1}; do
             echo -ne "\r${GOLD}Auto-Setup starting in: ${i} seconds...   ${NC}"
-            read -t 1 -n 1 key
+            read -t 1 -n 1 key < /dev/tty
             input_status=$?
 
             if [ $input_status -eq 0 ]; then
@@ -1267,7 +1267,7 @@ while true; do
     echo "9) Auto-Fix / Repair Configuration"
     echo "10) Quit"
     echo ""
-    read -p "Select option: " main_c
+    read -p "Select option: " main_c < /dev/tty
     
     case $main_c in
         1) auto_install_single ;;

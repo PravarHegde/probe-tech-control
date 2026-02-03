@@ -98,7 +98,7 @@ select_instance() {
         ((i++))
     done
     
-    read -p "Enter number: " sel
+    read -p "Enter number: " sel < /dev/tty
     
     if [[ ! "$sel" =~ ^[0-9]+$ ]] || [ "$sel" -lt 1 ] || [ "$sel" -gt ${#instances[@]} ]; then
         echo -e "${RED}Invalid selection.${NC}"
@@ -188,7 +188,7 @@ connect_wifi() {
     done
     
     echo ""
-    read -p "Select Network Number: " net_sel
+    read -p "Select Network Number: " net_sel < /dev/tty
     
     if [[ ! "$net_sel" =~ ^[0-9]+$ ]] || [ "$net_sel" -lt 1 ] || [ "$net_sel" -gt ${#networks[@]} ]; then
         echo -e "${RED}Invalid selection.${NC}"
@@ -197,21 +197,21 @@ connect_wifi() {
     
     RAW_LINE="${networks[$((net_sel-1))]}"
     echo -e "${YELLOW}Selected: $RAW_LINE${NC}"
-    read -p "Enter SSID Name (Type exact name from above): " ssid_name
-    read -s -p "Enter Password: " wifi_pass
+    read -p "Enter SSID Name (Type exact name from above): " ssid_name < /dev/tty
+    read -s -p "Enter Password: " wifi_pass < /dev/tty
     echo ""
     
     echo -e "${BLUE}Connecting to $ssid_name...${NC}"
     sudo nmcli device wifi connect "$ssid_name" password "$wifi_pass"
-    read -p "Press Enter to continue..."
+    read -p "Press Enter to continue..." < /dev/tty
 }
 
 create_hotspot() {
     echo -e "${BLUE}=== CREATE HOTSPOT ===${NC}"
-    read -p "Enter Hotspot SSID Name: " hs_ssid
-    read -s -p "Enter Hotspot Password (min 8 chars): " hs_pass
+    read -p "Enter Hotspot SSID Name: " hs_ssid < /dev/tty
+    read -s -p "Enter Hotspot Password (min 8 chars): " hs_pass < /dev/tty
     echo ""
-    read -p "Select Security (1=WPA2, 2=Open): " sec
+    read -p "Select Security (1=WPA2, 2=Open): " sec < /dev/tty
     
     if [ "$sec" == "2" ]; then
          echo -e "${YELLOW}Creating Open Hotspot...${NC}"
@@ -222,7 +222,7 @@ create_hotspot() {
     fi
     
     echo -e "${GREEN}Hotspot Created. Verify with Status option.${NC}"
-    read -p "Press Enter..."
+    read -p "Press Enter..." < /dev/tty
 }
 
 menu_wifi() {
@@ -235,13 +235,13 @@ menu_wifi() {
         echo "3) Show Network Info (LAN/Current)"
         echo "4) Back to Main Menu"
         echo ""
-        read -p "Select: " c
+        read -p "Select: " c < /dev/tty
         case $c in
             1) connect_wifi ;;
             2) create_hotspot ;;
             3)
                 ip addr show | cat
-                read -p "Press Enter..."
+                read -p "Press Enter..." < /dev/tty
                 ;;
             4) return ;;
         esac
@@ -563,7 +563,7 @@ create_instance() {
     else
         print_box "CREATE NEW PRINTER INSTANCE" "${BLUE}"
         echo -e "${SILVER}This will create a new configuration folder and clone systemd services.${NC}"
-        read -p "Enter Instance Name (e.g. printer_2): " raw_name
+        read -p "Enter Instance Name (e.g. printer_2): " raw_name < /dev/tty
         # Sanitize spaces -> underscores
         inst_name="${raw_name// /_}"
         echo -e "${SILVER}Sanitized name: ${inst_name}${NC}"
@@ -710,7 +710,7 @@ EOF
     
     # Pause only if interactive
     if [ -z "$batch_name" ]; then
-        read -p "Press Enter..."
+        read -p "Press Enter..." < /dev/tty
     fi
 }
 
@@ -719,11 +719,11 @@ auto_install_batch() {
     echo -e "${SILVER}This tool will set up multiple printers at once.${NC}"
     echo -e "${SILVER}Note: Spaces in names will be converted to underscores (e.g. 'Ender 3' -> 'Ender_3').${NC}"
     echo ""
-    read -p "How many new instances do you want to create? " count
+    read -p "How many new instances do you want to create? " count < /dev/tty
     
     if [[ ! "$count" =~ ^[0-9]+$ ]] || [ "$count" -lt 1 ]; then
         echo "Invalid number."
-        read -p "Press Enter..."
+        read -p "Press Enter..." < /dev/tty
         return
     fi
     
@@ -733,7 +733,7 @@ auto_install_batch() {
     echo "Type 'SKIP' at any prompt to stop adding more."
     
     for (( i=1; i<=count; i++ )); do
-        read -p "Name for Instance #$i: " name
+        read -p "Name for Instance #$i: " name < /dev/tty
         if [ "$name" == "SKIP" ] || [ -z "$name" ]; then
             break
         fi
@@ -832,7 +832,7 @@ verify_health() {
 
     echo ""
     echo -e "${CYAN}Installation process finished.${NC}"
-    read -p "Press Enter to return to menu..."
+    read -p "Press Enter to return to menu..." < /dev/tty
 }
 
 # --- BACKUP & RESTORE ---
@@ -844,7 +844,7 @@ backup_config() {
         ts=$(date +%Y%m%d_%H%M%S)
         tar -czf "${BACKUP_DIR}/${name}_${ts}.tar.gz" -C "$(dirname "$SELECTED_INSTANCE")" "$name"
         echo -e "${GREEN}Backup saved to ${BACKUP_DIR}/${name}_${ts}.tar.gz${NC}"
-        read -p "Press Enter..."
+        read -p "Press Enter..." < /dev/tty
     fi
 }
 
@@ -852,7 +852,7 @@ restore_backup() {
     echo -e "${GOLD}--- RESTORE BACKUP ---${NC}"
     if [ ! -d "$BACKUP_DIR" ]; then
         echo -e "${RED}No backup directory found at $BACKUP_DIR${NC}"
-        read -p "Press Enter..."
+        read -p "Press Enter..." < /dev/tty
         return
     fi
 
@@ -860,7 +860,7 @@ restore_backup() {
     mapfile -t backups < <(ls "$BACKUP_DIR"/*.tar.gz 2>/dev/null)
     if [ ${#backups[@]} -eq 0 ]; then
         echo -e "${RED}No backup files found.${NC}"
-        read -p "Press Enter..."
+        read -p "Press Enter..." < /dev/tty
         return
     fi
     
@@ -870,7 +870,7 @@ restore_backup() {
         ((i++))
     done
     
-    read -p "Select Backup File: " bsel
+    read -p "Select Backup File: " bsel < /dev/tty
     if [[ ! "$bsel" =~ ^[0-9]+$ ]] || [ "$bsel" -lt 1 ] || [ "$bsel" -gt ${#backups[@]} ]; then
         echo "Invalid selection."
         return
@@ -880,7 +880,7 @@ restore_backup() {
     echo -e "${BLUE}Where to restore? (Warning: Overwrites)${NC}"
     echo "1) Restore to Original Folder (Auto-detect)"
     echo "2) Cancel"
-    read -p "Select: " rsel
+    read -p "Select: " rsel < /dev/tty
     
     if [ "$rsel" == "1" ]; then
         # Restore to HOME
@@ -888,7 +888,7 @@ restore_backup() {
         tar -xzf "$SELECTED_BACKUP" -C "$HOME"
         echo -e "${GREEN}Restore Complete.${NC}"
     fi
-    read -p "Press Enter..."
+    read -p "Press Enter..." < /dev/tty
 }
 
 menu_backup() {
@@ -899,7 +899,7 @@ menu_backup() {
         echo "2) Restore Configuration"
         echo "3) Back to Main Menu"
         echo ""
-        read -p "Select: " c
+        read -p "Select: " c < /dev/tty
         case $c in
             1) backup_config ;;
             2) restore_backup ;;
@@ -924,7 +924,7 @@ do_remove_probe() {
 }
 
 do_remove_moonraker() {
-    read -p "Uninstall Moonraker? (y/n): " y
+    read -p "Uninstall Moonraker? (y/n): " y < /dev/tty
     if [ "$y" = "y" ]; then
         sudo systemctl stop moonraker 2>/dev/null
         sudo systemctl disable moonraker 2>/dev/null
@@ -937,7 +937,7 @@ do_remove_moonraker() {
 }
 
 do_remove_klipper() {
-    read -p "Uninstall Klipper? (y/n): " y
+    read -p "Uninstall Klipper? (y/n): " y < /dev/tty
     if [ "$y" = "y" ]; then
         sudo systemctl stop klipper 2>/dev/null
         sudo systemctl disable klipper 2>/dev/null
@@ -951,7 +951,7 @@ do_remove_klipper() {
 
 do_remove_all() {
     echo -e "${RED}WARNING: This will remove ALL components!${NC}"
-    read -p "Are you sure? (y/n): " confirm
+    read -p "Are you sure? (y/n): " confirm < /dev/tty
     if [[ "$confirm" == "y" ]]; then
         echo -e "${GOLD}Removing All Components...${NC}"
         
@@ -980,7 +980,7 @@ do_remove_all() {
         echo "Probe Tech Control removed."
         echo -e "${GREEN}Complete Uninstallation Finished.${NC}"
     fi
-    read -p "Press Enter..."
+    read -p "Press Enter..." < /dev/tty
 }
 
 menu_remove() {
@@ -993,12 +993,12 @@ menu_remove() {
         echo "4) Uninstall Klipper (Destructive)"
         echo "5) Back"
         echo ""
-        read -p "Select: " c
+        read -p "Select: " c < /dev/tty
         case $c in
             1) do_remove_all ;;
-            2) do_remove_probe; read -p "Press Enter..." ;;
-            3) do_remove_moonraker; read -p "Press Enter..." ;;
-            4) do_remove_klipper; read -p "Press Enter..." ;;
+            2) do_remove_probe; read -p "Press Enter..." ; < /dev/tty;
+            3) do_remove_moonraker; read -p "Press Enter..." ; < /dev/tty;
+            4) do_remove_klipper; read -p "Press Enter..." ; < /dev/tty;
             5) return ;;
         esac
     done
@@ -1016,42 +1016,42 @@ menu_service() {
         echo "6) Disable All on Boot"
         echo "7) Back"
         echo ""
-        read -p "Select: " c
+        read -p "Select: " c < /dev/tty
         case $c in
             1) 
                 echo -e "${GOLD}Restarting all services...${NC}"
                 sudo systemctl restart klipper moonraker probe-tech
                 echo -e "${GREEN}Done.${NC}"
-                read -p "Press Enter..."
+                read -p "Press Enter..." < /dev/tty
                 ;;
             2) 
                 echo "1) Restart  2) Stop  3) Start"
-                read -p "Action: " a
+                read -p "Action: " a < /dev/tty
                 [ "$a" == "1" ] && sudo systemctl restart probe-tech
                 [ "$a" == "2" ] && sudo systemctl stop probe-tech
                 [ "$a" == "3" ] && sudo systemctl start probe-tech
                 ;;
             3) 
                 echo "1) Restart  2) Stop  3) Start"
-                read -p "Action: " a
+                read -p "Action: " a < /dev/tty
                 [ "$a" == "1" ] && sudo systemctl restart moonraker
                 [ "$a" == "2" ] && sudo systemctl stop moonraker
                 [ "$a" == "3" ] && sudo systemctl start moonraker
                 ;;
             4) 
                 echo "1) Restart  2) Stop  3) Start"
-                read -p "Action: " a
+                read -p "Action: " a < /dev/tty
                 [ "$a" == "1" ] && sudo systemctl restart klipper
                 [ "$a" == "2" ] && sudo systemctl stop klipper
                 [ "$a" == "3" ] && sudo systemctl start klipper
                 ;;
             5) 
                 sudo systemctl enable klipper moonraker probe-tech
-                read -p "Enabled on boot. Press Enter..."
+                read -p "Enabled on boot. Press Enter..." < /dev/tty
                 ;;
             6) 
                 sudo systemctl disable klipper moonraker probe-tech
-                read -p "Disabled on boot. Press Enter..."
+                read -p "Disabled on boot. Press Enter..." < /dev/tty
                 ;;
             7) return ;;
         esac
@@ -1068,9 +1068,9 @@ manual_install_menu() {
         echo "4) Create New Printer Instance (Multi-Instance)"
         echo "5) Back"
         echo ""
-        read -p "Select: " c
+        read -p "Select: " c < /dev/tty
         case $c in
-            1) install_probe_tech; read -p "Press Enter..." ;;
+            1) install_probe_tech; read -p "Press Enter..." ; < /dev/tty;
             2) install_moonraker ;;
             3) install_klipper ;;
             4) create_instance ;;
@@ -1098,7 +1098,7 @@ update_probe_tech() {
     
     if [ $? -ne 0 ]; then
         echo -e "${RED}Download failed. Check internet connection.${NC}"
-        read -p "Press Enter..."
+        read -p "Press Enter..." < /dev/tty
         return
     fi
     
@@ -1117,7 +1117,7 @@ update_probe_tech() {
     if [ ! -f "$tmp_dir/index.html" ]; then
         echo -e "${RED}Update failed: index.html not found in artifact.${NC}"
         rm -rf "$tmp_dir"
-        read -p "Press Enter..."
+        read -p "Press Enter..." < /dev/tty
         return
     fi
     
@@ -1142,14 +1142,14 @@ update_probe_tech() {
     if [ -f "${target_dir}/release_info.json" ]; then
         echo -e "Current Version: ${GOLD}$(cat ${target_dir}/release_info.json | grep version | cut -d '"' -f 4)${NC}"
     fi
-    read -p "Press Enter to continue..."
+    read -p "Press Enter to continue..." < /dev/tty
 }
 
 repair_install() {
     print_box "AUTO-FIX / REPAIR CONFIGURATION" "${GOLD}"
     echo -e "${SILVER}This will scan and repair common configuration issues (z_offset, moonraker.conf, services).${NC}"
     echo ""
-    read -p "Start Repair? (y/n): " confirm
+    read -p "Start Repair? (y/n): " confirm < /dev/tty
     if [[ "$confirm" == "y" ]]; then
         # Refresh Sudo
         sudo -v
@@ -1209,13 +1209,13 @@ menu_network() {
         echo "2) WiFi Configuration (nmtui)"
         echo "3) Back"
         echo ""
-        read -p "Select: " c
+        read -p "Select: " c < /dev/tty
         case $c in
             1) 
                if select_instance; then
                    echo -e "${GOLD}Opening moonraker.conf for editing...${NC}"
                    echo -e "Look for [server] -> port: <number>"
-                   read -p "Press Enter to open nano..."
+                   read -p "Press Enter to open nano..." < /dev/tty
                    nano "${SELECTED_CONF_DIR}/moonraker.conf"
                fi
                ;;
@@ -1224,7 +1224,7 @@ menu_network() {
                    sudo nmtui
                else
                    echo -e "${RED}Network Manager TUI (nmtui) not found.${NC}"
-                   read -p "Press Enter..."
+                   read -p "Press Enter..." < /dev/tty
                fi
                ;;
             3) return ;;

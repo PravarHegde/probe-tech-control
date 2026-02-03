@@ -260,7 +260,7 @@ install_klipper() {
     
     if [ ! -d "${HOME}/klipper" ]; then
         cd "${HOME}"
-        git clone https://github.com/Klipper3d/klipper.git
+        git clone --depth 1 https://github.com/Klipper3d/klipper.git
     fi
 
     # Ensure virtualenv exists (Fix for Ubuntu 24.04 and others)
@@ -315,7 +315,7 @@ install_moonraker() {
 
     if [ ! -d "${HOME}/moonraker" ]; then
         cd "${HOME}"
-        git clone https://github.com/Arksine/moonraker.git
+        git clone --depth 1 https://github.com/Arksine/moonraker.git
     fi
 
     # Ensure virtualenv (Fix for newer distros)

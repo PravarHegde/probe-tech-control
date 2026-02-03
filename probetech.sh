@@ -21,8 +21,8 @@ if [ -d "$TARGET_DIR" ]; then
 fi
 
 # Clone the repository
-echo -e "${BLUE}Cloning repository...${NC}"
-git clone https://github.com/PravarHegde/probe-tech-control-beta.git "$TARGET_DIR"
+echo -e "${BLUE}Cloning repository (Shallow)...${NC}"
+git clone --depth 1 https://github.com/PravarHegde/probe-tech-control-beta.git "$TARGET_DIR"
 
 if [ ! -d "$TARGET_DIR" ]; then
     echo "Error: Failed to clone repository."

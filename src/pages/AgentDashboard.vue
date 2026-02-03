@@ -27,10 +27,13 @@
                             outlined
                             dense
                             class="mt-4"
-                            :append-icon="mdiSend"
-                            @click:append="sendMessage"
+                            class="mt-4"
                             @keydown.enter="sendMessage"
-                        ></v-text-field>
+                        >
+                            <template v-slot:append>
+                                <v-icon @click="sendMessage">{{ mdiSend }}</v-icon>
+                            </template>
+                        </v-text-field>
                     </v-card-text>
                 </v-card>
             </v-col>

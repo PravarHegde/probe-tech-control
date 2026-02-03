@@ -416,10 +416,11 @@ install_probe_tech() {
                  cat <<EOF >> "$MOONRAKER_CONF"
 
 [update_manager probe_tech]
-type: web
-channel: stable
-repo: PravarHegde/probe-tech-control
+type: git_repo
 path: ~/probe-tech-control
+origin: https://github.com/PravarHegde/probe-tech-control.git
+primary_branch: develop
+is_system_service: False
 EOF
                  echo -e "${GREEN}✓ Moonraker Update Manager added${NC}"
              fi
@@ -507,9 +508,9 @@ EOF
             cat <<EOF >> "$MOONRAKER_CONF"
 
 [update_manager probe_tech]
-type: web
+type: git_repo
 channel: stable
-repo: PravarHegde/probe-tech-control
+origin: https://github.com/PravarHegde/probe-tech-control.git\nprimary_branch: develop\nis_system_service: False
 path: ~/probe-tech-control
 EOF
         fi
@@ -620,9 +621,9 @@ EOF
             cat <<EOF >> "${CONF_DIR}/moonraker.conf"
 
 [update_manager probe_tech]
-type: web
+type: git_repo
 channel: stable
-repo: PravarHegde/probe-tech-control
+origin: https://github.com/PravarHegde/probe-tech-control.git\nprimary_branch: develop\nis_system_service: False
 path: ~/probe-tech-control
 EOF
         fi
@@ -1061,6 +1062,69 @@ manual_install_menu() {
 # --- REPAIR UTILS ---
 
 
+# --- UPDATE UTILS ---
+
+update_probe_tech_beta() {
+    print_box "UPDATING PROBE TECH CONTROL (BETA)" "${MAGENTA}"
+    echo -e "${SILVER}This will download the latest pre-built artifact from GitHub.${NC}"
+    echo -e "${SILVER}Optimized for low RAM usage (No building on device).${NC}"
+    
+    # URL for the pre-built artifact from the beta repo
+    local artifact_url="https://github.com/PravarHegde/probe-tech-control/raw/develop/probe-tech-control.zip.zip"
+    
+    # Download
+    echo -e "${BLUE}Downloading latest artifact...${NC}"
+    curl -L "$artifact_url" -o "/tmp/ptc_update.zip.zip"
+    
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Download failed. Check internet connection.${NC}"
+        read -p "Press Enter..."
+        return
+    fi
+    
+    # Extract
+    echo -e "${BLUE}Extracting...${NC}"
+    local tmp_dir="/tmp/ptc_extracted_$(date +%s)"
+    mkdir -p "$tmp_dir"
+    
+    unzip -q "/tmp/ptc_update.zip.zip" -d "$tmp_dir"
+    if [ -f "$tmp_dir/probe-tech-control.zip" ]; then
+        unzip -q "$tmp_dir/probe-tech-control.zip" -d "$tmp_dir"
+        rm "$tmp_dir/probe-tech-control.zip"
+    fi
+    
+    # Verify
+    if [ ! -f "$tmp_dir/index.html" ]; then
+        echo -e "${RED}Update failed: index.html not found in artifact.${NC}"
+        rm -rf "$tmp_dir"
+        read -p "Press Enter..."
+        return
+    fi
+    
+    # Deploy
+    echo -e "${GOLD}Deploying to ~/probe-tech-control...${NC}"
+    local target_dir="${HOME}/probe-tech-control"
+    mkdir -p "$target_dir"
+    
+    # Sync files (cleanly)
+    rm -rf "${target_dir:?}/"*
+    cp -r "$tmp_dir/"* "$target_dir/"
+    
+    # Cleanup
+    rm -f "/tmp/ptc_update.zip.zip"
+    rm -rf "$tmp_dir"
+    
+    # Restart
+    echo -e "${GOLD}Restarting services...${NC}"
+    sudo systemctl restart probe-tech
+    
+    echo -e "${GREEN}✓ Update Successful!${NC}"
+    if [ -f "${target_dir}/release_info.json" ]; then
+        echo -e "Current Version: ${GOLD}$(cat ${target_dir}/release_info.json | grep version | cut -d '"' -f 4)${NC}"
+    fi
+    read -p "Press Enter to continue..."
+}
+
 repair_install() {
     print_box "AUTO-FIX / REPAIR CONFIGURATION" "${GOLD}"
     echo -e "${SILVER}This will scan and repair common configuration issues (z_offset, moonraker.conf, services).${NC}"
@@ -1197,11 +1261,12 @@ while true; do
     echo -e "${MAGENTA}2) Auto-Setup: Multi-Instance (Batch Installer)${NC}"
     echo "3) Manual Installation & Updates"
     echo "4) Service Control (Status / Restart)"
-    echo "5) Remove Components"
-    echo "6) Backup & Restore"
-    echo "7) WiFi Config & Port Configuration"
-    echo "8) Auto-Fix / Repair Configuration"
-    echo "9) Quit"
+    echo -e "${CYAN}5) Check for Beta Updates (RAM Optimized)${NC}"
+    echo "6) Remove Components"
+    echo "7) Backup & Restore"
+    echo "8) WiFi Config & Port Configuration"
+    echo "9) Auto-Fix / Repair Configuration"
+    echo "10) Quit"
     echo ""
     read -p "Select option: " main_c
     
@@ -1210,11 +1275,12 @@ while true; do
         2) auto_install_batch ;;
         3) manual_install_menu ;;
         4) menu_service ;;
-        5) menu_remove ;;
-        6) menu_backup ;;
-        7) menu_network ;;
-        8) repair_install ;;
-        9) exit 0 ;;
+        5) update_probe_tech_beta ;;
+        6) menu_remove ;;
+        7) menu_backup ;;
+        8) menu_network ;;
+        9) repair_install ;;
+        10) exit 0 ;;
         *) ;;
     esac
 done

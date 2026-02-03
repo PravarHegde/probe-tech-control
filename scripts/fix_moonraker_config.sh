@@ -8,13 +8,22 @@ echo "Searching for moonraker.conf files..."
 find ~/printer_data/config ~/*_data/config -name "moonraker.conf" 2>/dev/null | while read conf; do
     echo "Processing $conf"
     
-    # 1. Fix Section Header: [update_manager client probe_tech] -> [update_manager probe_tech]
+    # 1. Fix Legacy Sections: [update_manager client probe_tech] -> [update_manager probe_tech]
     if grep -q "\[update_manager client probe_tech\]" "$conf"; then
         echo "  - Correcting section header..."
         sed -i 's/\[update_manager client probe_tech\]/[update_manager probe_tech]/' "$conf"
     fi
 
-    # 2. Check for invalid path usage
+    # 2. Convert to git_repo (RAM Efficient Update Method)
+    if grep -A 1 "\[update_manager probe_tech\]" "$conf" | grep -q "type: web"; then
+        echo "  - Converting to modern git_repo format..."
+        sed -i '/\[update_manager probe_tech\]/,/path:/ {
+            s/type: web/type: git_repo/
+            s/repo:/origin: https:\/\/github.com\/PravarHegde\/probe-tech-control.git\nprimary_branch: develop\nis_system_service: False\n# repo:/
+        }' "$conf"
+    fi
+
+    # 3. Check for invalid path usage
     if grep -q "path: ~/probe-tech-control" "$conf"; then
         # Check if the directory exists
         if [ ! -d "${HOME}/probe-tech-control" ]; then

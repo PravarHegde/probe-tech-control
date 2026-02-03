@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Probe Tech Control Advanced Installer and Manager
-# Version: v3.2.6 (The Factory Production Suite)
+# Version: v3.2.7 (The Factory Production Suite)
 
 # --- VARIABLES ---
 HOME_DIR="${HOME}"

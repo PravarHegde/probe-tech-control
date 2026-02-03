@@ -164,22 +164,22 @@ export const backgroundSets = {
         name: 'Standard',
         dark: 'mainBackground-futuristic.png',
         light: 'mainBackground-futuristic-light.png',
-        logoDark: 'sidebarLogo-silver.svg', // Silver logo (User provided)
-        logoLight: 'sidebarLogo-silver.svg', // Silver logo (User provided)
+        logoDark: 'sidebarLogo-probharath.svg', // Silver logo (User provided)
+        logoLight: 'sidebarLogo-probharath.svg', // Silver logo (User provided)
     },
     royal: {
         name: 'Royal & Thunder (New)',
         dark: 'bg-royal-dark.png',
         light: 'bg-royal-light-pcb.png', // Golden PCB
-        logoDark: 'sidebarLogo-silver.svg', // Silver logo (Single instance)
-        logoLight: 'sidebarLogo-silver.svg', // Silver logo (Single instance)
+        logoDark: 'sidebarLogo-probharath.svg', // Silver logo (Single instance)
+        logoLight: 'sidebarLogo-probharath.svg', // Silver logo (Single instance)
     },
     industrial: {
         name: 'Industrial (Classic)',
         dark: 'mainBackground-industrial.png',
         light: 'mainBackground-industrial.png',
-        logoDark: 'sidebarLogo-silver.svg', // Silver logo (User provided)
-        logoLight: 'sidebarLogo-silver.svg',
+        logoDark: 'sidebarLogo-probharath.svg', // Silver logo (User provided)
+        logoLight: 'sidebarLogo-probharath.svg',
     },
 }
 
@@ -189,14 +189,14 @@ export const backgroundSets = {
 export const themes: Theme[] = [
     {
         name: 'mainsail',
-        displayName: 'Futuristic (Default)',
+        displayName: 'Default',
         colorLogo: '#00FFFF',
         mainBackground: { show: true, light: true },
         sidebarBackground: { show: true, light: true },
     },
     {
         name: 'classic',
-        displayName: 'Classic (Fast)',
+        displayName: 'Lite',
         colorLogo: defaultLogoColor,
         mainBackground: { show: false, light: false },
         sidebarBackground: { show: false, light: false },

@@ -14,21 +14,6 @@
                     <v-select v-model="themeName" :items="themes" class="mt-0" hide-details outlined dense />
                 </settings-row>
 
-                <settings-row :title="'Main Background'">
-                    <v-file-input
-                        v-model="backgroundFile"
-                        accept="image/*"
-                        label="Select Background Image (Click)"
-                        prepend-icon="mdi-image"
-                        color="amber darken-3"
-                        filled
-                        dense
-                        show-size
-                        hide-details
-                        class="mt-1"
-                        :loading="uploadingBackground"
-                        @change="uploadMainBackground" />
-                </settings-row>
                 <v-expand-transition>
                     <div v-if="themeName === 'mainsail'">
                         <v-divider class="my-2" />
@@ -45,6 +30,22 @@
                         </settings-row>
                     </div>
                 </v-expand-transition>
+
+                <settings-row :title="'Select background from local'">
+                    <v-file-input
+                        v-model="backgroundFile"
+                        accept="image/*"
+                        label="Select Background Image (Click)"
+                        prepend-icon="mdi-image"
+                        color="amber darken-3"
+                        filled
+                        dense
+                        show-size
+                        hide-details
+                        class="mt-1"
+                        :loading="uploadingBackground"
+                        @change="uploadMainBackground" />
+                </settings-row>
 
                 <v-divider class="my-2" />
                 <settings-row :title="$t('Settings.UiSettingsTab.Logo')">

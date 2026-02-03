@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Probe Tech Control Advanced Installer and Manager
-# Version 11: The Factory Production Suite (Auto-Port, Batch Mode, Auto-Sanitize)
+# Version: v3.2.6 (The Factory Production Suite)
 
 # --- VARIABLES ---
 HOME_DIR="${HOME}"
@@ -1064,8 +1064,8 @@ manual_install_menu() {
 
 # --- UPDATE UTILS ---
 
-update_probe_tech_beta() {
-    print_box "UPDATING PROBE TECH CONTROL (BETA)" "${MAGENTA}"
+update_probe_tech() {
+    print_box "UPDATING PROBE TECH CONTROL" "${MAGENTA}"
     echo -e "${SILVER}This will download the latest pre-built artifact from GitHub.${NC}"
     echo -e "${SILVER}Optimized for low RAM usage (No building on device).${NC}"
     
@@ -1221,35 +1221,34 @@ if [ $# -eq 0 ]; then
         clear
         print_box "FRESH INSTALLATION DETECTED" "${GOLD}"
         echo -e "${GREEN}System appears clean.${NC}"
-        echo -e "${GREEN}Starting Seamless Automatic Installation in 30 seconds...${NC}"
+        echo -e "${SILVER}Starting Seamless Automatic Installation...${NC}"
         echo -e "${SILVER}Press ENTER to Start Immediately, or ANY OTHER KEY to Cancel/Menu.${NC}"
         echo ""
-        
-        # Wait 30 seconds for input
-        # We read 1 character. If it is empty (Enter), we proceed. 
-        # If it is not empty, we cancel.
-        # Note: read -t returns >128 on timeout. 0 on success.
-        
-        read -t 30 -n 1 key
-        input_status=$?
-        
-        if [ $input_status -gt 128 ]; then
-             # Timeout - Start Auto Install
-             echo -e "\n${GREEN}Timeout Reached. Starting Auto-Setup...${NC}"
-             auto_install_single
-             echo -e "${GREEN}Seamless Install Complete.${NC}"
-             exit 0
-        elif [ "$key" == "" ]; then
-             # Enter Pressed - Start Auto Install
-             echo -e "\n${GREEN}Starting Auto-Setup...${NC}"
-             auto_install_single
-             echo -e "${GREEN}Seamless Install Complete.${NC}"
-             exit 0
-        else
-             # Other Key Pressed - Cancel
-             echo -e "\n${YELLOW}Auto-Install Cancelled. Opening Menu...${NC}"
-             sleep 1
-        fi
+
+        # Visible Countdown Loop
+        for i in {30..1}; do
+            echo -ne "\r${GOLD}Auto-Setup starting in: ${i} seconds...   ${NC}"
+            read -t 1 -n 1 key
+            input_status=$?
+
+            if [ $input_status -eq 0 ]; then
+                if [ "$key" == "" ]; then
+                    # Enter pressed
+                    break
+                else
+                    # Other key pressed - CANCEL
+                    echo -e "\n${YELLOW}Auto-Install Cancelled. Opening Menu...${NC}"
+                    sleep 1
+                    break 2 # Exit both loop and the if block logic
+                fi
+            fi
+        done
+
+        # If we reached here without breaking out of 'if', start auto install
+        echo -e "\n${GREEN}Starting Auto-Setup...${NC}"
+        auto_install_single
+        echo -e "${GREEN}Seamless Install Complete.${NC}"
+        exit 0
     fi
 fi
 
@@ -1261,7 +1260,7 @@ while true; do
     echo -e "${MAGENTA}2) Auto-Setup: Multi-Instance (Batch Installer)${NC}"
     echo "3) Manual Installation & Updates"
     echo "4) Service Control (Status / Restart)"
-    echo -e "${CYAN}5) Check for Beta Updates (RAM Optimized)${NC}"
+    echo -e "${CYAN}5) Check for Updates (RAM Optimized)${NC}"
     echo "6) Remove Components"
     echo "7) Backup & Restore"
     echo "8) WiFi Config & Port Configuration"
@@ -1275,7 +1274,7 @@ while true; do
         2) auto_install_batch ;;
         3) manual_install_menu ;;
         4) menu_service ;;
-        5) update_probe_tech_beta ;;
+        5) update_probe_tech ;;
         6) menu_remove ;;
         7) menu_backup ;;
         8) menu_network ;;

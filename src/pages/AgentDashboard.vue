@@ -27,7 +27,6 @@
                             outlined
                             dense
                             class="mt-4"
-                            class="mt-4"
                             @keydown.enter="sendMessage"
                         >
                             <template v-slot:append>

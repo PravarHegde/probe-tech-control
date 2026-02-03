@@ -346,15 +346,19 @@ install_probe_tech() {
         # Download from develop/master (using the known URL structure)
         # Note: Ideally this should switch based on version, but for now we use the develop artifact for latest
         # Or better: check if we are on master branch? hardcode for now.
-        local artifact_url="https://github.com/PravarHegde/probe-tech-control/raw/develop/probe-tech-control.zip.zip"
+        local artifact_url="https://github.com/PravarHegde/probe-tech-control/raw/develop/probe-tech-control.zip"
         
-        curl -L "$artifact_url" -o "${SCRIPT_DIR}/probe-tech-control.zip.zip"
+        curl -L "$artifact_url" -o "${SCRIPT_DIR}/probe-tech-control.zip"
         
         if [ $? -eq 0 ]; then
             echo -e "${BLUE}Extracting artifact...${NC}"
-            unzip -q "${SCRIPT_DIR}/probe-tech-control.zip.zip" -d "${SCRIPT_DIR}"
-            if [ -f "${SCRIPT_DIR}/probe-tech-control.zip" ]; then
-                 rm "${SCRIPT_DIR}/probe-tech-control.zip.zip"
+            # Check if it's a valid zip
+            unzip -tq "${SCRIPT_DIR}/probe-tech-control.zip" >/dev/null 2>&1
+            if [ $? -eq 0 ]; then
+                 : # Valid zip, proceed to extraction logic below
+            else
+                 echo -e "${RED}Downloaded artifact is invalid or corrupt.${NC}"
+                 rm "${SCRIPT_DIR}/probe-tech-control.zip"
             fi
         else
             echo -e "${RED}Failed to download artifact. Proceeding without web files...${NC}"

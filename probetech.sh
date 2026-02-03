@@ -43,7 +43,7 @@ cd "$TARGET_DIR" || exit 1
 # Explicitly select only the files we need (Ignoring everything else, like the big zip)
 echo -e "${BLUE}Checking out scripts...${NC}"
 git sparse-checkout init --no-cone
-git sparse-checkout set install.sh scripts/* requirements.txt
+git sparse-checkout set install.sh scripts/* probe_tech.cfg requirements.txt
 
 # Run the installer
 cd "$TARGET_DIR"

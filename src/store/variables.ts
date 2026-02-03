@@ -119,7 +119,7 @@ export const thumbnailBigMin = 128
 export const navigationWidth = 220
 export const navigationItemHeight = 48
 export const panelToolbarHeight = 48
-export const topbarHeight = 64
+export const topbarHeight = 80
 
 /*
  * List of hidden timelapse console outputs

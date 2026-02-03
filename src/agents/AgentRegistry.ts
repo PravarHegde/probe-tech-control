@@ -1,78 +1,134 @@
 import { Agent } from './AgentInterface'
 import { BasicAgent } from './BasicAgent'
 import { CustomAgent } from './CustomAgent'
+import { CloudAgent } from './CloudAgent'
+import { LocalLLMAgent } from './LocalLLMAgent'
+
+class CoreAgent implements Agent {
+    id = 'core-agent'
+    name = 'Core System'
+    description = 'Minimal fallback agent.'
+    async process(input: string): Promise<string> {
+        return "No agent is active. Please install or activate an agent from the Manager."
+    }
+}
 
 class AgentRegistry {
-    private agents: Map<string, Agent> = new Map()
-    private activeAgentId: string = 'basic-agent'
+    private installedAgents: Map<string, Agent> = new Map()
+    private availableTemplates: Map<string, Agent> = new Map()
+    private activeAgentId: string = 'core-agent'
+
+    // Core fallback
+    private coreAgent = new CoreAgent()
 
     constructor() {
-        // Register default agent
-        this.register(new BasicAgent())
+        // 1. Register Core (Always available, invisible in list)
+        this.installedAgents.set(this.coreAgent.id, this.coreAgent)
 
-        // Load custom agents from storage
-        const customAgents = JSON.parse(localStorage.getItem('customAgents') || '[]')
-        customAgents.forEach((data: any) => {
-            this.register(new CustomAgent(data.id, data.name, data.url))
+        // 2. Define Marketplace Templates
+        const templates = [
+            new BasicAgent(),
+            new CloudAgent(),
+            new LocalLLMAgent()
+        ]
+        templates.forEach(t => this.availableTemplates.set(t.id, t))
+
+        // 3. Load INSTALLED agents from storage
+        // Format: { id: string, type: 'basic'|'cloud'|'local'|'custom', args?: any }
+        const installedData = JSON.parse(localStorage.getItem('installedAgents') || '[]')
+
+        // If empty (fresh install), do NOT install anything by default (per user request for "light")
+        // OR: Should we install BasicAgent by default? User said "default no agents or very simple".
+        // Let's stick to CoreAgent as default if nothing is installed.
+
+        installedData.forEach((data: any) => {
+            if (this.availableTemplates.has(data.id)) {
+                // It's a template we know
+                this.installedAgents.set(data.id, this.availableTemplates.get(data.id)!)
+            } else if (data.type === 'custom') {
+                // Rehydrate custom agent
+                const agent = new CustomAgent(data.id, data.name, data.url)
+                this.installedAgents.set(agent.id, agent)
+            }
         })
 
-        // Load active agent from storage
+        // 4. Load Active Agent
         const storedId = localStorage.getItem('activeAgentId')
-        if (storedId && this.agents.has(storedId)) {
+        if (storedId && this.installedAgents.has(storedId)) {
             this.activeAgentId = storedId
+        } else {
+            this.activeAgentId = 'core-agent'
         }
     }
 
-    register(agent: Agent) {
-        this.agents.set(agent.id, agent)
+    // --- Marketplace Methods ---
+
+    getAvailableAgents(): Agent[] {
+        return Array.from(this.availableTemplates.values())
     }
 
-    // Specifically for adding new custom agents from UI
-    addCustomAgent(name: string, url: string) {
-        const id = 'custom-' + Date.now()
-        const agent = new CustomAgent(id, name, url)
-        this.register(agent)
-        this.saveCustomAgents()
-        return agent
+    getInstalledAgents(): Agent[] {
+        // Exclude core-agent from UI list
+        return Array.from(this.installedAgents.values()).filter(a => a.id !== 'core-agent')
     }
 
-    removeAgent(id: string) {
-        if (id === 'basic-agent') return // Cannot remove default
-        this.agents.delete(id)
-        this.saveCustomAgents()
+    isInstalled(id: string): boolean {
+        return this.installedAgents.has(id)
+    }
+
+    install(id: string) {
+        if (this.availableTemplates.has(id)) {
+            this.installedAgents.set(id, this.availableTemplates.get(id)!)
+            this.saveInstalledAgents()
+        }
+    }
+
+    uninstall(id: string) {
+        if (id === 'core-agent') return
+
+        this.installedAgents.delete(id)
+        this.saveInstalledAgents()
+
+        // If active agent was uninstalled, fallback to core
         if (this.activeAgentId === id) {
-            this.setActiveAgent('basic-agent')
+            this.activeAgentId = 'core-agent'
+            localStorage.setItem('activeAgentId', 'core-agent')
         }
     }
 
-    private saveCustomAgents() {
-        const custom = Array.from(this.agents.values())
-            .filter(a => a instanceof CustomAgent)
-            .map(a => ({
-                id: a.id,
-                name: a.name,
-                url: (a as CustomAgent).url
-            }))
-        localStorage.setItem('customAgents', JSON.stringify(custom))
-    }
-
-    getAgent(id: string): Agent | undefined {
-        return this.agents.get(id)
-    }
-
-    getAllAgents(): Agent[] {
-        return Array.from(this.agents.values())
-    }
+    // --- Active Agent Methods ---
 
     getActiveAgent(): Agent {
-        return this.agents.get(this.activeAgentId) || this.agents.get('basic-agent')!
+        return this.installedAgents.get(this.activeAgentId) || this.coreAgent
     }
 
     setActiveAgent(id: string) {
-        if (this.agents.has(id)) {
+        if (this.installedAgents.has(id)) {
             this.activeAgentId = id
             localStorage.setItem('activeAgentId', id)
         }
+    }
+
+    // --- Custom Agent Methods ---
+
+    addCustomAgent(name: string, url: string) {
+        const id = 'custom-' + Date.now()
+        const agent = new CustomAgent(id, name, url)
+        this.installedAgents.set(id, agent)
+        this.saveInstalledAgents()
+        return agent
+    }
+
+    private saveInstalledAgents() {
+        const list = Array.from(this.installedAgents.values())
+            .filter(a => a.id !== 'core-agent')
+            .map(a => {
+                if (a instanceof CustomAgent) {
+                    return { id: a.id, type: 'custom', name: a.name, url: a.url }
+                }
+                return { id: a.id, type: 'template' }
+            })
+        localStorage.setItem('installedAgents', JSON.stringify(list))
     }
 }
 

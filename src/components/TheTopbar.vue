@@ -341,7 +341,7 @@ export default class TheTopbar extends Mixins(BaseMixin, ThemeMixin) {
 
 @media (min-width: 960px) {
     ::v-deep .topbar .nav-logo {
-        max-height: 60px; /* Maximize size on Desktop (Top bar is 64px) */
+        max-height: 72px; /* Maximize size on Desktop (Top bar is 64px) */
     }
 }
 /*noinspection CssUnusedSymbol*/

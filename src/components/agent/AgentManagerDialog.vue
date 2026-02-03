@@ -34,8 +34,9 @@
                                 </v-list-item-action>
                                 
                                 <v-list-item-action>
-                                    <v-btn icon small color="error" @click="uninstall(agent.id)">
-                                        <v-icon>mdi-delete</v-icon>
+                                    <v-btn small text color="error" @click="uninstall(agent.id)">
+                                        <v-icon left small>mdi-delete</v-icon>
+                                        Remove
                                     </v-btn>
                                 </v-list-item-action>
                             </v-list-item>

@@ -334,7 +334,7 @@ export default class TheTopbar extends Mixins(BaseMixin, ThemeMixin) {
 }
 ::v-deep .topbar .nav-logo {
     width: auto;
-    max-height: 80%; /* Ensure it fits within the bar */
+    max-height: 36px; /* Fixed height to prevent overflow */
     height: auto;
 }
 /*noinspection CssUnusedSymbol*/

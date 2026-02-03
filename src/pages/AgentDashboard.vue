@@ -3,9 +3,15 @@
         <v-row>
             <v-col cols="12" md="8">
                 <v-card class="glass-panel mb-4">
-                    <v-card-title class="headline primary--text">
-                        <v-icon left color="primary">{{ mdiRobot }}</v-icon>
-                        AI Job Planner
+                    <v-card-title class="headline primary--text d-flex justify-space-between">
+                        <div>
+                            <v-icon left color="primary">{{ mdiRobot }}</v-icon>
+                            AI Job Planner
+                            <span class="subtitle-2 grey--text ml-2">({{ activeAgentName }})</span>
+                        </div>
+                        <v-btn small text color="primary" @click="showManager = true">
+                            <v-icon left>mdi-cog</v-icon> Manage Agents
+                        </v-btn>
                     </v-card-title>
                     <v-card-text>
                         <div class="chat-interface pa-4" style="height: 400px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 8px;">
@@ -24,10 +30,9 @@
 
                         <!-- Quick Actions -->
                         <div class="d-flex flex-wrap mt-2">
-                             <v-chip outlined small class="mr-2 mb-2" @click="quickAction('status')">Current Status</v-chip>
-                             <v-chip outlined small class="mr-2 mb-2" @click="quickAction('temp')">Temperatures</v-chip>
-                             <v-chip outlined small class="mr-2 mb-2" @click="quickAction('home')">Home All</v-chip>
-                             <v-chip outlined small class="mr-2 mb-2" @click="quickAction('pause')">Pause Print</v-chip>
+                             <v-chip v-for="cap in capabilities" :key="cap" outlined small class="mr-2 mb-2" @click="quickAction(cap)">
+                                {{ capitalize(cap) }}
+                             </v-chip>
                         </div>
 
                         <v-text-field
@@ -36,10 +41,11 @@
                             outlined
                             dense
                             class="mt-2"
+                            :disabled="processing"
                             @keydown.enter="sendMessage"
                         >
                             <template v-slot:append>
-                                <v-icon @click="sendMessage">{{ mdiSend }}</v-icon>
+                                <v-icon @click="sendMessage" :disabled="processing">{{ mdiSend }}</v-icon>
                             </template>
                         </v-text-field>
                     </v-card-text>
@@ -91,18 +97,22 @@
                 </v-card>
             </v-col>
         </v-row>
+        
+        <agent-manager-dialog v-model="showManager" @agent-changed="onAgentChanged" />
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { namespace } from 'vuex-class'
-const printer = namespace('printer')
 import { mdiRobot, mdiSend, mdiHeartPulse, mdiFlash, mdiCheckCircleOutline } from '@mdi/js'
+import { agentRegistry } from '@/agents/AgentRegistry'
+import AgentManagerDialog from '@/components/agent/AgentManagerDialog.vue'
 
-
-
-@Component
+@Component({
+    components: {
+        AgentManagerDialog
+    }
+})
 export default class AgentDashboard extends Vue {
     mdiRobot = mdiRobot
     mdiSend = mdiSend
@@ -110,28 +120,46 @@ export default class AgentDashboard extends Vue {
     mdiFlash = mdiFlash
     mdiCheckCircleOutline = mdiCheckCircleOutline
     
-    @printer.Getter('getPrintPercent') printPercent!: number
-    @printer.Getter('getEstimatedTimeETAFormat') estimatedTimeETAFormat!: string
-    @printer.Getter('getExtruders') extruders!: any[]
-    @printer.Getter('getPrinterObject') getPrinterObject!: (name: string) => any
-    @printer.Action('sendGcode') sendGcode!: (gcode: string) => void
-
     newMessage = ''
     messages = [
         {
             id: 1,
-            text: 'Hello! I am your intelligent print agent. I can help you check status, temperatures, or control the printer. Try typing "status" or "temp".',
+            text: 'Hello! I am your intelligent print agent. I can help you check status, temperatures, or control the printer.',
             sender: 'ai',
         },
     ]
+    
+    showManager = false
+    activeAgentName = ''
+    capabilities: string[] = []
+    processing = false
+    
+    created() {
+        this.updateAgentInfo()
+    }
+    
+    updateAgentInfo() {
+        const agent = agentRegistry.getActiveAgent()
+        this.activeAgentName = agent.name
+        this.capabilities = agent.getCapabilities ? (agent.getCapabilities() || []) : ['status', 'help']
+    }
+    
+    onAgentChanged() {
+        this.updateAgentInfo()
+        this.messages.push({
+            id: Date.now(),
+            text: `System: Switched to ${this.activeAgentName}`,
+            sender: 'ai'
+        })
+    }
 
     quickAction(action: string) {
         this.newMessage = action
         this.sendMessage()
     }
 
-    sendMessage() {
-        if (!this.newMessage.trim()) return
+    async sendMessage() {
+        if (!this.newMessage.trim() || this.processing) return
 
         const userText = this.newMessage
         this.messages.push({
@@ -141,76 +169,39 @@ export default class AgentDashboard extends Vue {
         })
 
         this.newMessage = ''
+        this.processing = true
+        this.scrollToBottom()
         
-        // Process Intent
-        setTimeout(() => {
-            const response = this.processMessage(userText.toLowerCase())
+        // Process Intent via Agent Registry
+        try {
+            const agent = agentRegistry.getActiveAgent()
+            // Construct context
+            const context = {
+                store: this.$store,
+                router: this.$router
+            }
+            
+            const response = await agent.process(userText, context)
+            
             this.messages.push({
                 id: Date.now() + 1,
                 text: response,
                 sender: 'ai',
             })
-            this.scrollToBottom()
-        }, 500)
-
-        this.scrollToBottom()
-    }
-
-    processMessage(text: string): string {
-        // Status Intent
-        if (text.includes('status') || text.includes('progress') || text.includes('state')) {
-            const percent = (this.printPercent * 100).toFixed(1)
-            const eta = this.estimatedTimeETAFormat
-            if (percent === '0.0' && eta === '--') {
-                 return `The printer is currently idle. Ready for your next job!`
-            }
-            return `Current Status:\n- Progress: ${percent}%\n- ETA: ${eta}`
-        }
-
-        // Temperature Intent
-        if (text.includes('temp') || text.includes('heat') || text.includes('hot')) {
-            let response = 'Current Temperatures:\n'
-            
-            // Extruders
-            this.extruders.forEach((ext: any) => {
-                const printerExt = this.getPrinterObject(ext.key)
-                if (printerExt) {
-                    response += `- ${ext.name}: ${printerExt.temperature.toFixed(1)}°C / ${printerExt.target.toFixed(1)}°C\n`
-                }
+        } catch (e) {
+            this.messages.push({
+                id: Date.now() + 1,
+                text: `Error: ${e.message}`,
+                sender: 'ai',
             })
-
-            // Heater Bed
-            const bed = this.getPrinterObject('heater_bed')
-            if (bed) {
-                response += `- Bed: ${bed.temperature.toFixed(1)}°C / ${bed.target.toFixed(1)}°C\n`
-            }
-            
-            return response
+        } finally {
+            this.processing = false
+            this.scrollToBottom()
         }
-
-        // Home Intent
-        if (text.includes('home') || text.includes('g28')) {
-            this.sendGcode('G28')
-            return "Sending G28 (Home All) command..."
-        }
-
-        // Stop/Pause Intent
-        if (text.includes('stop') || text.includes('cancel')) {
-            // In a real agent, we might ask for confirmation.
-            // For now, we'll give a warning.
-            return "To cancel the print, please use the main dashboard controls for safety."
-        }
-        
-        if (text.includes('pause')) {
-             this.sendGcode('PAUSE')
-             return "Sending PAUSE command..."
-        }
-        
-        if (text.includes('help')) {
-            return "I can help with:\n- 'Status': Check print progress\n- 'Temp': Check temperatures\n- 'Home': Home all axes\n- 'Pause': Pause the print"
-        }
-
-        return "I didn't capture that. Try asking for 'status' or 'temp', or check the quick actions below."
+    }
+    
+    capitalize(s: string) {
+        return s.charAt(0).toUpperCase() + s.slice(1)
     }
 
     scrollToBottom() {
@@ -223,6 +214,10 @@ export default class AgentDashboard extends Vue {
 </script>
 
 <style scoped>
+.glass-panel {
+    background: rgba(45, 45, 45, 0.9); /* Darker background for visibility */
+    backdrop-filter: blur(5px);
+}
 .glass-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(5px);

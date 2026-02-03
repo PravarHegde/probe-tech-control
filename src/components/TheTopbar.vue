@@ -332,16 +332,16 @@ export default class TheTopbar extends Mixins(BaseMixin, ThemeMixin) {
     height: 100% !important;
     max-height: none;
 }
-::v-deep .topbar .nav-logo {
+ ::v-deep .topbar .nav-logo {
     width: auto;
     height: auto;
-    max-height: 36px; /* Mobile safe size */
+    max-height: 48px; /* Mobile safe size */
     transition: max-height 0.3s;
 }
 
 @media (min-width: 960px) {
     ::v-deep .topbar .nav-logo {
-        max-height: 46px; /* Maximize size on Desktop (Top bar is 48px) */
+        max-height: 60px; /* Maximize size on Desktop (Top bar is 64px) */
     }
 }
 /*noinspection CssUnusedSymbol*/

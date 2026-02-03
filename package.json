@@ -1,6 +1,6 @@
 {
     "name": "probe-tech-control",
-    "version": "3.2.2",
+    "version": "3.2.4",
     "private": true,
     "type": "module",
     "decription": "a klipper web interface",

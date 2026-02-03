@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [develop, feature/ui-stable]
+    branches: [develop, feature/ui-stable, 3.2.4]
   pull_request:
-    branches: [develop, feature/ui-stable]
+    branches: [develop, feature/ui-stable, 3.2.4]
   workflow_dispatch:
 
 jobs:

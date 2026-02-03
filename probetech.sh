@@ -23,24 +23,25 @@ fi
 # Clone the repository
 echo -e "${BLUE}Cloning repository (Shallow)...${NC}"
 # Clone the repository
-# Clone repository (Sparse Checkout for speed <1MB)
+# Clone repository (Optimized <1MB)
 echo -e "${BLUE}Fetching installer...${NC}"
 mkdir -p "$TARGET_DIR"
-cd "$TARGET_DIR" || exit 1
 
-# Initialize and pull only install.sh + scripts
-if [ ! -d ".git" ]; then
-    git init -q
-    git remote add origin https://github.com/PravarHegde/probe-tech-control.git
+if [ -d "$TARGET_DIR" ]; then
+    # Clear directory to ensure clean clone
+    rm -rf "$TARGET_DIR"
+    mkdir -p "$TARGET_DIR"
 fi
 
-git config core.sparseCheckout true
-echo "install.sh" > .git/info/sparse-checkout
-echo "scripts/" >> .git/info/sparse-checkout
-echo "requirements.txt" >> .git/info/sparse-checkout
+# Use modern partial clone to download ONLY the needed scripts (no history, no blobs/files initially)
+echo -e "${BLUE}Initializing partial clone...${NC}"
+git clone --depth 1 --filter=blob:none --sparse https://github.com/PravarHegde/probe-tech-control.git "$TARGET_DIR"
 
-echo -e "${BLUE}Downloading files...${NC}"
-git pull --depth 1 origin master
+cd "$TARGET_DIR" || exit 1
+
+# Explicitly select only the files we need (Ignoring everything else, like the big zip)
+echo -e "${BLUE}Checking out scripts...${NC}"
+git sparse-checkout set install.sh scripts requirements.txt
 
 # Run the installer
 cd "$TARGET_DIR"

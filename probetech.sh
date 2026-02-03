@@ -40,8 +40,10 @@ git clone --depth 1 --filter=blob:none --sparse https://github.com/PravarHegde/p
 cd "$TARGET_DIR" || exit 1
 
 # Explicitly select only the files we need (Ignoring everything else, like the big zip)
+# Explicitly select only the files we need (Ignoring everything else, like the big zip)
 echo -e "${BLUE}Checking out scripts...${NC}"
-git sparse-checkout set install.sh scripts requirements.txt
+git sparse-checkout init --no-cone
+git sparse-checkout set install.sh scripts/* requirements.txt
 
 # Run the installer
 cd "$TARGET_DIR"

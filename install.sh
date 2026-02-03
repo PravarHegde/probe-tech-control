@@ -996,9 +996,9 @@ menu_remove() {
         read -p "Select: " c < /dev/tty
         case $c in
             1) do_remove_all ;;
-            2) do_remove_probe; read -p "Press Enter..." ; < /dev/tty;
-            3) do_remove_moonraker; read -p "Press Enter..." ; < /dev/tty;
-            4) do_remove_klipper; read -p "Press Enter..." ; < /dev/tty;
+            2) do_remove_probe; read -p "Press Enter..." < /dev/tty ;;
+            3) do_remove_moonraker; read -p "Press Enter..." < /dev/tty ;;
+            4) do_remove_klipper; read -p "Press Enter..." < /dev/tty ;;
             5) return ;;
         esac
     done
@@ -1070,7 +1070,7 @@ manual_install_menu() {
         echo ""
         read -p "Select: " c < /dev/tty
         case $c in
-            1) install_probe_tech; read -p "Press Enter..." ; < /dev/tty;
+            1) install_probe_tech; read -p "Press Enter..." < /dev/tty ;;
             2) install_moonraker ;;
             3) install_klipper ;;
             4) create_instance ;;

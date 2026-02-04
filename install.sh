@@ -66,6 +66,19 @@ get_next_port() {
     echo $((max_port + 1))
 }
 
+# Find the next available port starting from 8080
+get_free_web_port() {
+    local port=8080
+    while true; do
+        # Check if port is in use (using python as it is guaranteed to be installed)
+        if python3 -c "import socket; s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); s.bind(('', $port))" 2>/dev/null; then
+            echo "$port"
+            break
+        fi
+        ((port++))
+    done
+}
+
 
 # Shows a list of valid config directories to pick from
 select_instance() {
@@ -159,7 +172,13 @@ check_status() {
     
     echo ""
     MY_IP=$(get_ip)
-    echo -e "Web Interface:      ${GOLD}http://${MY_IP}:8080${NC}"
+    # Attempt to read port from service file if running
+    if [ -f "/etc/systemd/system/probe-tech.service" ]; then
+        SERVICE_PORT=$(grep -oP '(?<=--port )\d+' /etc/systemd/system/probe-tech.service || echo "8080")
+    else
+        SERVICE_PORT="8080"
+    fi
+    echo -e "Web Interface:      ${GOLD}http://${MY_IP}:${SERVICE_PORT}${NC}"
     echo -e "${BLUE}=====================================================================${NC}"
     echo ""
 }
@@ -544,12 +563,20 @@ EOF
     echo -e "${GOLD}Setting up Service...${NC}"
     # Use SCRIPT_DIR for service template too
     if [ -f "${SCRIPT_DIR}/scripts/probe-tech.service" ]; then
+         # Detect free port
+         WEB_PORT=$(get_free_web_port)
+         echo -e "${BLUE}Selected Web Port: ${WEB_PORT}${NC}"
+
          sed "s/{USER}/${USER}/g" "${SCRIPT_DIR}/scripts/probe-tech.service" > /tmp/probe-tech.service
+         # Replace PORT and DIR
+         sed -i "s|{PORT}|${WEB_PORT}|g" /tmp/probe-tech.service
+         sed -i "s|{DIR}|${WEB_DIR}|g" /tmp/probe-tech.service
+         
          sudo mv /tmp/probe-tech.service "/etc/systemd/system/probe-tech.service"
          sudo systemctl daemon-reload
          sudo systemctl enable probe-tech.service
          sudo systemctl start probe-tech.service
-         echo -e "${GREEN}✓ Service Started & Enabled${NC}"
+         echo -e "${GREEN}✓ Service Started on Port ${WEB_PORT}${NC}"
     fi
 }
 

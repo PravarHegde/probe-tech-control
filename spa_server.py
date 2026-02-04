@@ -3,9 +3,16 @@ import socketserver
 import os
 import sys
 import mimetypes
+import argparse
 
-PORT = 8080
-DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+# --- ARGUMENT PARSING ---
+parser = argparse.ArgumentParser(description="Single Page Application Server")
+parser.add_argument("--port", type=int, default=8080, help="Port to serve on (default: 8080)")
+parser.add_argument("--dir", type=str, default=os.path.dirname(os.path.abspath(__file__)), help="Directory to serve (default: script dir)")
+args = parser.parse_args()
+
+PORT = args.port
+DIRECTORY = args.dir
 
 # Ensure common MIME types are explicitly known
 mimetypes.add_type('application/javascript', '.js')
@@ -50,6 +57,13 @@ if __name__ == "__main__":
     # Allow address reuse to prevent "Address already in use" on quick restarts
     socketserver.TCPServer.allow_reuse_address = True
     
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        print(f"Serving SPA at port {PORT} from {DIRECTORY}")
-        httpd.serve_forever()
+    try:
+        with socketserver.TCPServer(("", PORT), Handler) as httpd:
+            print(f"Serving SPA at port {PORT} from {DIRECTORY}")
+            httpd.serve_forever()
+    except OSError as e:
+        if e.errno == 98:
+            print(f"Error: Port {PORT} is already in use.")
+            sys.exit(1)
+        else:
+            raise

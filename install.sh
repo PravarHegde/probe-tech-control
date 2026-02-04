@@ -354,10 +354,18 @@ install_moonraker() {
 
 install_probe_tech() {
     local target_dir="$1"
+    local inst_name="$2"  # New argument: Optional instance name
     
-    # --- WEB INTERFACE DEPLOYMENT (NEW) ---
-    echo -e "${GOLD}Deploying Web Interface...${NC}"
-    WEB_DIR="${HOME}/probe-tech-control"
+    # Define WEB_DIR based on instance name
+    if [ -z "$inst_name" ] || [ "$inst_name" == "default" ]; then
+        WEB_DIR="${HOME}/probe-tech-control"
+        SERVICE_NAME="probe-tech"
+    else
+        WEB_DIR="${HOME}/probe-tech-control-${inst_name}"
+        SERVICE_NAME="probe-tech-${inst_name}"
+    fi
+
+    echo -e "${GOLD}Deploying Web Interface for ${inst_name:-default}...${NC}"
     
     # Check if we have a release zip in the script directory
     if [ ! -f "${SCRIPT_DIR}/probe-tech-control.zip" ]; then
@@ -461,7 +469,9 @@ install_probe_tech() {
 
 [update_manager probe_tech]
 type: git_repo
-path: ~/probe-tech-control
+[update_manager probe_tech]
+type: git_repo
+path: ~/${WEB_DIR##$HOME/}
 origin: https://github.com/PravarHegde/probe-tech-control.git
 primary_branch: develop
 is_system_service: False
@@ -561,23 +571,26 @@ EOF
         echo -e "${GREEN}✓ Created default moonraker.conf${NC}"
     fi
 
-    echo -e "${GOLD}Setting up Service...${NC}"
+    echo -e "${GOLD}Setting up Service for ${SERVICE_NAME}...${NC}"
     # Use SCRIPT_DIR for service template too
     if [ -f "${SCRIPT_DIR}/scripts/probe-tech.service" ]; then
          # Detect free port
          WEB_PORT=$(get_free_web_port)
          echo -e "${BLUE}Selected Web Port: ${WEB_PORT}${NC}"
 
-         sed "s/{USER}/${USER}/g" "${SCRIPT_DIR}/scripts/probe-tech.service" > /tmp/probe-tech.service
+         sed "s/{USER}/${USER}/g" "${SCRIPT_DIR}/scripts/probe-tech.service" > "/tmp/${SERVICE_NAME}.service"
          # Replace PORT and DIR
-         sed -i "s|{PORT}|${WEB_PORT}|g" /tmp/probe-tech.service
-         sed -i "s|{DIR}|${WEB_DIR}|g" /tmp/probe-tech.service
+         sed -i "s|{PORT}|${WEB_PORT}|g" "/tmp/${SERVICE_NAME}.service"
+         sed -i "s|{DIR}|${WEB_DIR}|g" "/tmp/${SERVICE_NAME}.service"
          
-         sudo mv /tmp/probe-tech.service "/etc/systemd/system/probe-tech.service"
+         # Sanity check: ensure Description is unique slightly
+         sed -i "s|Probe Tech Control Web Interface|PTC Web Interface (${inst_name:-default})|g" "/tmp/${SERVICE_NAME}.service"
+         
+         sudo mv "/tmp/${SERVICE_NAME}.service" "/etc/systemd/system/${SERVICE_NAME}.service"
          sudo systemctl daemon-reload
-         sudo systemctl enable probe-tech.service
-         sudo systemctl start probe-tech.service
-         echo -e "${GREEN}✓ Service Started on Port ${WEB_PORT}${NC}"
+         sudo systemctl enable "${SERVICE_NAME}.service"
+         sudo systemctl start "${SERVICE_NAME}.service"
+         echo -e "${GREEN}✓ Service ${SERVICE_NAME} Started on Port ${WEB_PORT}${NC}"
     fi
 }
 
@@ -793,7 +806,8 @@ auto_install_batch() {
         create_instance "$inst"
         
         if [ -n "$CREATED_CONF_DIR" ]; then
-             install_probe_tech "$CREATED_CONF_DIR"
+             # PASS THE INSTANCE NAME to install_probe_tech
+             install_probe_tech "$CREATED_CONF_DIR" "$inst"
              echo -e "${GREEN}✓ $inst Ready${NC}"
         else
              echo -e "${RED}Failed to create $inst${NC}"

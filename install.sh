@@ -404,8 +404,27 @@ install_probe_tech() {
         fi
         
         # Unzip
-        unzip -o -q "${SCRIPT_DIR}/probe-tech-control.zip" -d "$WEB_DIR"
-        
+    unzip -o -q "${SCRIPT_DIR}/probe-tech-control.zip" -d "${WEB_DIR}"
+    
+    # Patch config.json for Moonraker Port
+    # Default 7125. If inst_name is printer_2, port should be 7126 etc. 
+    # BUT, simpler is to just pass the port or guess it?
+    # For now, let's just attempt to align with klipper defaults.
+    # Actually, the batch installer created moonraker on 7125 + count.
+    
+    # Let's verify if we can detect the port from moonraker.conf in the target dir?
+    # We passed target_dir ($1). 
+    MOONRAKER_CONF="${target_dir}/config/moonraker.conf"
+    if [ -f "$MOONRAKER_CONF" ]; then
+         DETECTED_PORT=$(grep "port:" "$MOONRAKER_CONF" | awk '{print $2}')
+         if [ -n "$DETECTED_PORT" ]; then
+             echo -e "${GOLD}Configuring Web Interface for Port ${DETECTED_PORT}...${NC}"
+             sed -i "s/\"port\": 7125/\"port\": ${DETECTED_PORT}/" "${WEB_DIR}/config.json"
+         fi
+    fi
+    
+    # Start Server
+    cp "${SCRIPT_DIR}/spa_server.py" "${WEB_DIR}/"
         # Check if unzip succeeded
         if [ -f "${WEB_DIR}/index.html" ]; then
              echo -e "${GREEN}✓ Web Interface Installed to ${WEB_DIR}${NC}"

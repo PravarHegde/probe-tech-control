@@ -455,7 +455,8 @@ install_probe_tech() {
         fi
 
         if ! grep -q "\[update_manager probe_tech\]" "$MOONRAKER_CONF"; then
-             if [ -d "$WEB_DIR" ]; then
+             # Only add update_manager if it's a git repo, otherwise moonraker complains
+             if [ -d "${WEB_DIR}/.git" ]; then
                  cat <<EOF >> "$MOONRAKER_CONF"
 
 [update_manager probe_tech]

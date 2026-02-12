@@ -53,18 +53,36 @@ In your Mac terminal:
 
 ---
 
-## 🤖 Android Setup (Octo4a / Termux)
+## 🤖 Android Setup (Old Smartphones)
 
-You can repurpose an old Android phone as a Klipper host for PTC.
+Repurposing an old Android phone is one of the most cost-effective ways to run Klipper and PTC.
 
-### 1. Recommended: Octo4a + Klipper Extension
-- **Pros**: Handles USB-OTG connectivity automatically; no root needed.
-- **Setup**: Install [Octo4a](https://github.com/feelfreelinux/octo4a), enabling the Klipper extension.
-- **Connection**: In PTC, connect to the IP of your phone on port 7125.
+### 1. Hardware Requirements
+- **USB OTG Adapter**: To connect the phone to the printer's USB cable.
+- **Power Y-Cable**: Highly recommended. This allows you to charge the phone while it's connected to the printer.
+- **Android Version**: 5.0 (Lollipop) or higher.
 
-### 2. Advanced: Termux (Proot Debian)
-- Setup a full Linux environment using **KIAUH** inside Termux. 
-- Best for users who want a native Linux experience on Android.
+### 2. Method A: Octo4a (Easiest)
+[Octo4a](https://github.com/feelfreelinux/octo4a) is an all-in-one app that handles the Linux environment and USB drivers.
+1. Install the **Octo4a APK** on your phone.
+2. Open Octo4a and go to **Extensions**.
+3. Install the **Klipper Extension**.
+4. In the Klipper settings inside Octo4a, ensure the serial port is set to `/dev/ttyOcto4a`.
+5. Note the **IP Address** shown on the Octo4a screen.
+
+### 3. Method B: Termux (Advanced)
+For users comfortable with the command line.
+1. Install **Termux** from F-Droid.
+2. Use a script like [KIAUH](https://github.com/dw-0/kiauh) inside a `proot` Debian environment to install Klipper and Moonraker.
+
+---
+
+### 4. Connecting PTC to your Phone
+Once Klipper/Moonraker is running on your phone:
+1. Open Probe Tech Control on your PC/Tablet.
+2. Go to **Settings > Connectivity**.
+3. Enter your phone's IP address (e.g., `192.168.1.50`) and port `7125`.
+4. Your old phone is now the "brain" of your printer!
 
 ---
 

@@ -64,6 +64,32 @@ max_accel: 3000
 EOF
 fi
 
+# Check if moonraker.conf exists, if not create a placeholder
+if [ ! -f "./printer_data/config/moonraker.conf" ]; then
+    echo -e "${GOLD}Creating default moonraker.conf...${NC}"
+    cat <<EOF > "./printer_data/config/moonraker.conf"
+[server]
+host: 0.0.0.0
+port: 7125
+klippy_uds_address: /opt/printer_data/comms/klippy.sock
+
+[authorization]
+cors_domains:
+    *
+trusted_clients:
+    127.0.0.1
+    10.0.0.0/8
+    127.0.0.0/8
+    169.254.0.0/16
+    172.16.0.0/12
+    192.168.0.0/16
+    FE80::/10
+    ::1/128
+
+[update_manager]
+EOF
+fi
+
 # Permissions check
 echo -e "${BLUE}Checking user permissions for serial access...${NC}"
 if ! groups $USER | grep &>/dev/null "dialout"; then

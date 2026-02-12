@@ -75,3 +75,15 @@ The fastest way to deploy Probe Tech Control in a container:
     *This will automatically check for Docker, build the image, and start the containers.*
 
 3.  Access the interface at `http://localhost:8080`.
+
+### Management
+After installation, you can manage the entire stack (UI, Klipper, Moonraker) using the **Docker Manager**:
+```bash
+./docker-manager.sh
+```
+**Features:**
+- **Service Control**: Restart, Stop, or Start all/individual containers.
+- **Log Viewer**: Live logs for debugging.
+- **Config Editor**: Edit `printer.cfg` and `moonraker.conf`.
+- **System Control**: Reboot or Shutdown the host machine.
+- **Auto-Fix**: Automatically re-initialize directories and permissions.

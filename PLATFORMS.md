@@ -58,6 +58,29 @@ In your Mac terminal:
 
 ---
 
-## ⚠️ Important Considerations
-- **Serial Paths**: On Windows/Mac, the printer might show up as `/dev/ttyUSB0` or `/dev/ttyACM0` inside the container once attached. Ensure your `printer.cfg` matches this.
-- **Performance**: Docker on Windows/Mac runs inside a Virtual Machine. Performance is slightly lower than native Linux but more than sufficient for 3D printing.
+## 🤖 Android Setup (Octo4a / Termux)
+
+You can repurpose an old Android phone as a Klipper host for PTC.
+
+### 1. Recommended: Octo4a + Klipper Extension
+- **Pros**: Handles USB-OTG connectivity automatically; no root needed.
+- **Setup**: Install [Octo4a](https://github.com/feelfreelinux/octo4a), enabling the Klipper extension.
+- **Connection**: In PTC, connect to the IP of your phone on port 7125.
+
+### 2. Advanced: Termux (Proot Debian)
+- Setup a full Linux environment using **KIAUH** inside Termux. 
+- Best for users who want a native Linux experience on Android.
+
+---
+
+## ⚖️ PTC vs. OctoPrint
+
+| Feature | Probe Tech Control (PTC) | OctoPrint |
+| :--- | :--- | :--- |
+| **Engine** | Klipper + Moonraker | OctoPrint Core |
+| **UI Type** | Modern, SPA, Lightweight | Plugin-based, Traditional |
+| **Resource Usage**| Very Low (Docker Optimized) | Moderate to High |
+| **Windows Support**| WSL2 + Docker | Native Python or Docker |
+| **Android** | Via Termux or Octo4a | Native via Octo4a |
+
+**Summary**: PTC provides a faster, more modern interface for Klipper users compared to the heavier plugin architecture of OctoPrint.

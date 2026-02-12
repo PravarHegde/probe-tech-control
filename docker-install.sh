@@ -25,6 +25,11 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
+# Ensure Docker starts on boot
+echo -e "${BLUE}Ensuring Docker starts on boot...${NC}"
+sudo systemctl enable docker &> /dev/null
+sudo systemctl start docker &> /dev/null
+
 # Check for Docker Compose
 if ! docker compose version &> /dev/null; then
     echo -e "${RED}Docker Compose V2 not found!${NC}"

@@ -60,6 +60,9 @@ The web interface configuration is stored in `config.json` inside the web root. 
 
 ## Option 3: Docker Installation (Automated)
 
+> [!NOTE]
+> This method is fully supported on **Linux**. For **Windows** or **macOS**, please see our [Multi-Platform Guide](PLATFORMS.md) for USB passthrough instructions.
+
 The fastest way to deploy Probe Tech Control in a container:
 
 1.  Clone the repository:

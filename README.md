@@ -61,6 +61,10 @@ Manage and troubleshoot your stack with our advanced **Docker Manager**:
 cd ptc && ./docker-manager.sh
 ```
 *(Includes: Service Control, Log Viewer, Config Editor, Container Shells, System Reboot/Shutdown, and Auto-Fix)*
+
+> [!TIP]
+> **Windows/Mac User?** Check our [Platform Guide](PLATFORMS.md) for USB/Serial setup instructions.
+
 👉 **[Docker Installation Guide](INSTALL.md#option-3-docker-installation-automated)**
 
 **B) Manual Fresh Start (Developer):**

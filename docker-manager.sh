@@ -53,9 +53,9 @@ menu_services() {
     while true; do
         clear
         print_box "SERVICE CONTROL" "${BLUE}"
-        echo "1) Restart All"
-        echo "2) Stop All"
-        echo "3) Start All"
+        echo "1) Restart All Containers"
+        echo "2) Stop All Containers"
+        echo "3) Start All Containers"
         echo "4) Restart Individual Container"
         echo "5) Back"
         echo ""
@@ -72,6 +72,29 @@ menu_services() {
                 [ "$sc" == "3" ] && docker compose restart klipper
                 ;;
             5) return ;;
+        esac
+    done
+}
+
+menu_system() {
+    while true; do
+        clear
+        print_box "SYSTEM CONTROL" "${RED}"
+        echo "1) Restart Host System (Reboot)"
+        echo "2) Shutdown Host System"
+        echo "3) Back"
+        echo ""
+        read -p "Select: " c < /dev/tty
+        case $c in
+            1) 
+                echo -e "${RED}System will reboot now!${NC}"
+                sudo reboot
+                ;;
+            2) 
+                echo -e "${RED}System will shutdown now!${NC}"
+                sudo shutdown -h now
+                ;;
+            3) return ;;
         esac
     done
 }
@@ -98,6 +121,34 @@ menu_config() {
     done
 }
 
+menu_network() {
+    clear
+    print_box "WIFI & NETWORK INFO" "${MAGENTA}"
+    local ip=$(get_ip)
+    echo -e "System IP: ${GOLD}${ip}${NC}"
+    echo ""
+    echo -e "${BLUE}--- Network Interfaces ---${NC}"
+    ip -4 addr show | grep -E "inet|mtu" | grep -v "127.0.0.1"
+    echo ""
+    if command -v nmtui &> /dev/null; then
+        echo "Launch WiFi Config (nmtui)? (y/n)"
+        read -p "> " n < /dev/tty
+        [[ "$n" == "y" ]] && sudo nmtui
+    fi
+    read -p "Press Enter to return..." < /dev/tty
+}
+
+repair_stack() {
+    print_box "AUTO-FIX / REPAIR" "${GOLD}"
+    echo -e "${SILVER}Re-initializing directories and permissions...${NC}"
+    mkdir -p ./printer_data/config ./printer_data/logs ./printer_data/comms
+    sudo usermod -aG dialout $USER
+    echo -e "${BLUE}Restarting containers...${NC}"
+    docker compose up -d
+    echo -e "${GREEN}✓ Repair attempts complete.${NC}"
+    read -p "Press Enter..." < /dev/tty
+}
+
 update_stack() {
     print_box "UPDATING STACK" "${CYAN}"
     echo -e "${GOLD}Pulling latest changes and rebuilding...${NC}"
@@ -118,7 +169,10 @@ while true; do
     echo "3) Edit Configuration Files"
     echo "4) Update Stack (Git Pull + Rebuild)"
     echo "5) Shell Access (Terminal in Container)"
-    echo "6) Exit"
+    echo "6) WiFi & Network Info"
+    echo "7) Auto-Fix / Repair"
+    echo "8) System Control (Reboot / Shutdown)"
+    echo "9) Exit"
     echo ""
     read -p "Select option: " main_c < /dev/tty
     
@@ -133,7 +187,10 @@ while true; do
             [ "$asel" == "1" ] && docker compose exec moonraker /bin/sh
             [ "$asel" == "2" ] && docker compose exec klipper /bin/sh
             ;;
-        6) exit 0 ;;
+        6) menu_network ;;
+        7) repair_stack ;;
+        8) menu_system ;;
+        9) exit 0 ;;
         *) ;;
     esac
 done

@@ -1,39 +1,23 @@
 #
-# Builder stage, builds the application in node
-#
-FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
-
-RUN apk add zip
-
-WORKDIR /app
-COPY package*.json /app/
-
-RUN npm ci
-
-COPY ./ /app/
-
-RUN npm run build
-
-# set port to >1024 port for non root running
-RUN sed 's/80/8080/g' .docker/nginx.conf > .docker/nginx.conf.unprivileged
-
-#
-# Unprivileged runner stage, runs the application in nginx
-#
-FROM nginxinc/nginx-unprivileged:stable-alpine AS unprivileged
-
-USER root
-RUN rm -rf /usr/share/nginx/html/*
-COPY --link --from=builder /app/.docker/nginx.conf.unprivileged  /etc/nginx/conf.d/default.conf
-COPY --link --from=builder /app/dist/ /usr/share/nginx/html/
-USER nginx
-
-#
-# Runner stage, runs the application in nginx
+# Ultra-lightweight runner stage, pulls pre-built artifacts
+# using a single-stage nginx build
 #
 FROM nginx:stable-alpine AS runner
 
-RUN rm -rf /usr/share/nginx/html/*
-COPY --from=builder /app/.docker/nginx.conf  /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist/ /usr/share/nginx/html/
-COPY --chmod=755 --from=builder /app/.docker/00-remove-ipv6-if-unavailable.sh /docker-entrypoint.d/
+# Install curl and unzip to handle artifacts
+RUN apk add --no-cache curl unzip
+
+WORKDIR /usr/share/nginx/html
+
+# Download the latest pre-built zip from GitHub
+# We use the 'develop' branch artifact as established in install.sh
+RUN curl -L https://github.com/PravarHegde/probe-tech-control/raw/develop/probe-tech-control.zip -o ptc.zip && \
+    unzip -o ptc.zip && \
+    rm ptc.zip
+
+# Copy nginx config from the repo (assumed to be in .docker/)
+COPY .docker/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Metadata
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

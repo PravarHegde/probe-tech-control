@@ -1,8 +1,34 @@
 services:
   probe-tech-control:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:80"
+    restart: always
+    depends_on:
+      - moonraker
+
+  moonraker:
+    image: mkuf/moonraker:latest
+    volumes:
+      - ./printer_data/config:/opt/printer_data/config
+      - ./printer_data/logs:/opt/printer_data/logs
+      - ./printer_data/comms:/opt/printer_data/comms
+      # Pass through host system stats for load/temperature monitoring
+      - /proc:/proc:ro
+      - /sys:/sys:ro
+      - /etc/os-release:/etc/os-release:ro
+    restart: always
+    depends_on:
+      - klipper
+
+  klipper:
+    image: mkuf/klipper:latest
+    privileged: true
+    volumes:
+      - ./printer_data/config:/opt/printer_data/config
+      - ./printer_data/logs:/opt/printer_data/logs
+      - ./printer_data/comms:/opt/printer_data/comms
+      - /dev:/dev
     restart: always

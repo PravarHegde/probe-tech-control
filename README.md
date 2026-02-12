@@ -56,7 +56,11 @@ Prefer containerization? Use our automated Docker installer:
 ```bash
 git clone https://github.com/PravarHegde/probe-tech-control ptc && cd ptc && chmod +x docker-install.sh && ./docker-install.sh
 ```
-👉 **[Docker Installation Guide](INSTALL.md#option-3-docker-installation-experimental)**
+Manage your stack with our advanced **Docker Manager**:
+```bash
+./docker-manager.sh
+```
+👉 **[Docker Installation Guide](INSTALL.md#option-3-docker-installation-automated)**
 
 **B) Manual Fresh Start (Developer):**
 ```bash

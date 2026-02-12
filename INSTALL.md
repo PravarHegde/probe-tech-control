@@ -57,3 +57,21 @@ We provide a lightweight Python web server service for PTC.
 ## Configuration
 
 The web interface configuration is stored in `config.json` inside the web root. By default, it looks for Moonraker on **port 7125**.
+
+## Option 3: Docker Installation (Automated)
+
+The fastest way to deploy Probe Tech Control in a container:
+
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/PravarHegde/probe-tech-control ptc
+    cd ptc
+    ```
+2.  Run the automated Docker installer:
+    ```bash
+    chmod +x docker-install.sh
+    ./docker-install.sh
+    ```
+    *This will automatically check for Docker, build the image, and start the containers.*
+
+3.  Access the interface at `http://localhost:8080`.

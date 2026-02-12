@@ -4,6 +4,12 @@
     <h1 align="center">Probe Tech Control</h1>
   </a>
 </p>
+
+<p align="center">
+  <a href="#option-4-docker-installation">
+    <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
+  </a>
+</p>
 <p align="center">
   A lightweight, responsive web user interface for Klipper, designed for high-performance 3D printer control and monitoring.
 </p>
@@ -44,6 +50,13 @@ If you have a broken installation and want to start fresh:
 ```bash
 cd ~ && rm -rf ptc ptc_installer probe-tech-control && wget -O - https://raw.githubusercontent.com/PravarHegde/probe-tech-control/master/probetech.sh | bash
 ```
+
+### Option 4: Docker Installation (Automated)
+Prefer containerization? Use our automated Docker installer:
+```bash
+git clone https://github.com/PravarHegde/probe-tech-control ptc && cd ptc && chmod +x docker-install.sh && ./docker-install.sh
+```
+👉 **[Docker Installation Guide](INSTALL.md#option-3-docker-installation-experimental)**
 
 **B) Manual Fresh Start (Developer):**
 ```bash

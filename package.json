@@ -9,7 +9,7 @@
     },
     "scripts": {
         "serve": "vite serve",
-        "build": "NODE_OPTIONS=--max-old-space-size=2048 vite build && npm run build.zip",
+        "build": "NODE_OPTIONS=--max-old-space-size=1536 vite build && npm run build.zip",
         "format": "npm run format:base -- --write",
         "format:base": "prettier .",
         "format:check": "npm run format:base -- --check",

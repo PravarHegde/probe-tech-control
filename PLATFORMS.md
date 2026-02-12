@@ -1,16 +1,11 @@
-# Multi-Platform Support - Windows & macOS
-
-While Probe Tech Control runs on **Windows** and **macOS** via Docker, the primary challenge is **USB Passthrough** (allowing the Klipper container to talk to your physical 3D printer).
-
----
-
 ## 🪟 Windows Setup (WSL2)
 
-Windows doesn't natively expose USB ports to Docker. Use **usbipd-win** to share your printer.
+Windows doesn't natively expose USB ports to Docker. The "magic helper" tool you need is **usbipd-win**.
 
-### 1. Prerequisites
-- **Docker Desktop** (configured with WSL2 Backend).
-- **Git Bash** or **Ubuntu (WSL2)** from the Microsoft Store.
+### 1. The "Seamless" Helper: usbipd-win
+This is the essential plugin/tool that bridges your Windows USB port to the Linux/Docker environment.
+- **Download**: [usbipd-win Releases](https://github.com/dorssel/usbipd-win/releases)
+- **Install**: Run the `.msi` or use `winget install dorssel.usbipd-win`.
 
 ### 2. USB Passthrough
 1. Install [usbipd-win](https://github.com/dorssel/usbipd-win).

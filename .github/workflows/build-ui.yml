@@ -1,0 +1,38 @@
+name: Build and Release UI
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Trigger when pushing tags like v1.0.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # IMPORTANT: If your Vue UI source code is located in a specific folder (e.g., 'ui/'),
+      # change the 'working-directory' for the npm steps.
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Web UI
+        run: npm run build
+
+      - name: Zip Build Output
+        # Assuming the build output folder is 'dist' or 'probe-tech-control'
+        run: zip -r probe-tech-control.zip dist/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: probe-tech-control.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

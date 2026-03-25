@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  klipper:
+    image: mk-klipper:latest # Base image, replace with specific image as needed
+    container_name: klipper
+    privileged: true
+    network_mode: host
+    volumes:
+      - ./scripts/probe_tech.cfg:/home/klippy/printer_data/config/probe_tech.cfg:ro
+      - /dev:/dev
+    restart: unless-stopped
+
+  moonraker:
+    image: mk-moonraker:latest # Base image
+    container_name: moonraker
+    network_mode: host
+    volumes:
+      - ./scripts/moonraker_test.conf:/home/moonraker/printer_data/config/moonraker.conf
+      - ./probe-tech-control:/home/moonraker/probe-tech-control
+    depends_on:
+      - klipper
+    restart: unless-stopped

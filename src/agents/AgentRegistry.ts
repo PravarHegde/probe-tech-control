@@ -25,6 +25,11 @@ class AgentRegistry {
         // 1. Register Core (Always available, invisible in list)
         this.installedAgents.set(this.coreAgent.id, this.coreAgent)
 
+        // 1.5 Register Built-In MK1 Agent Exception
+        const localHost = window.location.hostname
+        const mk1Agent = new CustomAgent('mk1-builtin', 'Built-in MK1 Agent', `http://${localHost}:8255`)
+        this.installedAgents.set(mk1Agent.id, mk1Agent)
+
         // 2. Define Marketplace Templates
         const templates = [
             new BasicAgent(),

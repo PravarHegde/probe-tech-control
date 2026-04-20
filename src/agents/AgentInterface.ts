@@ -7,6 +7,7 @@ export interface Agent {
     id: string
     name: string
     description: string
+    url?: string
 
     // The core processing method
     // Returns a Promise that resolves to the response string

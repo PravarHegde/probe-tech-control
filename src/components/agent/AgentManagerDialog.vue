@@ -6,10 +6,11 @@
                 Manage AI Agents
             </v-card-title>
             
-            <v-tabs v-model="tab" background-color="transparent" grow>
+            <v-tabs v-model="tab" background-color="transparent" show-arrows centered>
                 <v-tab>Installed</v-tab>
                 <v-tab>Marketplace</v-tab>
                 <v-tab>Custom Link</v-tab>
+                <v-tab>Global Settings</v-tab>
             </v-tabs>
 
             <v-card-text class="pt-4">
@@ -65,6 +66,19 @@
                                 </v-list-item-action>
                             </v-list-item>
                         </v-list>
+                        
+                        <v-divider class="my-4"></v-divider>
+                        
+                        <div class="px-3">
+                            <div class="subtitle-1 font-weight-bold mb-2">Local Model Hub (Ollama)</div>
+                            <div class="d-flex align-center mb-2">
+                                <v-text-field v-model="pendingModel" label="Model Name (e.g. llama3)" dense outlined hide-details class="mr-2"></v-text-field>
+                                <v-btn color="secondary" :loading="downloading" @click="downloadModel">
+                                    <v-icon left>mdi-cloud-download</v-icon> Pull
+                                </v-btn>
+                            </div>
+                            <div class="caption grey--text mb-4">Streams model directly to local hardware. Target active agent must be MK1 for proxy bridging.</div>
+                        </div>
                     </v-tab-item>
 
                     <!-- Tab 3: Custom Link -->
@@ -72,9 +86,31 @@
                         <div class="px-2 pt-4">
                             <div class="subtitle-2 mb-2">Connect to a generic HTTP Agent</div>
                             <v-text-field v-model="newName" label="Agent Name" dense outlined hide-details class="mb-2"></v-text-field>
-                            <v-text-field v-model="newUrl" label="API URL" dense outlined hide-details placeholder="https://..." class="mb-2"></v-text-field>
-                            <v-btn block color="secondary" :disabled="!isValid" @click="addCustomAgent">
+                            <v-text-field v-model="newUrl" label="API URL" dense outlined hide-details placeholder="http://..." class="mb-4"></v-text-field>
+                            <v-btn block color="secondary" :disabled="!isValid" :loading="adding" @click="addCustomAgent">
                                 <v-icon left>mdi-link-plus</v-icon> Add Agent
+                            </v-btn>
+                        </div>
+                    </v-tab-item>
+
+                    <!-- Tab 4: Models & APIs -->
+                    <v-tab-item>
+                        <div class="px-3 pt-4 pb-2" style="max-height: 400px; overflow-y: auto;">
+                            <div class="subtitle-1 font-weight-bold mb-2">Cloud AI API</div>
+                            <v-select v-model="settingsProvider" :items="['openai', 'gemini']" label="AI Provider" dense outlined hide-details class="mb-2"></v-select>
+                            <v-text-field v-model="settingsApiKey" label="API Key" type="password" dense outlined hide-details class="mb-4"></v-text-field>
+
+                            <v-divider class="mb-4"></v-divider>
+
+                            <div class="subtitle-1 font-weight-bold mb-2">Advanced Context</div>
+                            <v-switch v-model="settingsMcp" label="Enable MCP Server (Tools)" dense hide-details class="mb-4"></v-switch>
+
+                            <v-divider class="mb-4"></v-divider>
+
+
+
+                            <v-btn block color="primary" class="mt-2" :loading="savingSettings" @click="saveGlobalSettings">
+                                Save Configuration
                             </v-btn>
                         </div>
                     </v-tab-item>
@@ -112,6 +148,14 @@ export default class AgentManagerDialog extends Vue {
     
     newName = ''
     newUrl = ''
+    adding = false
+    
+    settingsProvider = 'openai'
+    settingsApiKey = ''
+    settingsMcp = false
+    pendingModel = ''
+    downloading = false
+    savingSettings = false
     
     @Watch('value')
     onOpen(val: boolean) {
@@ -157,13 +201,59 @@ export default class AgentManagerDialog extends Vue {
         return this.newName.trim().length > 0 && this.newUrl.trim().length > 0
     }
     
-    addCustomAgent() {
+    async addCustomAgent() {
         if (!this.isValid) return
+        this.adding = true
+
         agentRegistry.addCustomAgent(this.newName, this.newUrl)
         this.newName = ''
         this.newUrl = ''
+        this.adding = false
         this.refresh()
         this.tab = 0
+    }
+
+    get activeAgentUrl() {
+        const agent = agentRegistry.getActiveAgent()
+        return agent && agent.url ? agent.url.replace(/\/$/, "") : 'http://192.168.1.15:8255'
+    }
+
+    async saveGlobalSettings() {
+        this.savingSettings = true
+        try {
+            await fetch(`${this.activeAgentUrl}/api/config`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    mcp_enabled: this.settingsMcp,
+                    ai_api_key: this.settingsApiKey || null,
+                    ai_provider: this.settingsProvider
+                })
+            })
+            alert("Configuration forcefully synced to backend!")
+        } catch (e) {
+            console.error("Failed configuration push", e)
+            alert("Failed to contact backend. Make sure MK1 is running!")
+        }
+        this.savingSettings = false
+    }
+
+    async downloadModel() {
+        if (!this.pendingModel) return
+        this.downloading = true
+        try {
+            await fetch(`${this.activeAgentUrl}/api/models/pull`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: this.pendingModel })
+            })
+            alert("Local Hardware Model Download Sequence Initiated!")
+            this.pendingModel = ''
+        } catch (e) {
+            console.error(e)
+            alert("Ollama bridging failed.")
+        }
+        this.downloading = false
     }
 }
 </script>

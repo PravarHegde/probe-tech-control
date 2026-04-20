@@ -121,13 +121,7 @@ export default class AgentDashboard extends Vue {
     mdiCheckCircleOutline = mdiCheckCircleOutline
     
     newMessage = ''
-    messages = [
-        {
-            id: 1,
-            text: 'Hello! I am your intelligent print agent. I can help you check status, temperatures, or control the printer.',
-            sender: 'ai',
-        },
-    ]
+    messages: any[] = []
     
     showManager = false
     activeAgentName = ''
@@ -136,6 +130,16 @@ export default class AgentDashboard extends Vue {
     
     created() {
         this.updateAgentInfo()
+        const agent = agentRegistry.getActiveAgent()
+        const ipString = agent.url ? `\nMCP Server Target: ${agent.url}` : ''
+        
+        this.messages = [
+            {
+                id: Date.now(),
+                text: `System: Automatically loaded ${this.activeAgentName}${ipString}`,
+                sender: 'ai',
+            }
+        ]
     }
     
     updateAgentInfo() {
@@ -146,9 +150,12 @@ export default class AgentDashboard extends Vue {
     
     onAgentChanged() {
         this.updateAgentInfo()
+        const agent = agentRegistry.getActiveAgent()
+        const ipString = agent.url ? `\nMCP Server Target: ${agent.url}` : ''
+        
         this.messages.push({
             id: Date.now(),
-            text: `System: Switched to ${this.activeAgentName}`,
+            text: `System: Switched to ${this.activeAgentName}${ipString}`,
             sender: 'ai'
         })
     }

@@ -1,5 +1,7 @@
 requests
 openai
+google-genai
 fastapi
 uvicorn
 apscheduler
+mcp

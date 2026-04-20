@@ -4,6 +4,86 @@ import { CustomAgent } from './CustomAgent'
 import { CloudAgent } from './CloudAgent'
 import { LocalLLMAgent } from './LocalLLMAgent'
 
+class LlamaAgent implements Agent {
+    id = 'llama-local'
+    name = 'Llama 3 Local'
+    description = 'High-performance general reasoning model'
+    async process(input: string, context: any): Promise<string> {
+        try {
+            const url = `http://${window.location.hostname}:8255/api/chat/local`
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ model: 'llama3', prompt: input })
+            })
+            const data = await res.json()
+            return data.response
+        } catch(e) {
+            return "Llama is initializing offline mode. Hardware daemon proxy unavailable."
+        }
+    }
+}
+
+class GemmaAgent implements Agent {
+    id = 'gemma-local'
+    name = 'Gemma Local'
+    description = 'Lightweight, highly-efficient embedded AI'
+    async process(input: string, context: any): Promise<string> {
+        try {
+            const url = `http://${window.location.hostname}:8255/api/chat/local`
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ model: 'gemma:2b', prompt: input })
+            })
+            const data = await res.json()
+            return data.response
+        } catch(e) {
+            return "Gemma is initializing offline mode. Hardware daemon proxy unavailable."
+        }
+    }
+}
+
+class ProBharathGemmaAgent implements Agent {
+    id = 'gemma-probharath'
+    name = 'ProBharath Industrial Gemma'
+    description = 'Custom trained text briefing for manufacturing (Farm-Grade)'
+    async process(input: string, context: any): Promise<string> {
+        try {
+            const url = `http://${window.location.hostname}:8255/api/chat/local`
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ model: 'probharath-gemma', prompt: input })
+            })
+            const data = await res.json()
+            return data.response
+        } catch(e) {
+            return "Hardware daemon proxy unavailable."
+        }
+    }
+}
+
+class TinyLlamaAgent implements Agent {
+    id = 'tinyllama-probharath'
+    name = 'ProBharath TinyLlama (Pi Edition)'
+    description = 'Highly compressed 600MB model for Raspberry Pi & Android'
+    async process(input: string, context: any): Promise<string> {
+        try {
+            const url = `http://${window.location.hostname}:8255/api/chat/local`
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ model: 'probharath-lite', prompt: input })
+            })
+            const data = await res.json()
+            return data.response
+        } catch(e) {
+            return "Hardware daemon proxy unavailable."
+        }
+    }
+}
+
 class CoreAgent implements Agent {
     id = 'core-agent'
     name = 'Core System'
@@ -34,7 +114,10 @@ class AgentRegistry {
         const templates = [
             new BasicAgent(),
             new CloudAgent(),
-            new LocalLLMAgent()
+            new LlamaAgent(),
+            new GemmaAgent(),
+            new ProBharathGemmaAgent(),
+            new TinyLlamaAgent()
         ]
         templates.forEach(t => this.availableTemplates.set(t.id, t))
 

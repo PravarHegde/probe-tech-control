@@ -26,6 +26,15 @@
                                 </div>
                                 <v-avatar v-if="msg.sender === 'user'" size="32" color="grey darken-3" class="ml-2">Me</v-avatar>
                             </div>
+                            
+                            <!-- AI Typing Indicator -->
+                            <div v-if="processing" class="d-flex mb-2">
+                                <v-avatar size="32" color="primary" class="mr-2">AI</v-avatar>
+                                <div class="pa-2 rounded-lg glass-card d-flex align-center">
+                                    <v-progress-circular indeterminate color="primary" size="20" width="2" class="mr-2"></v-progress-circular>
+                                    <span class="grey--text subtitle-2">AI is processing locally...</span>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Quick Actions -->

@@ -184,7 +184,25 @@ export default class AgentManagerDialog extends Vue {
         this.$emit('agent-changed')
     }
     
-    install(id: string) {
+    async install(id: string) {
+        if (id === 'llama-local' || id === 'gemma-local') {
+            this.downloading = true
+            const targetModel = id === 'llama-local' ? 'llama3' : 'gemma:2b'
+            try {
+                // Trigger the live Ollama proxy pull
+                await fetch(`${this.activeAgentUrl}/api/models/pull`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: targetModel })
+                })
+                alert(`Successfully pulled ${targetModel} natively into hardware via Ollama!`)
+            } catch (e) {
+                console.error("Local hardware pull failed:", e)
+                alert("Native Ollama pull failed. Check connection.")
+            }
+            this.downloading = false
+        }
+        
         agentRegistry.install(id)
         this.refresh()
         // Switch to Installed tab to show it's there

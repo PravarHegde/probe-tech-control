@@ -54,49 +54,49 @@ export default class ProbharathBoardsPanel extends Mixins(BaseMixin) {
                 name: 'Probharath Auro O Standard',
                 description: 'Ultra-budget model with standalone drivers, I2C display, and encoder support.',
                 icon: mdiPrinter3d,
-                downloadLink: '/Machine configs/probharath_machines/Auro_O/Standard/printer.cfg',
+                downloadLink: 'https://raw.githubusercontent.com/PravarHegde/probe-tech-control/machine_configs_O/public/Machine%20configs/probharath_machines/Auro_O/Standard/printer.cfg',
                 filename: 'printer.cfg'
             },
             {
                 name: 'Probharath Auro O Pure',
                 description: 'Single-nozzle model with 100% Dedicated UART pins for maximum bandwidth.',
                 icon: mdiPrinter3d,
-                downloadLink: '/Machine configs/probharath_machines/Auro_O/Pure/printer.cfg',
+                downloadLink: 'https://raw.githubusercontent.com/PravarHegde/probe-tech-control/machine_configs_O/public/Machine%20configs/probharath_machines/Auro_O/Pure/printer.cfg',
                 filename: 'printer.cfg'
             },
             {
                 name: 'Probharath Auro O Pro',
                 description: 'Maximum performance dual-nozzle IDEX capable model.',
                 icon: mdiPrinter3d,
-                downloadLink: '/Machine configs/probharath_machines/Auro_O/Pro/printer.cfg',
+                downloadLink: 'https://raw.githubusercontent.com/PravarHegde/probe-tech-control/machine_configs_O/public/Machine%20configs/probharath_machines/Auro_O/Pro/printer.cfg',
                 filename: 'printer.cfg'
             },
             {
                 name: 'Probharath Elite O',
                 description: 'Premium 3D printer board with high-end features and TMC2209s.',
                 icon: mdiStar,
-                downloadLink: '/Machine configs/probharath_machines/probharath_elite_o.cfg',
+                downloadLink: 'https://raw.githubusercontent.com/PravarHegde/probe-tech-control/machine_configs_O/public/Machine%20configs/probharath_machines/probharath_elite_o.cfg',
                 filename: 'probharath_elite_o.cfg'
             },
             {
                 name: 'Probharath Titan CNC O (Lathe)',
                 description: 'Heavy duty controller for 2-Axis Lathe with Spindle PWM.',
                 icon: mdiCogs,
-                downloadLink: '/Machine configs/probharath_machines/Titan_CNC_O/2_Axis_Lathe/printer.cfg',
+                downloadLink: 'https://raw.githubusercontent.com/PravarHegde/probe-tech-control/machine_configs_O/public/Machine%20configs/probharath_machines/Titan_CNC_O/2_Axis_Lathe/printer.cfg',
                 filename: 'printer.cfg'
             },
             {
                 name: 'Probharath Titan CNC O (3-Axis VFD)',
                 description: 'Heavy duty controller for 3-Axis CNC Router with high-frequency VFD Spindle control.',
                 icon: mdiCogs,
-                downloadLink: '/Machine configs/probharath_machines/Titan_CNC_O/3_Axis_CNC_VFD/printer.cfg',
+                downloadLink: 'https://raw.githubusercontent.com/PravarHegde/probe-tech-control/machine_configs_O/public/Machine%20configs/probharath_machines/Titan_CNC_O/3_Axis_CNC_VFD/printer.cfg',
                 filename: 'printer.cfg'
             },
             {
                 name: 'Probharath Matrixs',
                 description: 'Advanced dual MCU CAN bus system for maximum expandability.',
                 icon: mdiServerNetwork,
-                downloadLink: '/Machine configs/probharath_machines/probharath_matrixs.cfg',
+                downloadLink: 'https://raw.githubusercontent.com/PravarHegde/probe-tech-control/machine_configs_O/public/Machine%20configs/probharath_machines/probharath_matrixs.cfg',
                 filename: 'probharath_matrixs.cfg'
             }
         ]

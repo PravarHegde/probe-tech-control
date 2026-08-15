@@ -51,15 +51,8 @@ export default class ProbharathBoardsPanel extends Mixins(BaseMixin) {
     get boards() {
         return [
             {
-                name: 'Probharath Auro O Lite',
-                description: 'Ultra-budget model with standalone drivers, I2C display, and encoder support.',
-                icon: mdiPrinter3d,
-                downloadLink: '/Machine configs/probharath_machines/Auro_O/Lite/printer.cfg',
-                filename: 'printer.cfg'
-            },
-            {
                 name: 'Probharath Auro O Standard',
-                description: 'Balanced model featuring a shared UART bus and I2C display header.',
+                description: 'Ultra-budget model with standalone drivers, I2C display, and encoder support.',
                 icon: mdiPrinter3d,
                 downloadLink: '/Machine configs/probharath_machines/Auro_O/Standard/printer.cfg',
                 filename: 'printer.cfg'
@@ -86,11 +79,18 @@ export default class ProbharathBoardsPanel extends Mixins(BaseMixin) {
                 filename: 'probharath_elite_o.cfg'
             },
             {
-                name: 'Probharath Titan CNC O',
-                description: 'Heavy duty controller for CNC and Lathe with NEMA 34 drivers.',
+                name: 'Probharath Titan CNC O (Lathe)',
+                description: 'Heavy duty controller for 2-Axis Lathe with Spindle PWM.',
                 icon: mdiCogs,
-                downloadLink: '/Machine configs/probharath_machines/probharath_titan_cnc_o.cfg',
-                filename: 'probharath_titan_cnc_o.cfg'
+                downloadLink: '/Machine configs/probharath_machines/Titan_CNC_O/2_Axis_Lathe/printer.cfg',
+                filename: 'printer.cfg'
+            },
+            {
+                name: 'Probharath Titan CNC O (3-Axis VFD)',
+                description: 'Heavy duty controller for 3-Axis CNC Router with high-frequency VFD Spindle control.',
+                icon: mdiCogs,
+                downloadLink: '/Machine configs/probharath_machines/Titan_CNC_O/3_Axis_CNC_VFD/printer.cfg',
+                filename: 'printer.cfg'
             },
             {
                 name: 'Probharath Matrixs',

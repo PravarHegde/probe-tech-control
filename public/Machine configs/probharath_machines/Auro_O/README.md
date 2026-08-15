@@ -12,7 +12,7 @@ By carefully mapping and optimizing the incredibly tight 35-pin GPIO limit of th
 
 ## The Lineup
 
-### 1. Auro O Lite (`Lite/`)
+### 1. Auro O Light (`Light/`)
 Designed for absolute cost savings. It runs all stepper drivers in standalone mode (no UART), completely freeing up the data pins so you can easily attach an I2C Display and a Rotary Encoder. 
 
 ### 2. Auro O Standard (`Standard/`)

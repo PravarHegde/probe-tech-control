@@ -22,7 +22,7 @@ Because all 4 SKUs are based on the **same physical PCB**, the traces should be 
 ## The "Flex" Pins (The Multiplexed Features)
 These pins change their hardware function depending on which of the 4 configurations the user flashes. **When designing the PCB, route these pins to jumper headers so the user can physically select the routing.**
 
-| Pin | Auro O Lite (Standalone) | Auro O Standard (Shared UART) | Auro O Pure (Dedicated UART) | Auro O Pro (Dual Nozzle) |
+| Pin | Auro O Light (Standalone) | Auro O Standard (Shared UART) | Auro O Pure (Dedicated UART) | Auro O Pro (Dual Nozzle) |
 | :--- | :--- | :--- | :--- | :--- |
 | **`PA9`** | Encoder Pin A | **Shared UART** (X, Y, Z, E0) | `E1` UART | **Shared UART** (X, Y, Z, E0) |
 | **`PB15`** | *Unused* | *Unused* | `X` UART | *Unused* |
@@ -34,6 +34,20 @@ These pins change their hardware function depending on which of the 4 configurat
 | **`PB10`**| I2C SCL (Display) | I2C SCL (Display) | `Y` Enable | I2C SCL (Display) |
 
 ---
+
+## Modular Expansion Headers
+To support user-selectable hardware upgrades (as requested for future updates), the following expansion interfaces should be broken out on the PCB using standard JST-XH or Dupont headers.
+
+| Expansion Type | Pins | Notes |
+| :--- | :--- | :--- |
+| **I2C Expansion (4-pin)** | `PB10` (SCL), `PB11` (SDA), 3.3V, GND | Used for OLED displays, I2C filament sensors. Standard on all models except Pure. <br>*(**Alternative:** Can be repurposed as `USART3` (TX/RX) for WiFi if a display is not used).* |
+| **SPI Expansion (6-pin)** | `PA5` (SCK), `PA6` (MISO), `PA7` (MOSI), `PB12` (CS), 3.3V, GND | Used for ADXL345 input shaping. (Note: Shares pins with E0/Probe, requires jumper selection). |
+| **Raw GPIO (3-pin)** | `PC15` (Signal), 5V, GND | Available if Extruder 1 is unused. Can drive WS2812 RGB LEDs or Relays. |
+| **WiFi UART (4-pin)** | `PA2` (TX), `PA3` (RX), 5V/3.3V, GND | Used for ESP8266/ESP32 WiFi modules. Available ONLY if using Sensorless Homing (which frees up the X/Y physical endstops). |
+
+---
+
+> **Note:** The Auro O is a 48-pin MCU pushed to its absolute limit. Enabling SPI or Raw GPIO expansions requires disabling the conflicting hardware feature (e.g., E0/E1) via jumper blocks.
 
 ## Heaters & Thermistors
 | Function | Pin | Notes |

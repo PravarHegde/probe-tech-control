@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <div class="d-flex align-center">
         <form @submit.prevent="setTemps">
@@ -42,6 +48,19 @@
                         <span style="padding-top: 2px">{{ preset.value }}°C</span>
                     </div>
                 </v-list-item>
+                
+                <v-divider v-if="presets && presets.length > 0"></v-divider>
+                
+                <v-list-item link style="min-height: 32px" @click="toggleLock">
+                    <div class="_preset">
+                        <v-icon small class="_preset-icon" :color="isLocked ? 'primary' : ''">
+                            {{ isLocked ? mdiLock : mdiLockOpenVariant }}
+                        </v-icon>
+                        <span style="padding-top: 2px">
+                            {{ isLocked ? 'Unlock Timeout' : `Lock (${(idleTimeoutLocked / 3600).toFixed(1)}h)` }}
+                        </span>
+                    </div>
+                </v-list-item>
             </v-list>
         </v-menu>
     </div>
@@ -52,15 +71,39 @@ import Component from 'vue-class-component'
 import { Mixins, Prop, Watch } from 'vue-property-decorator'
 import BaseMixin from '@/components/mixins/base'
 import ControlMixin from '@/components/mixins/control'
-import { mdiSnowflake, mdiFire, mdiMenuDown } from '@mdi/js'
+import { mdiSnowflake, mdiFire, mdiMenuDown, mdiLock, mdiLockOpenVariant } from '@mdi/js'
 
 @Component
 export default class TemperatureInput extends Mixins(BaseMixin, ControlMixin) {
     mdiSnowflake = mdiSnowflake
     mdiFire = mdiFire
     mdiMenuDown = mdiMenuDown
+    mdiLock = mdiLock
+    mdiLockOpenVariant = mdiLockOpenVariant
 
     private value: any = 0
+    isLocked = false
+
+    get idleTimeoutRegular(): number {
+        return this.$store.state.gui?.view?.tempchart?.idleTimeoutRegular ?? 600
+    }
+
+    get idleTimeoutLocked(): number {
+        return this.$store.state.gui?.view?.tempchart?.idleTimeoutLocked ?? 86400
+    }
+
+    toggleLock() {
+        this.isLocked = !this.isLocked
+        if (this.isLocked) {
+            const gcode = `SET_IDLE_TIMEOUT TIMEOUT=${this.idleTimeoutLocked}`
+            this.$store.dispatch('server/addEvent', { message: gcode, type: 'command' })
+            this.$socket.emit('printer.gcode.script', { script: gcode })
+        } else {
+            const gcode = `SET_IDLE_TIMEOUT TIMEOUT=${this.idleTimeoutRegular}`
+            this.$store.dispatch('server/addEvent', { message: gcode, type: 'command' })
+            this.$socket.emit('printer.gcode.script', { script: gcode })
+        }
+    }
 
     @Prop({ type: String, required: true }) declare readonly name: string
     @Prop({ type: Number, required: true, default: 0 }) declare readonly target: number

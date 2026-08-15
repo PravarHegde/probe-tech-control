@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { checkKlipperConfigModules } from '@/store/variables'
 import { GetterTree } from 'vuex'
 import {

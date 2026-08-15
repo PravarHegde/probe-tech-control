@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <div class="d-flex justify-center flex-column fullscreen-upload__dragzone" :class="dropzoneClasses" @drop="onDrop">
         <v-icon class="fullscreen-upload__icon">{{ mdiTrayArrowDown }}</v-icon>

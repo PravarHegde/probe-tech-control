@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import { DateTimeFormatOptions } from 'vue-i18n'

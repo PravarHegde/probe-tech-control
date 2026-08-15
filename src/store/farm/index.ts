@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { printer } from '@/store/farm/printer'
 import { Module } from 'vuex'
 import { FarmState } from '@/store/farm/types'

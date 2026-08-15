@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <div>
         <h3 class="text-h5 mb-3 mt-5">{{ $t('Panels.MmuPanel.MmuMaintenanceDialog.Config') }}</h3>

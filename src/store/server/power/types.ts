@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 export interface ServerPowerState {
     devices: ServerPowerStateDevice[]
 }

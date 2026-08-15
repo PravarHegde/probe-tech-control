@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { Module } from 'vuex'
 import { ServerJobQueueState } from '@/store/server/jobQueue/types'
 import { actions } from '@/store/server/jobQueue/actions'

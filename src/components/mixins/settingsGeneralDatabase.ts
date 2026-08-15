@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import Component from 'vue-class-component'
 import BaseMixin from './base'
 import { TranslateResult } from 'vue-i18n'

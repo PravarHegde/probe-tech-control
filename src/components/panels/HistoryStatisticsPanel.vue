@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <panel
         :icon="mdiChartAreaspline"
@@ -76,7 +82,7 @@ import {
     ServerHistoryStateJob,
     ServerHistoryStateJobAuxiliaryTotal,
 } from '@/store/server/history/types'
-import { mdiChartAreaspline, mdiDatabaseArrowDownOutline } from '@mdi/js'
+import { mdiChartAreaspline, mdiChartAreaspline, mdiDatabaseArrowDownOutline } from '@mdi/js'
 import { formatPrintTime } from '@/plugins/helpers'
 import HistoryMixin from '@/components/mixins/history'
 import { TranslateResult } from 'vue-i18n'

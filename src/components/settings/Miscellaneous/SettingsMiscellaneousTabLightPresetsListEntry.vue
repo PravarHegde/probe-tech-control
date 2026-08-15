@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <settings-row :title="preset.name" :sub-title="subTitle" :dynamic-slot-width="true">
         <v-btn small outlined class="ml-3" @click="editPreset">

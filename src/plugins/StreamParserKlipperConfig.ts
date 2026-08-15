@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { StreamParser, StringStream } from '@codemirror/language'
 import { gcode } from '@/plugins/StreamParserGcode'
 

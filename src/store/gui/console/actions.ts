@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { ActionTree } from 'vuex'
 import { RootState } from '@/store/types'
 import { v4 as uuidv4 } from 'uuid'

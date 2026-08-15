@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { GuiNotificationState } from './types'
 import { Module } from 'vuex'
 import { actions } from './actions'

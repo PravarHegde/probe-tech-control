@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { GetterTree } from 'vuex'
 import { GuiPresetsState, GuiPresetsStatePreset } from '@/store/gui/presets/types'
 import { caseInsensitiveSort } from '@/plugins/helpers'

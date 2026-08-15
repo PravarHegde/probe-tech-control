@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { defaultLogoColor, themeDir, thumbnailBigMin } from '@/store/variables'
 import { convertName } from '@/plugins/helpers'
 import { GetterTree } from 'vuex'

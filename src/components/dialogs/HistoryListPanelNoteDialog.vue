@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <v-dialog v-model="showDialog" :max-width="600" persistent @keydown.esc="closeDialog">
         <panel :title="panelTitle" :icon="icon" card-class="history-note-dialog" :margin-bottom="false">

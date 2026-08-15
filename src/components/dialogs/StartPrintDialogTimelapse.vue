@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <v-card-text class="py-3 bt-1">
         <settings-row :title="$t('Dialogs.StartPrint.Timelapse')" :dense="true">

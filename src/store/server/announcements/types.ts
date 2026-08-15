@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 export interface ServerAnnouncementsState {
     entries: ServerAnnouncementsStateEntry[]
     feeds: string[]

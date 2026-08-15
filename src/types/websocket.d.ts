@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { WebSocketClient } from '@/plugins/webSocketClient'
 
 declare module 'vue/types/vue' {

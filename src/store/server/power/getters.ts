@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { GetterTree } from 'vuex'
 import { ServerPowerState } from '@/store/server/power/types'
 

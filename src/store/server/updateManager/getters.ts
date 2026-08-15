@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { GetterTree } from 'vuex'
 import { ServerUpdateManagerState, ServerUpdateManagerStateGuiList } from '@/store/server/updateManager/types'
 import { caseInsensitiveSort } from '@/plugins/helpers'

@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { Module } from 'vuex'
 import { ServerSpoolmanState } from '@/store/server/spoolman/types'
 import { actions } from '@/store/server/spoolman/actions'

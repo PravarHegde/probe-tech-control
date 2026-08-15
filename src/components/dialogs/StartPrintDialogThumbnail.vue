@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <div v-if="bigThumbnailUrl" class="d-flex align-center justify-center min-height-200">
         <v-img

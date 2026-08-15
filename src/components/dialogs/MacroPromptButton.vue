@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <v-btn :color="color" class="ma-2" @click="sendCommand">{{ text }}</v-btn>
 </template>

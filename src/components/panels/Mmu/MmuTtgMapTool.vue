@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <text :x="positionX" :y="positionY" text-anchor="end" :fill="fill" font-size="10px" :font-weight="fontWeight">
         {{ name }}

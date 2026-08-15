@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <settings-row :title="outputName" :sub-title="subTitle">
         <v-chip v-if="!(is_base ?? false)" label small>

@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import Dashboard from '../pages/Dashboard.vue'
 import Webcam from '../pages/Webcam.vue'
 import Farm from '../pages/Farm.vue'

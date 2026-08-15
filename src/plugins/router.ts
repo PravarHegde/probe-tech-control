@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import VueRouter from 'vue-router'
 import Vue from 'vue'
 import routes from '@/routes'

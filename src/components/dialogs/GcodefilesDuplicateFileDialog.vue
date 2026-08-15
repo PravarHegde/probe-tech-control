@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <v-dialog v-model="showDialog" width="400">
         <panel :title="$t('Files.DuplicateFile')" card-class="gcodefiles-duplicate-file-dialog" :margin-bottom="false">

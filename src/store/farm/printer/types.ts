@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { GuiState } from '@/store/gui/types'
 import { FileStateFile } from '@/store/files/types'
 import { GuiWebcamStateWebcam } from '@/store/gui/webcams/types'

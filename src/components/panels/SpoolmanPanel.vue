@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <panel :icon="mdiAdjust" :title="title" card-class="spoolman-panel" :collapsible="true">
         <template #buttons>

@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { GetterTree } from 'vuex'
 import { GuiNotificationState, GuiNotificationStateDismissEntry, GuiNotificationStateEntry } from './types'
 import { ServerAnnouncementsStateEntry } from '@/store/server/announcements/types'

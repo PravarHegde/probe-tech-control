@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <span>
         <span v-for="({ directoryName, location }, index) in pathSegments" :key="location" class="navigation-container">

@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import Component from 'vue-class-component'
 import { W3C_COLORS } from '@/plugins/w3c'
 import { Mixins } from 'vue-property-decorator'

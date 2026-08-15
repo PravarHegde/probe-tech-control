@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <div class="brand-logo">
         <img src="@/assets/logo.svg" alt="Probe Tech Logo" />

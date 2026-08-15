@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import Vue from 'vue'
 import { ActionTree } from 'vuex'
 import { GuiMaintenanceState, MaintenanceJson } from '@/store/gui/maintenance/types'

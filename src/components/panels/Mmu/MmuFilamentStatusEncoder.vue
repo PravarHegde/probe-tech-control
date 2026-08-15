@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <g>
         <circle cx="258" cy="140" r="8" stroke-width="1" :class="encoderClass" />

@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <panel :title="$t('Timelapse.Status')" :icon="mdiInformation" card-class="timelapse-status-panel">
         <v-card-text v-if="framesCount">

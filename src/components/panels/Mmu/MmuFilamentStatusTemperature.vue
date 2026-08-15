@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <text x="228" y="412" font-size="11px" font-weight="bold" text-anchor="end" :class="temperatureClass">
         {{ temperatureText }}

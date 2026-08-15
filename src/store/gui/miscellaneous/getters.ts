@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { GetterTree } from 'vuex'
 import { GuiMiscellaneousState, GuiMiscellaneousStateEntry } from '@/store/gui/miscellaneous/types'
 

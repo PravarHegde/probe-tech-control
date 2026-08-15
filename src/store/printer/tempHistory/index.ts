@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { Module } from 'vuex'
 import { PrinterTempHistoryState } from '@/store/printer/tempHistory/types'
 import { actions } from '@/store/printer/tempHistory/actions'

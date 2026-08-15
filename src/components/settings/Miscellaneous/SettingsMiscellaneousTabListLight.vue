@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <settings-row :title="outputName" :dynamic-slot-width="true">
         <v-btn v-if="chainCount > 1" small outlined class="ml-3" @click="openGroups">

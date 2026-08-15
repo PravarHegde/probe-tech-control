@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <panel v-if="showPanel" :icon="mdiMulticast" :title="title" :collapsible="true" card-class="mmu-panel">
         <template #buttons>

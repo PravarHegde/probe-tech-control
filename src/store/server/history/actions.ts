@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import Vue from 'vue'
 import { ActionTree } from 'vuex'
 import { ServerHistoryState, ServerHistoryStateJob } from '@/store/server/history/types'

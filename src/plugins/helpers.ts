@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { FileStateFile } from '@/store/files/types'
 import { PrinterStateMacroParams } from '@/store/printer/types'
 import {

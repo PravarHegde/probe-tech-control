@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <v-btn :disabled="printerIsPrintingOnly" dense class="flex-grow-1 px-0" :style="buttonStyle" @click="changeTool">
         <span v-if="color != null" class="_extruderColorState mr-1" :style="dotStyle" />

@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { KlipperRepos, Theme } from '@/store/types'
 
 export const defaultMode = 'dark'

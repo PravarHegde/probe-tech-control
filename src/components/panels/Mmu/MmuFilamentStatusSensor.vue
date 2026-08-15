@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <g v-if="hasSensor">
         <circle cx="258" :cy="yPosition" r="8" stroke-width="1" :class="circleClass" />

@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <v-alert v-if="bypassState" type="warning" class="mt-3" dense text>
         {{ $t('Panels.AfcPanel.BypassActive') }}

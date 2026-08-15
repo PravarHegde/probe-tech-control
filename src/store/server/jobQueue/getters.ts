@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { GetterTree } from 'vuex'
 import { ServerJobQueueState, ServerJobQueueStateJob } from '@/store/server/jobQueue/types'
 import Vue from 'vue'

@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { Module } from 'vuex'
 import { actions } from '@/store/gui/macros/actions'
 import { mutations } from '@/store/gui/macros/mutations'

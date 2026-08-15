@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <panel
         v-if="is_active"
@@ -48,12 +54,19 @@
             </v-row>
         </v-card-text>
         <heightmap-rename-profile-dialog v-model="showRename" :name="name" />
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="secondary" text @click="calibrateProbeZOffset">
+                <v-icon left>mdi-arrow-up-down</v-icon>
+                Calibrate Probe Z-Offset
+            </v-btn>
+        </v-card-actions>
     </panel>
 </template>
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 import BaseMixin from '@/components/mixins/base'
-import { mdiInformation, mdiPencil } from '@mdi/js'
+import { mdiInformation, mdiPencil, mdiArrowUpDown } from '@mdi/js'
 import BedmeshMixin from '@/components/mixins/bedmesh'
 
 @Component({
@@ -62,8 +75,25 @@ import BedmeshMixin from '@/components/mixins/bedmesh'
 export default class HeightmapCurrentProfilePanel extends Mixins(BaseMixin, BedmeshMixin) {
     mdiInformation = mdiInformation
     mdiPencil = mdiPencil
+    mdiArrowUpDown = mdiArrowUpDown
 
     showRename = false
+
+    calibrateProbeZOffset() {
+        const x_max = this.$store.state.printer.configfile.settings.stepper_x.position_max || 200
+        const y_max = this.$store.state.printer.configfile.settings.stepper_y.position_max || 200
+        const center_x = x_max / 2
+        const center_y = y_max / 2
+
+        let script = ''
+        if (this.$store.state.printer.toolhead?.homed_axes !== 'xyz') {
+            script += 'G28\n'
+        }
+        script += `G0 X${center_x} Y${center_y} Z10 F3000\nPROBE_CALIBRATE`
+
+        this.$store.dispatch('server/addEvent', { message: script, type: 'command' })
+        this.$socket.emit('printer.gcode.script', { script })
+    }
 
     get x_count() {
         return this.bed_mesh.probed_matrix[0]?.length ?? 0

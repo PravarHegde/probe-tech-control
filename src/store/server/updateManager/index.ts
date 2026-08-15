@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { Module } from 'vuex'
 import { ServerUpdateManagerState } from '@/store/server/updateManager/types'
 import { actions } from '@/store/server/updateManager/actions'

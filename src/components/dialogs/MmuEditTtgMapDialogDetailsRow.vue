@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <tr :class="rowClass" @click="selectGate">
         <td class="text-center">{{ gate }}</td>

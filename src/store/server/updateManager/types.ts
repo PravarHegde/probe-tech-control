@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 export interface ServerUpdateManagerState {
     busy: boolean
     github_rate_limit: number | null

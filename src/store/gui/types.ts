@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { GuiMacrosState } from '@/store/gui/macros/types'
 import { GuiConsoleState } from '@/store/gui/console/types'
 import { GuiPresetsState } from '@/store/gui/presets/types'

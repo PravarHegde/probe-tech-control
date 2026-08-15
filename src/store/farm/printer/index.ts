@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { FarmPrinterState } from '@/store/farm/printer/types'
 import { getDefaultState as getGuiDefaultState } from '@/store/gui/index'
 import { actions } from '@/store/farm/printer/actions'

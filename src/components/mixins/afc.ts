@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import { ServerSpoolmanStateSpool } from '@/store/server/spoolman/types'

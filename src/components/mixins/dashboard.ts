@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import Component from 'vue-class-component'
 import BaseMixin from '@/components/mixins/base'
 import { capitalize } from '@/plugins/helpers'

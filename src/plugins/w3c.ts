@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 export const W3C_COLORS: readonly { name: string; hex: string }[] = Object.freeze([
     { name: 'aliceblue', hex: '#F0F8FF' },
     { name: 'antiquewhite', hex: '#FAEBD7' },

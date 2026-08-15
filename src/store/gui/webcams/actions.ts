@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { ActionTree } from 'vuex'
 import { RootState } from '@/store/types'
 import { GuiWebcamState, GuiWebcamStateWebcam } from '@/store/gui/webcams/types'

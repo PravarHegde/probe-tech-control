@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { Module } from 'vuex'
 import { GuiMaintenanceState } from '@/store/gui/maintenance/types'
 import { actions } from '@/store/gui/maintenance/actions'

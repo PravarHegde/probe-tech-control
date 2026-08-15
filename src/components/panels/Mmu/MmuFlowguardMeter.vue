@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <svg ref="flowguardMeter" viewBox="0 0 140 140" preserveAspectRatio="xMidYMid meet" :class="svgClasses">
         <g transform="rotate(120 70 70)">

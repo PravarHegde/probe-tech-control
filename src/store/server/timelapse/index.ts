@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { Module } from 'vuex'
 import { ServerTimelapseState } from '@/store/server/timelapse/types'
 import { actions } from '@/store/server/timelapse/actions'

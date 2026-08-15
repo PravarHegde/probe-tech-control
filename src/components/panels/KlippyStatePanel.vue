@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <div v-if="klipperState !== 'ready' && socketIsConnected">
         <v-alert v-if="klippyIsConnected" :color="messageType.color" dense text border="left" class="mb-0 mb-6">

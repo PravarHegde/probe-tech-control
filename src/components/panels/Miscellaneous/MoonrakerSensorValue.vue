@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <div class="d-flex w-100 flex-row align-center">
         <v-icon small left>{{ unitToSymbol(unit) }}</v-icon>

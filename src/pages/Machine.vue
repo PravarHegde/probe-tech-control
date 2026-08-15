@@ -1,7 +1,14 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <v-container fluid py-0 px-0>
         <v-row>
             <v-col class="col-12 col-md-6 pb-0 pb-md-3">
+                <probharath-boards-panel></probharath-boards-panel>
                 <config-files-panel></config-files-panel>
             </v-col>
             <v-col class="col-12 col-md-6 pt-0 pt-md-3">
@@ -29,9 +36,11 @@ import LogfilesPanel from '@/components/panels/Machine/LogfilesPanel.vue'
 import EndstopPanel from '@/components/panels/Machine/EndstopPanel.vue'
 import ConfigFilesPanel from '@/components/panels/Machine/ConfigFilesPanel.vue'
 import SystemPanel from '@/components/panels/Machine/SystemPanel.vue'
+import ProbharathBoardsPanel from '@/components/panels/Machine/ProbharathBoardsPanel.vue'
 @Component({
     components: {
         SystemPanel,
+        ProbharathBoardsPanel,
         ConfigFilesPanel,
         EndstopPanel,
         LogfilesPanel,

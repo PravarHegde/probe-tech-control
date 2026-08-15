@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <v-menu :offset-y="true" :close-on-content-click="false" :title="$t('Panels.AfcPanel.Settings')" left>
         <template #activator="{ on, attrs }">

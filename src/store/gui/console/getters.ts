@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { GetterTree } from 'vuex'
 import { GuiConsoleState, GuiConsoleStateFilter } from '@/store/gui/console/types'
 import { caseInsensitiveSort } from '@/plugins/helpers'

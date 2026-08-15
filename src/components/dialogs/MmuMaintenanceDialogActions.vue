@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <div>
         <settings-row :title="$t('Panels.MmuPanel.MmuMaintenanceDialog.MotorSync')" dense>

@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { Component } from 'vue-property-decorator'
 import Vue from 'vue'
 import { FileStateFile } from '@/store/files/types'

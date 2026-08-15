@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import Vue from 'vue'
 import { MutationTree } from 'vuex'
 import { GuiMaintenanceState } from '@/store/gui/maintenance/types'

@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { Module } from 'vuex'
 import { GuiRemindersState } from '@/store/gui/reminders/types'
 import { actions } from '@/store/gui/reminders/actions'

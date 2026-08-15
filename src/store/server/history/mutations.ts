@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { getDefaultState } from './index'
 import Vue from 'vue'
 import { MutationTree } from 'vuex'

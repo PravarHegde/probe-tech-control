@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { FileStateFileThumbnail } from '@/store/files/types'
 
 export interface ServerHistoryState {

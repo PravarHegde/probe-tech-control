@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <v-dialog v-model="showDialog" persistent :max-width="400" @keydown.esc="closeDialog">
         <panel
@@ -23,6 +29,19 @@
                         }
                     "
                     @keyup.enter="calibrateMesh" />
+                    
+                <v-switch
+                    v-model="useCustomBoundary"
+                    label="Custom Mesh Boundary"
+                    class="mt-2"
+                ></v-switch>
+
+                <heightmap-custom-mesh-map
+                    v-if="useCustomBoundary"
+                    @update:bounds="onBoundsUpdated"
+                    @update:probes="onProbesUpdated"
+                    @close="closeDialog"
+                ></heightmap-custom-mesh-map>
             </v-card-text>
             <v-card-actions>
                 <v-spacer />
@@ -38,8 +57,11 @@
 import { Component, Mixins, Ref, VModel, Watch } from 'vue-property-decorator'
 import BaseMixin from '@/components/mixins/base'
 import { mdiCloseThick, mdiGrid } from '@mdi/js'
+import HeightmapCustomMeshMap from './HeightmapCustomMeshMap.vue'
 
-@Component
+@Component({
+    components: { HeightmapCustomMeshMap }
+})
 export default class HeightmapRenameProfileDialog extends Mixins(BaseMixin) {
     mdiCloseThick = mdiCloseThick
     mdiGrid = mdiGrid
@@ -50,14 +72,38 @@ export default class HeightmapRenameProfileDialog extends Mixins(BaseMixin) {
     isInvalidName = false
     name = ''
 
+    useCustomBoundary = false
+    customBounds = {
+        xMin: 0,
+        xMax: 200,
+        yMin: 0,
+        yMax: 200
+    }
+    probeCount = {
+        x: 5,
+        y: 5
+    }
+
     rules = [
         (value: string) => !!value || this.$t('Heightmap.InvalidNameEmpty'),
         // eslint-disable-next-line no-control-regex
         (value: string) => value === value.replace(/[^\x00-\x7F]/g, '') || this.$t('Heightmap.InvalidNameAscii'),
     ]
+    
+    onBoundsUpdated(bounds: any) {
+        this.customBounds = bounds
+    }
+    
+    onProbesUpdated(probes: any) {
+        this.probeCount = probes
+    }
 
     calibrateMesh(): void {
-        const gcode = `BED_MESH_CALIBRATE PROFILE="${this.name}"`
+        let gcode = `BED_MESH_CALIBRATE PROFILE="${this.name}"`
+        
+        if (this.useCustomBoundary) {
+            gcode += ` MESH_MIN=${this.customBounds.xMin},${this.customBounds.yMin} MESH_MAX=${this.customBounds.xMax},${this.customBounds.yMax} PROBE_COUNT=${this.probeCount.x},${this.probeCount.y}`
+        }
 
         this.$store.dispatch('server/addEvent', { message: gcode, type: 'command' })
         this.$socket.emit('printer.gcode.script', { script: gcode }, { loading: 'bedMeshCalibrate' })

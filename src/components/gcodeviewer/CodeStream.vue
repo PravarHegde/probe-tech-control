@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <div ref="view" class="codeview" @mouseup="mouseUp" @keydown="keyPress"></div>
 </template>

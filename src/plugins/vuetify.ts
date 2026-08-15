@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import Vue from 'vue'
 import Vuetify from 'vuetify'
 import { Touch, Ripple } from 'vuetify/lib/directives'

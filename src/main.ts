@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import 'regenerator-runtime' // async polyfill used by the gcodeviewer
 import 'resize-observer-polyfill' // polyfill needed by the responsive class detection
 import Vue from 'vue'

@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { Store } from 'vuex'
 import _Vue from 'vue'
 import { RootState } from '@/store/types'

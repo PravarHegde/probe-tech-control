@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { Agent } from './AgentInterface'
 import { BasicAgent } from './BasicAgent'
 import { CustomAgent } from './CustomAgent'
@@ -84,6 +90,21 @@ class TinyLlamaAgent implements Agent {
     }
 }
 
+class AISlicerAgent implements Agent {
+    id = 'ai-slicer-probharath'
+    name = 'ProBharath AI Slicer'
+    description = 'Analyzes 3D models and generates optimal slice settings (Mock)'
+    async process(input: string, context: any): Promise<string> {
+        if (input.toLowerCase().includes('slice') || input.toLowerCase().includes('stl') || input.toLowerCase().includes('mesh')) {
+            return "I am analyzing the geometry of your mesh... \n- Model: detected overhangs > 45°.\n- Material: PLA.\n- Recommendation: Adaptive layer height (0.12mm - 0.2mm), Tree supports enabled, 15% gyroid infill.\n[Action: Slicing job dispatched to cloud... GCode generated successfully.]"
+        }
+        return "I am the AI Slicer. Provide me with a mesh or ask me to slice a model."
+    }
+    getCapabilities?(): string[] {
+        return ['slice', 'analyze', 'status', 'help']
+    }
+}
+
 class CoreAgent implements Agent {
     id = 'core-agent'
     name = 'Core System'
@@ -117,7 +138,8 @@ class AgentRegistry {
             new LlamaAgent(),
             new GemmaAgent(),
             new ProBharathGemmaAgent(),
-            new TinyLlamaAgent()
+            new TinyLlamaAgent(),
+            new AISlicerAgent()
         ]
         templates.forEach(t => this.availableTemplates.set(t.id, t))
 

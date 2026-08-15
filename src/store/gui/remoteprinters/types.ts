@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { FarmPrinterStateSocket } from '@/store/farm/printer/types'
 
 export interface GuiRemoteprintersState {

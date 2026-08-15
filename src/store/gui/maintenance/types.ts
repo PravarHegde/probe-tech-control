@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 export interface GuiMaintenanceState {
     entries: {
         [key: string]: GuiMaintenanceStateEntry

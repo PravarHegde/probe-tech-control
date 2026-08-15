@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { PrinterTempHistoryState } from '@/store/printer/tempHistory/types'
 
 export interface VTextareaType extends HTMLInputElement {

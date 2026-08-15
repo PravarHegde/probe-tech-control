@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <v-alert :class="`notification-menu-entry--priority-${entry.priority}`" text :color="alertColor" border="left">
         <v-row align="start" class="flex-nowrap">

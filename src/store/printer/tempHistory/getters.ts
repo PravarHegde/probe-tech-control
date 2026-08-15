@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { datasetTypes, datasetTypesInPercents } from '@/store/variables'
 import { GetterTree } from 'vuex'
 import {

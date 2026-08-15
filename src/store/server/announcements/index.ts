@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { Module } from 'vuex'
 import { ServerAnnouncementsState } from '@/store/server/announcements/types'
 import { actions } from '@/store/server/announcements/actions'

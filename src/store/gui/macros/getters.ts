@@ -1,3 +1,9 @@
+/* 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+*/
 import { GetterTree } from 'vuex'
 import { GuiMacrosState, GuiMacrosStateMacrogroup } from '@/store/gui/macros/types'
 import { caseInsensitiveSort } from '@/plugins/helpers'

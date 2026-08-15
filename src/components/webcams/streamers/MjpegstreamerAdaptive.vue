@@ -1,3 +1,9 @@
+<!-- 
+==============================================================================
+PROBHARATH TECHNOLOGIES PVT LTD
+A Probharath Technologies Product
+============================================================================== 
+-->
 <template>
     <div v-observe-visibility="viewportVisibilityChanged" class="webcamBackground" :style="wrapperStyle">
         <img

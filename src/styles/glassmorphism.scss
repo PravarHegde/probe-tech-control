@@ -94,17 +94,15 @@
 }
 
 /* Force pointer events on sidebar content */
-.v-navigation-drawer__content,
-.os-host,
-.os-padding,
-.os-viewport,
-.os-content,
-.v-list-item,
-.v-list-item__content,
-.v-list-item__icon {
+.v-navigation-drawer .v-navigation-drawer__content,
+.v-navigation-drawer .os-host,
+.v-navigation-drawer .os-padding,
+.v-navigation-drawer .os-viewport,
+.v-navigation-drawer .os-content,
+.v-navigation-drawer .v-list-item,
+.v-navigation-drawer .v-list-item__content,
+.v-navigation-drawer .v-list-item__icon {
   pointer-events: auto !important;
-  z-index: 9999 !important;
-  /* Above EVERYTHING */
 }
 
 /* Make sidebar transparent */

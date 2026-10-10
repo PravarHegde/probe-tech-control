@@ -29,7 +29,12 @@
   <link rel="stylesheet" crossorigin href="/assets/index-BPou373M.css">
 <link rel="manifest" href="/manifest.webmanifest">  <style>
     /* ProBharath Probe Tech Control Layout & Solid Top Bar Fix */
-    header.v-app-bar.v-toolbar {
+    header,
+    header.v-app-bar,
+    header.v-toolbar,
+    header.topbar,
+    .v-app-bar,
+    .topbar {
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
@@ -38,16 +43,22 @@
       background-color: #121622 !important;
       background: linear-gradient(180deg, #151a28 0%, #0f131f 100%) !important;
       border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.85) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.95) !important;
+      transform: none !important;
     }
     .v-navigation-drawer {
       z-index: 9990 !important;
     }
+    .v-dialog__content,
+    .v-menu__content,
+    .v-overlay {
+      z-index: 100000 !important;
+    }
     .v-main {
-      padding-top: 86px !important;
+      padding-top: 104px !important;
     }
     .v-main__wrap {
-      padding-top: 16px !important;
+      padding-top: 20px !important;
     }
     /* ProBharath Ecosystem Ambient Elephant Watermark */
     .v-main::before {

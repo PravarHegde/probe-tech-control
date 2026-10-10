@@ -19,22 +19,68 @@
     <meta name="msapplication-TileImage" content="/img/icons/favicon.svg" />
     <meta name="msapplication-TileColor" content="#d51f26" />
 
-  <script type="module" crossorigin src="/assets/index-Bks_zwNO.js"></script>
+  <script type="module" crossorigin src="/assets/index-Bks_zwNO.js?v=3.5.0"></script>
   <link rel="modulepreload" crossorigin href="/assets/overlayscrollbars-CiKU261J.js">
   <link rel="modulepreload" crossorigin href="/assets/vuetify-HSJperxJ.js">
   <link rel="modulepreload" crossorigin href="/assets/echarts-Ce9dz-GT.js">
   <link rel="modulepreload" crossorigin href="/assets/codemirror-Dbba2-Wz.js">
   <link rel="stylesheet" crossorigin href="/assets/overlayscrollbars-BJn_P54_.css">
   <link rel="stylesheet" crossorigin href="/assets/vuetify-BSwS9o2d.css">
-  <link rel="stylesheet" crossorigin href="/assets/index-BPou373M.css">
-<link rel="manifest" href="/manifest.webmanifest">  <style>
+  <link rel="stylesheet" crossorigin href="/assets/index-BPou373M.css?v=3.5.0">
+<link rel="manifest" href="/manifest.webmanifest">
+  <script>
+    (function enforceTopBarLock() {
+      function applyLock() {
+        var header = document.querySelector('header');
+        if (header) {
+          header.style.setProperty('position', 'fixed', 'important');
+          header.style.setProperty('top', '0', 'important');
+          header.style.setProperty('left', '0', 'important');
+          header.style.setProperty('right', '0', 'important');
+          header.style.setProperty('z-index', '2147483647', 'important');
+          header.style.setProperty('background', '#121622', 'important');
+          header.style.setProperty('background-color', '#121622', 'important');
+          header.style.setProperty('opacity', '1', 'important');
+          header.style.setProperty('backdrop-filter', 'none', 'important');
+          header.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+          header.style.setProperty('box-shadow', '0 4px 20px rgba(0, 0, 0, 0.95)', 'important');
+          
+          var p = header.parentElement;
+          if (p && p !== document.body && !p.classList.contains('v-application--wrap')) {
+            p.style.setProperty('position', 'relative', 'important');
+            p.style.setProperty('z-index', '2147483647', 'important');
+          }
+        }
+        var main = document.querySelector('.v-main') || document.getElementById('content');
+        if (main) {
+          main.style.setProperty('position', 'relative', 'important');
+          main.style.setProperty('z-index', '1', 'important');
+          main.style.setProperty('padding-top', '56px', 'important');
+        }
+        var container = document.getElementById('page-container');
+        if (container) {
+          container.style.setProperty('padding-top', '24px', 'important');
+        }
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyLock);
+      } else {
+        applyLock();
+      }
+      window.addEventListener('load', applyLock);
+      setInterval(applyLock, 300);
+    })();
+  </script>
+  <style>
     /* ProBharath Probe Tech Control Layout & Solid Top Bar Fix */
     .topbar-wrapper,
+    div[data-v-0e06fe29],
     .v-application--wrap > div:has(header),
     .v-application--wrap > div:has(.topbar),
-    .v-application--wrap > div:has(.v-app-bar) {
+    .v-application--wrap > div:has(.v-app-bar),
+    .v-application--wrap > div:first-of-type {
       position: relative !important;
-      z-index: 2147483640 !important;
+      z-index: 2147483647 !important;
     }
     header[data-v-0e06fe29],
     header.topbar[data-v-0e06fe29],

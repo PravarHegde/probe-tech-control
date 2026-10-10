@@ -39,6 +39,7 @@ const routes: AppRoute[] = [
         name: 'dashboard',
         title: 'Dashboard',
         path: '/',
+        alias: ['/dashboard'],
         icon: mdiMonitorDashboard,
         component: Dashboard,
         alwaysShow: true,

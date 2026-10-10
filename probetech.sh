@@ -35,7 +35,7 @@ fi
 
 # Use modern partial clone to download ONLY the needed scripts (no history, no blobs/files initially)
 echo -e "${BLUE}Initializing partial clone...${NC}"
-git clone --depth 1 --filter=blob:none --sparse https://github.com/PravarHegde/probe-tech-control.git "$TARGET_DIR"
+git clone -b "${PROBETECH_BRANCH:-3.4v}" --depth 1 --filter=blob:none --sparse https://github.com/PravarHegde/probe-tech-control.git "$TARGET_DIR"
 
 cd "$TARGET_DIR" || exit 1
 

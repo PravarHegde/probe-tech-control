@@ -373,7 +373,7 @@ install_probe_tech() {
         # Download from develop/master (using the known URL structure)
         # Note: Ideally this should switch based on version, but for now we use the develop artifact for latest
         # Or better: check if we are on master branch? hardcode for now.
-        local artifact_url="https://github.com/PravarHegde/probe-tech-control/raw/develop/probe-tech-control.zip"
+        local artifact_url="https://github.com/PravarHegde/probe-tech-control/raw/3.4v/probe-tech-control.zip"
         
         curl -L "$artifact_url" -o "${SCRIPT_DIR}/probe-tech-control.zip"
         
@@ -404,27 +404,8 @@ install_probe_tech() {
         fi
         
         # Unzip
-    unzip -o -q "${SCRIPT_DIR}/probe-tech-control.zip" -d "${WEB_DIR}"
-    
-    # Patch config.json for Moonraker Port
-    # Default 7125. If inst_name is printer_2, port should be 7126 etc. 
-    # BUT, simpler is to just pass the port or guess it?
-    # For now, let's just attempt to align with klipper defaults.
-    # Actually, the batch installer created moonraker on 7125 + count.
-    
-    # Let's verify if we can detect the port from moonraker.conf in the target dir?
-    # We passed target_dir ($1). 
-    MOONRAKER_CONF="${target_dir}/config/moonraker.conf"
-    if [ -f "$MOONRAKER_CONF" ]; then
-         DETECTED_PORT=$(grep "port:" "$MOONRAKER_CONF" | awk '{print $2}')
-         if [ -n "$DETECTED_PORT" ]; then
-             echo -e "${GOLD}Configuring Web Interface for Port ${DETECTED_PORT}...${NC}"
-             sed -i "s/\"port\": 7125/\"port\": ${DETECTED_PORT}/" "${WEB_DIR}/config.json"
-         fi
-    fi
-    
-    # Start Server
-    cp "${SCRIPT_DIR}/spa_server.py" "${WEB_DIR}/"
+        unzip -o -q "${SCRIPT_DIR}/probe-tech-control.zip" -d "$WEB_DIR"
+        
         # Check if unzip succeeded
         if [ -f "${WEB_DIR}/index.html" ]; then
              echo -e "${GREEN}✓ Web Interface Installed to ${WEB_DIR}${NC}"
@@ -1155,11 +1136,11 @@ update_probe_tech() {
     echo -e "${SILVER}Optimized for low RAM usage (No building on device).${NC}"
     
     # URL for the pre-built artifact from the beta repo
-    local artifact_url="https://github.com/PravarHegde/probe-tech-control/raw/develop/probe-tech-control.zip.zip"
+    local artifact_url="https://github.com/PravarHegde/probe-tech-control/raw/3.4v/probe-tech-control.zip"
     
     # Download
     echo -e "${BLUE}Downloading latest artifact...${NC}"
-    curl -L "$artifact_url" -o "/tmp/ptc_update.zip.zip"
+    curl -L "$artifact_url" -o "/tmp/ptc_update.zip"
     
     if [ $? -ne 0 ]; then
         echo -e "${RED}Download failed. Check internet connection.${NC}"
@@ -1172,7 +1153,7 @@ update_probe_tech() {
     local tmp_dir="/tmp/ptc_extracted_$(date +%s)"
     mkdir -p "$tmp_dir"
     
-    unzip -q "/tmp/ptc_update.zip.zip" -d "$tmp_dir"
+    unzip -q "/tmp/ptc_update.zip" -d "$tmp_dir"
     if [ -f "$tmp_dir/probe-tech-control.zip" ]; then
         unzip -q "$tmp_dir/probe-tech-control.zip" -d "$tmp_dir"
         rm "$tmp_dir/probe-tech-control.zip"
@@ -1196,7 +1177,7 @@ update_probe_tech() {
     cp -r "$tmp_dir/"* "$target_dir/"
     
     # Cleanup
-    rm -f "/tmp/ptc_update.zip.zip"
+    rm -f "/tmp/ptc_update.zip"
     rm -rf "$tmp_dir"
     
     # Restart

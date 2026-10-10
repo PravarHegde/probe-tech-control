@@ -10,7 +10,9 @@ A Probharath Technologies Product
         v-model="naviDrawer"
         :mini-variant="navigationStyle === 'iconsOnly'"
         :width="navigationWidth"
-        :temporary="boolNaviTemp"
+        :temporary="false"
+        :mobile-breakpoint="0"
+        disable-resize-watcher
         clipped
         app
         :style="sidebarCssVars">
@@ -87,7 +89,7 @@ export default class TheSidebar extends Mixins(NavigationMixin, BaseMixin, Theme
     }
 
     get boolNaviTemp(): boolean {
-        return !this.isMobile && this.$vuetify.breakpoint.mdAndDown
+        return false
     }
 
     get sidebarCssVars(): any {

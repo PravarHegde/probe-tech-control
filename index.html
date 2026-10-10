@@ -27,162 +27,218 @@
   <link rel="stylesheet" crossorigin href="/assets/overlayscrollbars-BJn_P54_.css">
   <link rel="stylesheet" crossorigin href="/assets/vuetify-BSwS9o2d.css">
   <link rel="stylesheet" crossorigin href="/assets/index-BPou373M.css?v=3.5.0">
-<link rel="manifest" href="/manifest.webmanifest">
-  <script>
-    (function enforceTopBarLock() {
-      function applyLock() {
-        var header = document.querySelector('header');
-        if (header) {
-          header.style.setProperty('position', 'fixed', 'important');
-          header.style.setProperty('top', '0', 'important');
-          header.style.setProperty('left', '0', 'important');
-          header.style.setProperty('right', '0', 'important');
-          header.style.setProperty('z-index', '2147483647', 'important');
-          header.style.setProperty('background', '#121622', 'important');
-          header.style.setProperty('background-color', '#121622', 'important');
-          header.style.setProperty('opacity', '1', 'important');
-          header.style.setProperty('backdrop-filter', 'none', 'important');
-          header.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
-          header.style.setProperty('box-shadow', '0 4px 20px rgba(0, 0, 0, 0.95)', 'important');
-          
-          var p = header.parentElement;
-          if (p && p !== document.body && !p.classList.contains('v-application--wrap')) {
-            p.style.setProperty('position', 'relative', 'important');
-            p.style.setProperty('z-index', '2147483647', 'important');
-          }
-        }
-        var main = document.querySelector('.v-main') || document.getElementById('content');
-        if (main) {
-          main.style.setProperty('position', 'relative', 'important');
-          main.style.setProperty('z-index', '1', 'important');
-          main.style.setProperty('padding-top', '56px', 'important');
-        }
-        var container = document.getElementById('page-container');
-        if (container) {
-          container.style.setProperty('padding-top', '24px', 'important');
-        }
-      }
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', applyLock);
-      } else {
-        applyLock();
-      }
-      window.addEventListener('load', applyLock);
-      setInterval(applyLock, 300);
-    })();
-  </script>
+  <link rel="manifest" href="/manifest.webmanifest">
   <style>
-    /* ProBharath Probe Tech Control Layout & Solid Top Bar Fix */
-    .topbar-wrapper,
-    div[data-v-0e06fe29],
-    .v-application--wrap > div:has(header),
-    .v-application--wrap > div:has(.topbar),
-    .v-application--wrap > div:has(.v-app-bar),
-    .v-application--wrap > div:first-of-type {
-      position: relative !important;
-      z-index: 2147483647 !important;
-    }
-    header[data-v-0e06fe29],
-    header.topbar[data-v-0e06fe29],
-    header.v-app-bar[data-v-0e06fe29],
-    header,
-    header.v-app-bar,
-    header.v-toolbar,
-    header.topbar,
-    .v-app-bar,
-    .topbar {
+    /* ProBharath Glassmorphic Top Bar - Locked Front Layer */
+    header.v-app-bar.v-toolbar {
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
       right: 0 !important;
-      z-index: 2147483647 !important;
-      background: #121622 !important;
-      background-color: #121622 !important;
-      opacity: 1 !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.95) !important;
-      transform: none !important;
+      width: 100% !important;
+      height: 48px !important;
+      z-index: 100 !important;
+      background: rgba(12, 16, 26, 0.82) !important;
+      background-color: rgba(12, 16, 26, 0.82) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+      border-bottom: 1px solid rgba(0, 229, 255, 0.25) !important;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.75) !important;
     }
+
+    /* Fix panel headers: ensure flex alignment and clear separation between icon and title */
+    .v-toolbar__title {
+      display: flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+      overflow: visible !important;
+    }
+    .v-toolbar__title .v-icon {
+      margin-right: 8px !important;
+      flex-shrink: 0 !important;
+      display: inline-flex !important;
+    }
+    .v-toolbar__title .subheading {
+      display: inline-block !important;
+      vertical-align: middle !important;
+      user-select: none !important;
+    }
+
+    /* Initializing and Connection Dialog Sizing & Signature Translucent Frosted Glass */
+    .v-dialog:has(.the-connection-dialog) {
+      box-shadow: none !important;
+      background: transparent !important;
+      overflow: visible !important;
+    }
+    .the-connection-dialog,
+    .v-dialog .the-connection-dialog,
+    .v-dialog > .v-card.the-connection-dialog,
+    .the-connection-dialog.v-card.theme--dark {
+      min-width: 380px !important;
+      max-width: 440px !important;
+      border-radius: 14px !important;
+      background: rgba(10, 15, 26, 0.42) !important;
+      background-color: rgba(10, 15, 26, 0.42) !important;
+      backdrop-filter: blur(28px) saturate(200%) !important;
+      -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+      border: 1px solid rgba(0, 229, 255, 0.45) !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 229, 255, 0.25) !important;
+      overflow: hidden !important;
+    }
+    .the-connection-dialog header,
+    .the-connection-dialog .v-toolbar,
+    .the-connection-dialog .v-toolbar__content {
+      background: rgba(0, 229, 255, 0.06) !important;
+      background-color: rgba(0, 229, 255, 0.06) !important;
+      border-bottom: 1px solid rgba(0, 229, 255, 0.2) !important;
+    }
+    .the-connection-dialog .v-toolbar__title {
+      padding: 14px 18px !important;
+      gap: 12px !important;
+      font-weight: 500 !important;
+      color: #00f0ff !important;
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.4) !important;
+    }
+    .the-connection-dialog .v-card__text {
+      padding: 22px 24px 26px !important;
+      background: transparent !important;
+      background-color: transparent !important;
+    }
+    .the-connection-dialog .v-progress-linear {
+      height: 4px !important;
+      min-height: 4px !important;
+      max-height: 4px !important;
+      border-radius: 2px !important;
+      overflow: hidden !important;
+    }
+
+    /* Left Navigation Drawer: Docked directly beneath 48px top bar with zero gap */
     .v-navigation-drawer {
-      z-index: 1999000 !important;
+      top: 48px !important;
+      height: calc(100vh - 48px) !important;
+      max-height: calc(100vh - 48px) !important;
+      z-index: 90 !important;
+      background: rgba(15, 19, 29, 0.88) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+      border-right: 1px solid rgba(0, 229, 255, 0.15) !important;
+      pointer-events: auto !important;
     }
-    .v-dialog__content,
-    .v-menu__content,
-    .v-overlay {
-      z-index: 2147483647 !important;
+    /* Prevent overlay scrim from dimming the dashboard */
+    .v-overlay--active .v-overlay__scrim {
+      opacity: 0 !important;
+      display: none !important;
+      pointer-events: none !important;
     }
-    /* Strictly isolate v-main into its own low stacking context */
+    .v-overlay--active {
+      pointer-events: none !important;
+    }
+
+    /* When navigation drawer opens, automatically dock dashboard content */
+    .v-application--is-ltr .v-navigation-drawer--open:not(.v-navigation-drawer--mini-variant):not(.v-navigation-drawer--close) ~ .v-main {
+      padding-left: 220px !important;
+      transition: padding-left 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .v-application--is-ltr .v-navigation-drawer--open.v-navigation-drawer--mini-variant:not(.v-navigation-drawer--close) ~ .v-main {
+      padding-left: 56px !important;
+      transition: padding-left 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .v-application--is-ltr .v-navigation-drawer--close ~ .v-main {
+      padding-left: 0px !important;
+      transition: padding-left 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
     .v-main {
-      position: relative !important;
-      z-index: 1 !important;
-      isolation: isolate !important;
-      padding-top: 104px !important;
+      padding-top: 48px !important;
+      transition: padding-left 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
-    .v-main__wrap {
-      position: relative !important;
-      z-index: 1 !important;
-      padding-top: 20px !important;
+
+
+    /* Ensure ECharts chart container always has baseline dimensions without breaking progress bars */
+    .echarts, [_echarts_instance_], .chart-container {
+      min-width: 100% !important;
+      min-height: 180px !important;
     }
-    #page-container {
-      padding-top: 24px !important;
-    }
-    .v-main *,
-    .v-main .os-host,
-    .v-main .os-padding,
-    .v-main .os-viewport,
-    .v-main .os-content,
-    .v-main .v-list-item,
-    .v-main .v-list-item__content,
-    .v-main .v-list-item__icon,
-    .v-main .v-card,
-    .v-main .glass-panel,
-    .v-main .v-sheet {
-      z-index: 1 !important;
-    }
-    /* ProBharath Ecosystem Ambient Elephant Watermark */
-    .v-main::before {
+
+    /* Ambient Elephant Watermark */
+    body::after {
       content: '';
       position: fixed;
       bottom: 24px;
       right: 28px;
-      width: 250px;
-      height: 250px;
+      width: 240px;
+      height: 240px;
       background-image: url('/img/elephant-watermark-dark.png');
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
-      opacity: 0.10;
+      opacity: 0.08;
       pointer-events: none;
-      z-index: 1;
+      z-index: 0;
       filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.12));
-    }
-    .v-navigation-drawer .v-navigation-drawer__content::after {
-      content: '';
-      display: block;
-      position: absolute;
-      bottom: 56px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 44px;
-      height: 44px;
-      background-image: url('/img/elephant-watermark-dark.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      opacity: 0.16;
-      pointer-events: none;
     }
   </style>
   <script>
-    // Ensure default page always lands directly on Dashboard
+    // Suppress harmless transient ECharts warning during initial DOM layout mount
     (function() {
+      var origWarn = console.warn;
+      console.warn = function() {
+        if (arguments.length > 0 && typeof arguments[0] === 'string' && arguments[0].indexOf('Dom has no width or height') !== -1) {
+          return;
+        }
+        return origWarn.apply(console, arguments);
+      };
+    })();
+
+    // Ensure default page always lands directly on Dashboard and clear stale multi-instance cache
+    (function() {
+      try {
+        localStorage.removeItem('instances');
+        localStorage.removeItem('farm');
+      } catch(e) {}
       if (!window.location.hash || window.location.hash === '' || window.location.hash === '#/dashboard') {
         window.location.hash = '#/';
       }
+
+      // Responsive chart resize observer & Persistent navigation drawer
+      window.addEventListener('load', function() {
+        var drawer = document.querySelector('.v-navigation-drawer');
+        if (drawer && window.ResizeObserver) {
+          var ro = new ResizeObserver(function() {
+            setTimeout(function() {
+              window.dispatchEvent(new Event('resize'));
+            }, 50);
+          });
+          ro.observe(drawer);
+        }
+
+        // Prevent navigation drawer from closing on outside clicks
+        var disableDrawerClickOutside = function() {
+          var d = document.querySelector('.v-navigation-drawer');
+          if (d && d._clickOutside) {
+            d._clickOutside.closeConditional = function() { return false; };
+          }
+        };
+        disableDrawerClickOutside();
+        var obs = new MutationObserver(disableDrawerClickOutside);
+        obs.observe(document.body, { childList: true, subtree: true });
+
+        // Auto-dismiss initializing dialog once live dashboard or machine view is rendered
+        setInterval(function() {
+          var hasLiveContent = document.querySelector('#content .v-card, .v-main .v-card, #page-container .v-card');
+          var dialog = document.querySelector('.the-connection-dialog');
+          if (hasLiveContent && dialog) {
+            var dialogWrap = dialog.closest('.v-dialog__content');
+            if (dialogWrap) {
+              dialogWrap.style.setProperty('display', 'none', 'important');
+              dialogWrap.style.setProperty('visibility', 'hidden', 'important');
+            }
+          }
+        }, 200);
+      });
     })();
   </script>
+
+
 </head>
 
 <body style="background-color: #121212">

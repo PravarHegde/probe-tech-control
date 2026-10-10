@@ -85,7 +85,7 @@ export default class TheConnectingDialog extends Mixins(BaseMixin, ThemeMixin) {
     }
 
     get showDialog() {
-        return true
+        return !this.socketIsConnected || !this.guiIsReady || this.connectingFailed || this.isConnecting
     }
 
     get titleText() {

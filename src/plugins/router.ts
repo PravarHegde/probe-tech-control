@@ -15,4 +15,12 @@ const router = new VueRouter({
     routes,
 })
 
+router.beforeEach((to, from, next) => {
+    if (!to.matched || to.matched.length === 0 || to.path === '/relay' || to.path === '/relay/') {
+        next({ path: '/', replace: true })
+    } else {
+        next()
+    }
+})
+
 export default router

@@ -5,7 +5,7 @@ A Probharath Technologies Product
 ============================================================================== 
 -->
 <template>
-    <div>
+    <div class="topbar-wrapper">
         <v-app-bar app elevate-on-scroll :height="topbarHeight" class="topbar pa-0" clipped-left>
             <v-app-bar-nav-icon tile @click.stop="naviDrawer = !naviDrawer" />
             <router-link to="/">
@@ -350,7 +350,11 @@ export default class TheTopbar extends Mixins(BaseMixin, ThemeMixin) {
 /*noinspection CssUnusedSymbol*/
 @media (min-width: 768px) {
     header.topbar {
-        z-index: 8 !important;
+        z-index: 2147483647 !important;
     }
+}
+.topbar-wrapper {
+    position: relative !important;
+    z-index: 2147483640 !important;
 }
 </style>

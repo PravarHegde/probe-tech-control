@@ -69,7 +69,7 @@
 .glass-panel,
 .v-card,
 .v-navigation-drawer,
-.v-sheet:not(.v-sheet--outlined) {
+.v-sheet:not(.v-sheet--outlined):not(.v-app-bar):not(.topbar) {
   background-color: var(--glass-bg) !important;
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -78,6 +78,20 @@
   transition: all 0.3s ease;
   z-index: 10 !important;
   pointer-events: auto !important;
+}
+
+/* Ensure Topbar is purely solid and immune to glassmorphism */
+header.topbar,
+header.v-app-bar,
+.v-app-bar.topbar {
+  background: #121622 !important;
+  background-color: #121622 !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.95) !important;
+  z-index: 2147483647 !important;
 }
 
 .v-navigation-drawer {

@@ -70,6 +70,10 @@ export default class SidebarItem extends Mixins(BaseMixin) {
     get isActive(): boolean {
         if (this.item.target === '_blank' || !this.item.to) return false
 
+        if (this.item.to === '/' && (this.$route.path === '/' || this.$route.path === '/dashboard' || this.$route.path.startsWith('/relay'))) {
+            return true
+        }
+
         return this.$route.path === this.item.to
     }
 

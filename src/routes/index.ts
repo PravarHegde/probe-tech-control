@@ -39,7 +39,7 @@ const routes: AppRoute[] = [
         name: 'dashboard',
         title: 'Dashboard',
         path: '/',
-        alias: ['/dashboard'],
+        alias: ['/dashboard', '/relay', '/relay/', '/index.html'],
         icon: mdiMonitorDashboard,
         component: Dashboard,
         alwaysShow: true,
@@ -179,6 +179,14 @@ const routes: AppRoute[] = [
         showInNavi: false,
         path: '/settings/machine',
         redirect: '/config',
+    },
+    {
+        title: null,
+        component: null,
+        alwaysShow: false,
+        showInNavi: false,
+        path: '*',
+        redirect: '/',
     },
 ]
 

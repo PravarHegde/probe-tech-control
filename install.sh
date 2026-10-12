@@ -373,7 +373,7 @@ install_probe_tech() {
         # Download from develop/master (using the known URL structure)
         # Note: Ideally this should switch based on version, but for now we use the develop artifact for latest
         # Or better: check if we are on master branch? hardcode for now.
-        local artifact_url="https://github.com/PravarHegde/probe-tech-control/raw/3.47v/probe-tech-control.zip"
+        local artifact_url="https://github.com/PravarHegde/probe-tech-control/raw/3.48v/probe-tech-control.zip"
         
         curl -L "$artifact_url" -o "${SCRIPT_DIR}/probe-tech-control.zip"
         
@@ -1143,7 +1143,7 @@ update_probe_tech() {
     echo -e "${SILVER}Optimized for low RAM usage (No building on device).${NC}"
     
     # URL for the pre-built artifact from the beta repo
-    local artifact_url="https://github.com/PravarHegde/probe-tech-control/raw/3.47v/probe-tech-control.zip"
+    local artifact_url="https://github.com/PravarHegde/probe-tech-control/raw/3.48v/probe-tech-control.zip"
     
     # Download
     echo -e "${BLUE}Downloading latest artifact...${NC}"

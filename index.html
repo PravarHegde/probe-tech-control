@@ -28,11 +28,16 @@
   <link rel="stylesheet" crossorigin href="/assets/vuetify-BSwS9o2d.css">
   <link rel="stylesheet" crossorigin href="/assets/index-BPou373M.css">
 <link rel="manifest" href="/manifest.webmanifest">            <style>
-    /* Global Background spanning entire viewport from Y=0 */
-    html, body, #app, .v-application {
+    /* Theme Backgrounds: Dark & Light */
+    .theme--dark.v-application {
       background: #080d1a url('/img/themes/mainBackground-futuristic.png') no-repeat center top fixed !important;
       background-size: cover !important;
       background-color: #080d1a !important;
+    }
+    .theme--light.v-application {
+      background: #f1f5f9 url('/img/themes/mainBackground-futuristic-light.png') no-repeat center top fixed !important;
+      background-size: cover !important;
+      background-color: #f1f5f9 !important;
     }
 
     /* True Glassmorphic Top Bar - Narrow 56px height (Locked in) */
@@ -47,17 +52,30 @@
       height: 56px !important;
       max-height: 56px !important;
       z-index: 1000 !important;
-      background: rgba(8, 14, 26, 0.6) !important;
-      background-color: rgba(8, 14, 26, 0.6) !important;
-      backdrop-filter: blur(20px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-      border-bottom: 1px solid rgba(0, 229, 255, 0.3) !important;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(0, 229, 255, 0.15) !important;
       transform: none !important;
       overflow: visible !important;
     }
 
-    /* Inner topbar content - narrow 56px */
+    .theme--dark header.v-app-bar.topbar,
+    .theme--dark .topbar {
+      background: rgba(8, 14, 26, 0.65) !important;
+      background-color: rgba(8, 14, 26, 0.65) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+      border-bottom: 1px solid rgba(0, 229, 255, 0.3) !important;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(0, 229, 255, 0.15) !important;
+    }
+
+    .theme--light header.v-app-bar.topbar,
+    .theme--light .topbar {
+      background: rgba(255, 255, 255, 0.85) !important;
+      background-color: rgba(255, 255, 255, 0.85) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08) !important;
+    }
+
     header.v-app-bar.topbar .v-toolbar__content,
     header.v-app-bar .v-toolbar__content {
       background: transparent !important;
@@ -90,10 +108,17 @@
       line-height: 1.5 !important;
       letter-spacing: normal !important;
       text-transform: none !important;
-      color: #ffffff !important;
       display: flex !important;
       align-items: center !important;
       padding-left: 12px !important;
+    }
+    .theme--dark .topbar .v-toolbar__title,
+    .theme--dark header.v-app-bar .v-toolbar__title {
+      color: #ffffff !important;
+    }
+    .theme--light .topbar .v-toolbar__title,
+    .theme--light header.v-app-bar .v-toolbar__title {
+      color: #0f172a !important;
     }
 
     /* Original borderless 3-line hamburger icon (clean, no square box) */
@@ -107,17 +132,55 @@
       border: none !important;
       border-radius: 4px !important;
     }
-    .topbar .v-app-bar__nav-icon .v-icon,
-    header.v-app-bar .v-app-bar__nav-icon .v-icon {
+    .theme--dark .topbar .v-app-bar__nav-icon .v-icon,
+    .theme--dark header.v-app-bar .v-app-bar__nav-icon .v-icon {
       font-size: 24px !important;
       color: rgba(255, 255, 255, 0.9) !important;
+    }
+    .theme--light .topbar .v-app-bar__nav-icon .v-icon,
+    .theme--light header.v-app-bar .v-app-bar__nav-icon .v-icon {
+      font-size: 24px !important;
+      color: #0f172a !important;
     }
     .topbar .v-app-bar__nav-icon:hover {
       background: rgba(0, 229, 255, 0.12) !important;
       color: #00e5ff !important;
     }
 
-    /* Cards & Panel Toolbars: Keep strictly in normal document flow so headlines NEVER overlap */
+    /* Card Old Charm Restoration: subtle glassmorphic styling, borders, and headers */
+    .v-card,
+    .glass-panel,
+    .v-sheet.panel {
+      position: relative !important;
+      border-radius: 8px !important;
+      transition: all 0.25s ease !important;
+    }
+    .theme--dark .v-card,
+    .theme--dark .glass-panel,
+    .theme--dark .v-sheet.panel {
+      background-color: rgba(14, 22, 34, 0.75) !important;
+      border: 1px solid rgba(0, 229, 255, 0.18) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
+    }
+    .theme--dark .v-card:hover,
+    .theme--dark .glass-panel:hover {
+      border-color: rgba(0, 229, 255, 0.4) !important;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 229, 255, 0.15) !important;
+    }
+
+    .theme--light .v-card,
+    .theme--light .glass-panel,
+    .theme--light .v-sheet.panel {
+      background-color: rgba(255, 255, 255, 0.85) !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06) !important;
+    }
+
+    /* Cards & Panel Toolbars: Keep strictly in normal document flow with clean bottom border */
     .panel-toolbar,
     header.panel-toolbar,
     .v-card header,
@@ -129,21 +192,24 @@
       z-index: 1 !important;
       box-shadow: none !important;
       transform: none !important;
+      background: transparent !important;
       background-color: transparent !important;
     }
+    .theme--dark .panel-toolbar,
+    .theme--dark .v-card .v-toolbar {
+      border-bottom: 1px solid rgba(0, 229, 255, 0.12) !important;
+    }
+    .theme--light .panel-toolbar,
+    .theme--light .v-card .v-toolbar {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    }
 
-    /* Left Sidebar Drawer - Glassmorphism showing background wallpaper cleanly */
+    /* Left Sidebar Drawer - Dark / Charcoal-Gray Feel as requested */
     .v-navigation-drawer {
       z-index: 999 !important;
       top: 56px !important;
       height: calc(100vh - 56px) !important;
       max-height: calc(100vh - 56px) !important;
-      background: rgba(8, 16, 26, 0.72) !important;
-      background-color: rgba(8, 16, 26, 0.72) !important;
-      backdrop-filter: blur(20px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-      border-right: 1px solid rgba(0, 229, 255, 0.22) !important;
-      box-shadow: 4px 0 30px rgba(0, 0, 0, 0.45) !important;
       transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
     .v-navigation-drawer.v-navigation-drawer--open {
@@ -156,20 +222,100 @@
       pointer-events: none !important;
     }
 
+    /* Dark mode sidebar: comfortable dark/charcoal gray tone */
+    .theme--dark.v-navigation-drawer,
+    .theme--dark .v-navigation-drawer {
+      background: rgba(14, 20, 30, 0.90) !important;
+      background-color: rgba(14, 20, 30, 0.90) !important;
+      backdrop-filter: blur(20px) saturate(160%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+      border-right: 1px solid rgba(0, 229, 255, 0.15) !important;
+      box-shadow: 4px 0 25px rgba(0, 0, 0, 0.45) !important;
+    }
+    .theme--dark.v-navigation-drawer .v-list,
+    .theme--dark .v-navigation-drawer .v-list {
+      border-bottom: 1px solid rgba(0, 229, 255, 0.12) !important;
+    }
+    .theme--dark.v-navigation-drawer .v-list-item .v-list-item__title,
+    .theme--dark .v-navigation-drawer .v-list-item .v-list-item__title {
+      color: rgba(255, 255, 255, 0.88) !important;
+    }
+    .theme--dark.v-navigation-drawer .v-list-item .v-icon,
+    .theme--dark .v-navigation-drawer .v-list-item .v-icon {
+      color: rgba(255, 255, 255, 0.88) !important;
+    }
+    .theme--dark.v-navigation-drawer .v-list-item:hover,
+    .theme--dark .v-navigation-drawer .v-list-item:hover {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    .theme--dark.v-navigation-drawer .v-list-item:hover .v-list-item__title,
+    .theme--dark.v-navigation-drawer .v-list-item:hover .v-icon,
+    .theme--dark .v-navigation-drawer .v-list-item:hover .v-list-item__title,
+    .theme--dark .v-navigation-drawer .v-list-item:hover .v-icon {
+      color: #ffffff !important;
+    }
+    .theme--dark.v-navigation-drawer .v-list-item.v-list-item--active,
+    .theme--dark .v-navigation-drawer .v-list-item.v-list-item--active {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      border-right: 4px solid #00e5ff !important;
+    }
+    .theme--dark.v-navigation-drawer .v-list-item.v-list-item--active *,
+    .theme--dark .v-navigation-drawer .v-list-item.v-list-item--active * {
+      color: #ffffff !important;
+    }
+
+    /* Light mode sidebar */
+    .theme--light.v-navigation-drawer,
+    .theme--light .v-navigation-drawer {
+      background: rgba(248, 250, 252, 0.90) !important;
+      background-color: rgba(248, 250, 252, 0.90) !important;
+      backdrop-filter: blur(20px) saturate(160%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+      border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+      box-shadow: 2px 0 15px rgba(0, 0, 0, 0.06) !important;
+    }
+    .theme--light.v-navigation-drawer .v-list,
+    .theme--light .v-navigation-drawer .v-list {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+    }
+    .theme--light.v-navigation-drawer .v-list-item .v-list-item__title,
+    .theme--light .v-navigation-drawer .v-list-item .v-list-item__title {
+      color: #334155 !important;
+    }
+    .theme--light.v-navigation-drawer .v-list-item .v-icon,
+    .theme--light .v-navigation-drawer .v-list-item .v-icon {
+      color: #475569 !important;
+    }
+    .theme--light.v-navigation-drawer .v-list-item:hover,
+    .theme--light .v-navigation-drawer .v-list-item:hover {
+      background-color: rgba(0, 0, 0, 0.05) !important;
+    }
+    .theme--light.v-navigation-drawer .v-list-item:hover .v-list-item__title,
+    .theme--light.v-navigation-drawer .v-list-item:hover .v-icon,
+    .theme--light .v-navigation-drawer .v-list-item:hover .v-list-item__title,
+    .theme--light .v-navigation-drawer .v-list-item:hover .v-icon {
+      color: #0f172a !important;
+    }
+    .theme--light.v-navigation-drawer .v-list-item.v-list-item--active,
+    .theme--light .v-navigation-drawer .v-list-item.v-list-item--active {
+      background-color: rgba(0, 180, 216, 0.12) !important;
+      border-right: 4px solid #00b4d8 !important;
+    }
+    .theme--light.v-navigation-drawer .v-list-item.v-list-item--active *,
+    .theme--light .v-navigation-drawer .v-list-item.v-list-item--active * {
+      color: #0369a1 !important;
+      font-weight: 700 !important;
+    }
+
+    /* Common Sidebar List Item styling */
     .v-navigation-drawer .v-navigation-drawer__content {
       padding-top: 8px !important;
       background: transparent !important;
-      background-color: transparent !important;
-      display: flex !important;
-      flex-direction: column !important;
     }
-
-    /* Clean legacy sidebar items list */
     .v-navigation-drawer .v-list {
       padding-top: 4px !important;
       padding-bottom: 8px !important;
       background: transparent !important;
-      border-bottom: 1px solid rgba(0, 229, 255, 0.18) !important;
     }
     .v-navigation-drawer .v-list-item {
       min-height: 44px !important;
@@ -178,90 +324,26 @@
       border: none !important;
       outline: none !important;
       box-shadow: none !important;
-      background: transparent !important;
       transition: background-color 0.15s ease, color 0.15s ease !important;
     }
     .v-navigation-drawer .v-list-item:before {
       display: none !important;
     }
     .v-navigation-drawer .v-list-item .v-list-item__title {
-      color: #ffffff !important;
-      opacity: 0.9 !important;
       font-size: 13.5px !important;
       font-weight: 600 !important;
       text-transform: uppercase !important;
       letter-spacing: 0.5px !important;
     }
-    .v-navigation-drawer .v-list-item .v-icon,
-    .v-navigation-drawer .v-list-item .v-list-item__icon .v-icon {
-      color: #ffffff !important;
-      opacity: 0.9 !important;
+    .v-navigation-drawer .v-list-item .v-icon {
       font-size: 20px !important;
     }
-    .v-navigation-drawer .v-list-item:hover {
-      background-color: rgba(255, 255, 255, 0.08) !important;
-    }
-    .v-navigation-drawer .v-list-item:hover .v-list-item__title,
-    .v-navigation-drawer .v-list-item:hover .v-icon {
-      opacity: 1 !important;
-      color: #ffffff !important;
-    }
 
-    /* Active item in sidebar - exactly like reference photo (white text + cyan right border bar) */
-    .v-navigation-drawer .v-list-item.v-list-item--active,
-    .v-navigation-drawer .v-list-item.primary--text {
-      background-color: rgba(255, 255, 255, 0.05) !important;
-      border-top: none !important;
-      border-bottom: none !important;
-      border-left: none !important;
-      border-right: 4px solid #00e5ff !important;
-      border-radius: 0 !important;
-      outline: none !important;
-      box-shadow: none !important;
-    }
-    .v-navigation-drawer .v-list-item.v-list-item--active,
-    .v-navigation-drawer .v-list-item.v-list-item--active *,
-    .v-navigation-drawer .v-list-item.v-list-item--active .v-list-item__title,
-    .v-navigation-drawer .v-list-item.v-list-item--active .v-icon,
-    .v-navigation-drawer .v-list-item.primary--text,
-    .v-navigation-drawer .v-list-item.primary--text *,
-    .v-navigation-drawer .v-list-item.primary--text .v-list-item__title,
-    .v-navigation-drawer .v-list-item.primary--text .v-icon {
-      color: #ffffff !important;
-      opacity: 1 !important;
-    }
-
-    
-    .v-navigation-drawer .v-list-item--active .v-list-item__title,
-    .v-navigation-drawer .v-list-item--active .v-icon,
-    .v-navigation-drawer .v-list-item--active *,
-    .v-navigation-drawer .primary--text .v-list-item__title,
-    .v-navigation-drawer .primary--text .v-icon,
-    .v-navigation-drawer .primary--text * {
-      color: #ffffff !important;
-    }
-
-    /* Circular Elephant Emblem Medallion at the bottom of the sidebar */
-    .v-navigation-drawer::after {
-      content: '';
-      display: block;
-      position: absolute;
-      bottom: 18px;
-      left: 18px;
-      width: 76px;
-      height: 76px;
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background-color: #ffffff;
-      background-image: url('/img/elephant-watermark-dark.png');
-      background-size: 54px 54px;
-      background-repeat: no-repeat;
-      background-position: center;
-      border: 3px solid rgba(255, 255, 255, 0.85);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 16px rgba(0, 229, 255, 0.35);
-      pointer-events: none;
-      z-index: 10;
+    /* NO Elephant Medallion Emblem */
+    .v-navigation-drawer::after,
+    .v-navigation-drawer .v-navigation-drawer__content::after {
+      display: none !important;
+      content: none !important;
     }
 
     /* Dialogs, Menus, Overlays - top layer */
@@ -277,7 +359,7 @@
     }
 
     /* ProBharath Ecosystem Ambient Elephant Watermark */
-    .v-main::before {
+    .theme--dark .v-main::before {
       content: '';
       position: fixed;
       bottom: 24px;

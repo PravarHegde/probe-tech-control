@@ -1280,6 +1280,14 @@ menu_network() {
 
 # --- MAIN LOOP ---
 
+# CLI Argument Handling
+if [ "$1" == "--auto" ] || [ "$1" == "1" ] || [ "$1" == "-y" ] || [ "$1" == "--ptc" ]; then
+    echo -e "${GREEN}Starting Automatic Setup for Probe Tech Control...${NC}"
+    auto_install_single
+    echo -e "${GREEN}Installation Complete.${NC}"
+    exit 0
+fi
+
 # Check for seamless auto-install on fresh systems
 if [ $# -eq 0 ]; then
     # Check if critical components are missing (Fresh Install State)
@@ -1319,6 +1327,11 @@ if [ $# -eq 0 ]; then
 fi
 
 while true; do
+    if [ ! -t 0 ] && [ ! -c /dev/tty ]; then
+        echo -e "${GOLD}Non-interactive session detected. Auto-running setup...${NC}"
+        auto_install_single
+        exit 0
+    fi
     clear
     check_status
     

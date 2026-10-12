@@ -48,4 +48,4 @@ git sparse-checkout set install.sh scripts/* probe_tech.cfg requirements.txt pro
 # Run the installer
 cd "$TARGET_DIR"
 chmod +x install.sh
-./install.sh
+./install.sh "$@"

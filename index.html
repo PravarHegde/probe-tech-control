@@ -204,12 +204,14 @@
       border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
     }
 
-    /* Left Sidebar Drawer - Dark / Charcoal-Gray Feel as requested */
+            /* Left Sidebar Drawer - Dark / Charcoal-Gray Feel with ZERO Gap beneath Topbar */
     .v-navigation-drawer {
       z-index: 999 !important;
-      top: 56px !important;
-      height: calc(100vh - 56px) !important;
-      max-height: calc(100vh - 56px) !important;
+      top: 0 !important;
+      height: 100vh !important;
+      max-height: 100vh !important;
+      padding-top: 56px !important;
+      box-sizing: border-box !important;
       transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
     .v-navigation-drawer.v-navigation-drawer--open {
@@ -307,19 +309,20 @@
       font-weight: 700 !important;
     }
 
-    /* Common Sidebar List Item styling */
+    /* Common Sidebar List Item styling - zero top padding removes black gap */
     .v-navigation-drawer .v-navigation-drawer__content {
-      padding-top: 8px !important;
+      padding-top: 0 !important;
+      margin-top: 0 !important;
       background: transparent !important;
     }
     .v-navigation-drawer .v-list {
-      padding-top: 4px !important;
+      padding-top: 0 !important;
       padding-bottom: 8px !important;
       background: transparent !important;
     }
     .v-navigation-drawer .v-list-item {
       min-height: 44px !important;
-      margin: 1px 0 !important;
+      margin: 0 !important;
       border-radius: 0 !important;
       border: none !important;
       outline: none !important;
@@ -346,7 +349,7 @@
       content: none !important;
     }
 
-    /* Dialogs, Menus, Overlays - top layer */
+        /* Dialogs, Menus, Overlays - top layer */
     .v-dialog__content,
     .v-menu__content,
     .v-overlay {

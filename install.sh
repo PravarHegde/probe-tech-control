@@ -442,6 +442,11 @@ install_probe_tech() {
         echo -e "${RED}Error: probe_tech.cfg source missing in script directory.${NC}"
     fi
 
+    # Ensure theme folder exists to prevent 404 console warnings in Web UI
+    mkdir -p "${SELECTED_CONF_DIR}/theme"
+    [ ! -f "${SELECTED_CONF_DIR}/theme/default.json" ] && echo '{}' > "${SELECTED_CONF_DIR}/theme/default.json"
+    [ ! -f "${SELECTED_CONF_DIR}/theme/maintenance.json" ] && echo '{}' > "${SELECTED_CONF_DIR}/theme/maintenance.json"
+
     if [ -f "$PRINTER_CFG" ]; then
         if ! grep -q "include probe_tech.cfg" "$PRINTER_CFG"; then
              # Remove old scripts/ link if present (cleanup)

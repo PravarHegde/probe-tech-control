@@ -35,7 +35,7 @@ fi
 
 # Use modern partial clone to download ONLY the needed scripts (no history, no blobs/files initially)
 echo -e "${BLUE}Initializing partial clone...${NC}"
-git clone -b "${PROBETECH_BRANCH:-3.4v}" --depth 1 --filter=blob:none --sparse https://github.com/PravarHegde/probe-tech-control.git "$TARGET_DIR"
+git clone -b "${PROBETECH_BRANCH:-3.47v}" --depth 1 --filter=blob:none --sparse https://github.com/PravarHegde/probe-tech-control.git "$TARGET_DIR"
 
 cd "$TARGET_DIR" || exit 1
 
@@ -43,7 +43,7 @@ cd "$TARGET_DIR" || exit 1
 # Explicitly select only the files we need (Ignoring everything else, like the big zip)
 echo -e "${BLUE}Checking out scripts...${NC}"
 git sparse-checkout init --no-cone
-git sparse-checkout set install.sh scripts/* probe_tech.cfg requirements.txt
+git sparse-checkout set install.sh scripts/* probe_tech.cfg requirements.txt probe-tech-control.zip
 
 # Run the installer
 cd "$TARGET_DIR"

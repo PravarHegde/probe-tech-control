@@ -1,7 +1,7 @@
 <p align="center">
   <a>
     <img src="logo.svg" alt='Probe Tech Control logo' height="152">
-    <h1 align="center">Probe Tech Control v3.2.9</h1>
+    <h1 align="center">Probe Tech Control v3.4.7</h1>
   </a>
 </p>
 <p align="center">
@@ -37,7 +37,7 @@ Choose the method that best suits your needs:
 ### Option 1: Quick Install (Recommended)
 Run this single command to download and install automatically (Lightweight):
 ```bash
-wget -O - https://raw.githubusercontent.com/PravarHegde/probe-tech-control/master/probetech.sh | bash
+wget -O - https://raw.githubusercontent.com/PravarHegde/probe-tech-control/develop/probetech.sh | bash
 ```
 *Supports seamless auto-installation on fresh systems.*
 
@@ -59,7 +59,7 @@ If you have a broken installation and want to start fresh:
 
 **A) Quick Fresh Start (Recommended):**
 ```bash
-cd ~ && rm -rf ptc ptc_installer probe-tech-control && wget -O - https://raw.githubusercontent.com/PravarHegde/probe-tech-control/master/probetech.sh | bash
+cd ~ && rm -rf ptc ptc_installer probe-tech-control && wget -O - https://raw.githubusercontent.com/PravarHegde/probe-tech-control/develop/probetech.sh | bash
 ```
 
 **B) Manual Fresh Start (Developer):**

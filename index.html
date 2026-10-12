@@ -35,7 +35,7 @@
       background-color: #080d1a !important;
     }
 
-    /* True Glassmorphic Top Bar - Narrow 56px height */
+    /* True Glassmorphic Top Bar - Narrow 56px height (Locked in) */
     header.v-app-bar.topbar,
     header.v-app-bar,
     .topbar.v-sheet,
@@ -132,18 +132,18 @@
       background-color: transparent !important;
     }
 
-    /* Left Sidebar Drawer - Retrieved Exact Clean Legacy Tone from Reference Photo */
+    /* Left Sidebar Drawer - Glassmorphism showing background wallpaper cleanly */
     .v-navigation-drawer {
       z-index: 999 !important;
       top: 56px !important;
       height: calc(100vh - 56px) !important;
       max-height: calc(100vh - 56px) !important;
-      background: #0e1724 !important;
-      background-color: #0e1724 !important;
-      background-image: none !important;
-      border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
+      background: rgba(8, 16, 26, 0.72) !important;
+      background-color: rgba(8, 16, 26, 0.72) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+      border-right: 1px solid rgba(0, 229, 255, 0.22) !important;
+      box-shadow: 4px 0 30px rgba(0, 0, 0, 0.45) !important;
       transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
     .v-navigation-drawer.v-navigation-drawer--open {
@@ -158,15 +158,18 @@
 
     .v-navigation-drawer .v-navigation-drawer__content {
       padding-top: 8px !important;
-      background: #0e1724 !important;
-      background-color: #0e1724 !important;
-      background-image: none !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      display: flex !important;
+      flex-direction: column !important;
     }
 
-    /* Clean legacy sidebar items */
+    /* Clean legacy sidebar items list */
     .v-navigation-drawer .v-list {
       padding-top: 4px !important;
+      padding-bottom: 8px !important;
       background: transparent !important;
+      border-bottom: 1px solid rgba(0, 229, 255, 0.18) !important;
     }
     .v-navigation-drawer .v-list-item {
       min-height: 44px !important;
@@ -182,7 +185,8 @@
       display: none !important;
     }
     .v-navigation-drawer .v-list-item .v-list-item__title {
-      color: rgba(255, 255, 255, 0.85) !important;
+      color: #ffffff !important;
+      opacity: 0.9 !important;
       font-size: 13.5px !important;
       font-weight: 600 !important;
       text-transform: uppercase !important;
@@ -190,7 +194,8 @@
     }
     .v-navigation-drawer .v-list-item .v-icon,
     .v-navigation-drawer .v-list-item .v-list-item__icon .v-icon {
-      color: rgba(255, 255, 255, 0.85) !important;
+      color: #ffffff !important;
+      opacity: 0.9 !important;
       font-size: 20px !important;
     }
     .v-navigation-drawer .v-list-item:hover {
@@ -198,10 +203,11 @@
     }
     .v-navigation-drawer .v-list-item:hover .v-list-item__title,
     .v-navigation-drawer .v-list-item:hover .v-icon {
+      opacity: 1 !important;
       color: #ffffff !important;
     }
 
-    /* Active item in sidebar - exactly like MACHINE in reference photo (white text + cyan right border bar) */
+    /* Active item in sidebar - exactly like reference photo (white text + cyan right border bar) */
     .v-navigation-drawer .v-list-item.v-list-item--active,
     .v-navigation-drawer .v-list-item.primary--text {
       background-color: rgba(255, 255, 255, 0.05) !important;
@@ -222,6 +228,40 @@
     .v-navigation-drawer .v-list-item.primary--text .v-list-item__title,
     .v-navigation-drawer .v-list-item.primary--text .v-icon {
       color: #ffffff !important;
+      opacity: 1 !important;
+    }
+
+    
+    .v-navigation-drawer .v-list-item--active .v-list-item__title,
+    .v-navigation-drawer .v-list-item--active .v-icon,
+    .v-navigation-drawer .v-list-item--active *,
+    .v-navigation-drawer .primary--text .v-list-item__title,
+    .v-navigation-drawer .primary--text .v-icon,
+    .v-navigation-drawer .primary--text * {
+      color: #ffffff !important;
+    }
+
+    /* Circular Elephant Emblem Medallion at the bottom of the sidebar */
+    .v-navigation-drawer::after {
+      content: '';
+      display: block;
+      position: absolute;
+      bottom: 18px;
+      left: 18px;
+      width: 76px;
+      height: 76px;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background-color: #ffffff;
+      background-image: url('/img/elephant-watermark-dark.png');
+      background-size: 54px 54px;
+      background-repeat: no-repeat;
+      background-position: center;
+      border: 3px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 16px rgba(0, 229, 255, 0.35);
+      pointer-events: none;
+      z-index: 10;
     }
 
     /* Dialogs, Menus, Overlays - top layer */

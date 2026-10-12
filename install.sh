@@ -878,7 +878,9 @@ verify_health() {
 
     echo ""
     echo -e "${CYAN}Installation process finished.${NC}"
-    read -p "Press Enter to return to menu..." < /dev/tty
+    if (exec < /dev/tty) 2>/dev/null; then
+        read -p "Press Enter to return to menu..." < /dev/tty
+    fi
 }
 
 # --- BACKUP & RESTORE ---
@@ -1302,8 +1304,13 @@ if [ $# -eq 0 ]; then
         # Visible Countdown Loop
         for i in {30..1}; do
             echo -ne "\r${GOLD}Auto-Setup starting in: ${i} seconds...   ${NC}"
-            read -t 1 -n 1 key < /dev/tty
-            input_status=$?
+            if (exec < /dev/tty) 2>/dev/null; then
+                read -t 1 -n 1 key < /dev/tty
+                input_status=$?
+            else
+                sleep 1
+                input_status=1
+            fi
 
             if [ $input_status -eq 0 ]; then
                 if [ "$key" == "" ]; then
@@ -1327,7 +1334,7 @@ if [ $# -eq 0 ]; then
 fi
 
 while true; do
-    if [ ! -t 0 ] && [ ! -c /dev/tty ]; then
+    if ! (exec < /dev/tty) 2>/dev/null && [ ! -t 0 ]; then
         echo -e "${GOLD}Non-interactive session detected. Auto-running setup...${NC}"
         auto_install_single
         exit 0
@@ -1346,7 +1353,15 @@ while true; do
     echo "9) Auto-Fix / Repair Configuration"
     echo "10) Quit"
     echo ""
-    read -p "Select option: " main_c < /dev/tty
+    if (exec < /dev/tty) 2>/dev/null; then
+        read -p "Select option: " main_c < /dev/tty || exit 0
+    elif [ -t 0 ]; then
+        read -p "Select option: " main_c || exit 0
+    else
+        echo -e "${GOLD}Non-interactive mode. Auto-running setup...${NC}"
+        auto_install_single
+        exit 0
+    fi
     
     case $main_c in
         1) auto_install_single ;;

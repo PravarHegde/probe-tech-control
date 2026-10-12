@@ -27,55 +27,215 @@
   <link rel="stylesheet" crossorigin href="/assets/overlayscrollbars-BJn_P54_.css">
   <link rel="stylesheet" crossorigin href="/assets/vuetify-BSwS9o2d.css">
   <link rel="stylesheet" crossorigin href="/assets/index-BPou373M.css">
-<link rel="manifest" href="/manifest.webmanifest">  <style>
-    /* ProBharath Probe Tech Control Layout & Solid Top Bar Fix */
-    header,
+<link rel="manifest" href="/manifest.webmanifest">            <style>
+    /* Global Background spanning entire viewport from Y=0 */
+    html, body, #app, .v-application {
+      background: #080d1a url('/img/themes/mainBackground-futuristic.png') no-repeat center top fixed !important;
+      background-size: cover !important;
+      background-color: #080d1a !important;
+    }
+
+    /* True Glassmorphic Top Bar - Narrow 56px height */
+    header.v-app-bar.topbar,
     header.v-app-bar,
-    header.v-toolbar,
-    header.topbar,
-    .v-app-bar,
+    .topbar.v-sheet,
     .topbar {
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
       right: 0 !important;
-      z-index: 2000000 !important;
-      background-color: #121622 !important;
-      background: linear-gradient(180deg, #151a28 0%, #0f131f 100%) !important;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.95) !important;
+      height: 56px !important;
+      max-height: 56px !important;
+      z-index: 1000 !important;
+      background: rgba(8, 14, 26, 0.6) !important;
+      background-color: rgba(8, 14, 26, 0.6) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+      border-bottom: 1px solid rgba(0, 229, 255, 0.3) !important;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(0, 229, 255, 0.15) !important;
       transform: none !important;
+      overflow: visible !important;
     }
+
+    /* Inner topbar content - narrow 56px */
+    header.v-app-bar.topbar .v-toolbar__content,
+    header.v-app-bar .v-toolbar__content {
+      background: transparent !important;
+      background-color: transparent !important;
+      height: 56px !important;
+      max-height: 56px !important;
+      overflow: visible !important;
+    }
+
+    /* ProBharath Logo: Exact 68px size with glow matching user specification */
+    header.v-app-bar .v-toolbar__title img,
+    header.v-app-bar .v-toolbar__content img,
+    header.v-app-bar .nav-logo,
+    .topbar .nav-logo,
+    .nav-logo {
+      height: 68px !important;
+      max-height: 68px !important;
+      width: auto !important;
+      object-fit: contain !important;
+      filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.55)) !important;
+    }
+
+    /* Topbar Title: Exact retrieved font from original reference photo (Roboto 400 1.25rem) */
+    .topbar .v-toolbar__title,
+    header.v-app-bar .v-toolbar__title,
+    .v-toolbar__title {
+      font-family: Roboto, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif !important;
+      font-size: 1.25rem !important;
+      font-weight: 400 !important;
+      line-height: 1.5 !important;
+      letter-spacing: normal !important;
+      text-transform: none !important;
+      color: #ffffff !important;
+      display: flex !important;
+      align-items: center !important;
+      padding-left: 12px !important;
+    }
+
+    /* Original borderless 3-line hamburger icon (clean, no square box) */
+    .topbar .v-app-bar__nav-icon,
+    header.v-app-bar .v-app-bar__nav-icon,
+    .topbar .v-btn.v-btn--icon.v-app-bar__nav-icon,
+    .v-app-bar .v-app-bar__nav-icon {
+      background: transparent !important;
+      background-color: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
+      border-radius: 4px !important;
+    }
+    .topbar .v-app-bar__nav-icon .v-icon,
+    header.v-app-bar .v-app-bar__nav-icon .v-icon {
+      font-size: 24px !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+    .topbar .v-app-bar__nav-icon:hover {
+      background: rgba(0, 229, 255, 0.12) !important;
+      color: #00e5ff !important;
+    }
+
+    /* Cards & Panel Toolbars: Keep strictly in normal document flow so headlines NEVER overlap */
+    .panel-toolbar,
+    header.panel-toolbar,
+    .v-card header,
+    .v-card .v-toolbar {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      z-index: 1 !important;
+      box-shadow: none !important;
+      transform: none !important;
+      background-color: transparent !important;
+    }
+
+    /* Left Sidebar Drawer - Retrieved Exact Clean Legacy Tone from Reference Photo */
     .v-navigation-drawer {
-      z-index: 1999000 !important;
+      z-index: 999 !important;
+      top: 56px !important;
+      height: calc(100vh - 56px) !important;
+      max-height: calc(100vh - 56px) !important;
+      background: #0e1724 !important;
+      background-color: #0e1724 !important;
+      background-image: none !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
+    .v-navigation-drawer.v-navigation-drawer--open {
+      transform: translateX(0) !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
+    }
+    .v-navigation-drawer.v-navigation-drawer--close {
+      transform: translateX(-220px) !important;
+      pointer-events: none !important;
+    }
+
+    .v-navigation-drawer .v-navigation-drawer__content {
+      padding-top: 8px !important;
+      background: #0e1724 !important;
+      background-color: #0e1724 !important;
+      background-image: none !important;
+    }
+
+    /* Clean legacy sidebar items */
+    .v-navigation-drawer .v-list {
+      padding-top: 4px !important;
+      background: transparent !important;
+    }
+    .v-navigation-drawer .v-list-item {
+      min-height: 44px !important;
+      margin: 1px 0 !important;
+      border-radius: 0 !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+      transition: background-color 0.15s ease, color 0.15s ease !important;
+    }
+    .v-navigation-drawer .v-list-item:before {
+      display: none !important;
+    }
+    .v-navigation-drawer .v-list-item .v-list-item__title {
+      color: rgba(255, 255, 255, 0.85) !important;
+      font-size: 13.5px !important;
+      font-weight: 600 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+    }
+    .v-navigation-drawer .v-list-item .v-icon,
+    .v-navigation-drawer .v-list-item .v-list-item__icon .v-icon {
+      color: rgba(255, 255, 255, 0.85) !important;
+      font-size: 20px !important;
+    }
+    .v-navigation-drawer .v-list-item:hover {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    .v-navigation-drawer .v-list-item:hover .v-list-item__title,
+    .v-navigation-drawer .v-list-item:hover .v-icon {
+      color: #ffffff !important;
+    }
+
+    /* Active item in sidebar - exactly like MACHINE in reference photo (white text + cyan right border bar) */
+    .v-navigation-drawer .v-list-item.v-list-item--active,
+    .v-navigation-drawer .v-list-item.primary--text {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      border-top: none !important;
+      border-bottom: none !important;
+      border-left: none !important;
+      border-right: 4px solid #00e5ff !important;
+      border-radius: 0 !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    .v-navigation-drawer .v-list-item.v-list-item--active,
+    .v-navigation-drawer .v-list-item.v-list-item--active *,
+    .v-navigation-drawer .v-list-item.v-list-item--active .v-list-item__title,
+    .v-navigation-drawer .v-list-item.v-list-item--active .v-icon,
+    .v-navigation-drawer .v-list-item.primary--text,
+    .v-navigation-drawer .v-list-item.primary--text *,
+    .v-navigation-drawer .v-list-item.primary--text .v-list-item__title,
+    .v-navigation-drawer .v-list-item.primary--text .v-icon {
+      color: #ffffff !important;
+    }
+
+    /* Dialogs, Menus, Overlays - top layer */
     .v-dialog__content,
     .v-menu__content,
     .v-overlay {
       z-index: 2500000 !important;
     }
-    /* Strictly neutralize rogue z-index on dashboard cards, scrollbars and list items */
-    .v-main,
-    .v-main *,
-    .v-main .os-host,
-    .v-main .os-padding,
-    .v-main .os-viewport,
-    .v-main .os-content,
-    .v-main .v-list-item,
-    .v-main .v-list-item__content,
-    .v-main .v-list-item__icon,
-    .v-main .v-card,
-    .v-main .glass-panel,
-    .v-main .v-sheet {
-      z-index: 1 !important;
-    }
+
+    /* Main view proper top padding matching 56px narrow header */
     .v-main {
-      padding-top: 104px !important;
-      z-index: 1 !important;
+      padding-top: 56px !important;
     }
-    .v-main__wrap {
-      padding-top: 20px !important;
-    }
+
     /* ProBharath Ecosystem Ambient Elephant Watermark */
     .v-main::before {
       content: '';
@@ -90,34 +250,26 @@
       background-position: center;
       opacity: 0.10;
       pointer-events: none;
-      z-index: 1;
+      z-index: 0;
       filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.12));
     }
-    .v-navigation-drawer .v-navigation-drawer__content::after {
-      content: '';
-      display: block;
-      position: absolute;
-      bottom: 56px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 44px;
-      height: 44px;
-      background-image: url('/img/elephant-watermark-dark.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      opacity: 0.16;
-      pointer-events: none;
-    }
   </style>
-  <script>
-    // Ensure default page always lands directly on Dashboard
+    <script>
+    // Ensure default page always lands directly on Dashboard and drawer is open
     (function() {
-      if (!window.location.hash || window.location.hash === '' || window.location.hash === '#/dashboard') {
-        window.location.hash = '#/';
-      }
+      try {
+        if (!window.location.hash || window.location.hash === '' || window.location.hash === '#/dashboard') {
+          window.location.hash = '#/';
+        }
+        if (localStorage.getItem('naviDrawer') === 'false' || localStorage.getItem('naviDrawer') === null) {
+          localStorage.setItem('naviDrawer', 'true');
+        }
+      } catch (_) {}
     })();
   </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body style="background-color: #121212">

@@ -1,12 +1,18 @@
 <p align="center">
   <a>
     <img src="logo.svg" alt='Probe Tech Control logo' height="152">
-    <h1 align="center">Probe Tech Control v3.4.7</h1>
+    <h1 align="center">Probe Tech Control v3.5</h1>
   </a>
 </p>
 <p align="center">
   The highly autonomous, AI-driven 3D Printer manufacturing orchestrator and control interface.
 </p>
+
+> [!IMPORTANT]
+> **Important Milestone Backup: Version 3.5**
+> - **Unified Cloud Relay & Local Connectivity**: Seamless two-way integration with ProConnect Cloud relay tunneling (`probharath.com/proconnect`) and local IP network operation (`:8080`).
+> - **Auto-Select Dashboard**: Guarantees immediate initialization of the Dashboard tab with live hardware telemetry (Toolhead, Temperatures, Real-time G-Code Console).
+> - **Locked Glassmorphic Interface**: Persistent 56px topbar, elevated navigation layer, and glowing cyan indicators.
 
 ## ✨ The AI Manufacturing Ecosystem
 

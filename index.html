@@ -417,14 +417,19 @@
     .theme--dark .v-navigation-drawer .v-list-item:hover .v-icon {
       color: #ffffff !important;
     }
+    .theme--dark .custom-sidebar-item.active-nav-item,
     .theme--dark.v-navigation-drawer .v-list-item.v-list-item--active,
     .theme--dark .v-navigation-drawer .v-list-item.v-list-item--active {
-      background-color: rgba(255, 255, 255, 0.05) !important;
-      border-right: 4px solid #00e5ff !important;
+      background-color: rgba(0, 240, 255, 0.14) !important;
+      border-right: 4px solid #00f0ff !important;
+      box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.12) !important;
     }
+    .theme--dark .custom-sidebar-item.active-nav-item *,
     .theme--dark.v-navigation-drawer .v-list-item.v-list-item--active *,
     .theme--dark .v-navigation-drawer .v-list-item.v-list-item--active * {
-      color: #ffffff !important;
+      color: #00f0ff !important;
+      font-weight: 700 !important;
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.4) !important;
     }
 
     /* Light mode sidebar */
@@ -551,6 +556,50 @@
           localStorage.setItem('naviDrawer', 'true');
         }
       } catch (_) {}
+
+      // Auto-select Dashboard route on initial load so dashboard cards are rendered immediately
+      var selectAttempts = 0;
+      var autoSelectTimer = setInterval(function() {
+        selectAttempts++;
+        var hasCards = document.querySelector('#content .v-card, .v-main .v-card, #page-container .v-card, .v-main .v-data-table');
+        var dialog = document.querySelector('.the-connection-dialog');
+
+        if (hasCards) {
+          if (dialog) {
+            var dialogWrap = dialog.closest('.v-dialog__content');
+            if (dialogWrap) {
+              dialogWrap.style.setProperty('display', 'none', 'important');
+              dialogWrap.style.setProperty('visibility', 'hidden', 'important');
+            }
+          }
+          clearInterval(autoSelectTimer);
+          return;
+        }
+
+        // If user already clicked another tab, don't force dashboard
+        var activeItem = document.querySelector('.active-nav-item, .v-list-item--active');
+        if (activeItem) {
+          var activeTxt = (activeItem.innerText || activeItem.textContent || '').trim().toUpperCase();
+          if (activeTxt && activeTxt.indexOf('DASHBOARD') === -1) {
+            clearInterval(autoSelectTimer);
+            return;
+          }
+        }
+
+        // Click the Dashboard item to activate route
+        var navItems = document.querySelectorAll('.custom-sidebar-item, .v-navigation-drawer .v-list-item, .v-navigation-drawer [role="button"]');
+        for (var i = 0; i < navItems.length; i++) {
+          var txt = (navItems[i].innerText || navItems[i].textContent || '').trim().toUpperCase();
+          if (txt.indexOf('DASHBOARD') !== -1) {
+            navItems[i].click();
+            break;
+          }
+        }
+
+        if (selectAttempts >= 30) {
+          clearInterval(autoSelectTimer);
+        }
+      }, 350);
     })();
   </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">

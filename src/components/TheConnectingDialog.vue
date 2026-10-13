@@ -31,8 +31,11 @@ A Probharath Technologies Product
                     <v-btn class="primary--text" @click="reconnect">{{ $t('ConnectionDialog.TryAgain') }}</v-btn>
                 </div>
             </v-card-text>
-            <v-card-text v-else class="pt-5">
+            <v-card-text v-else class="pt-5 text-center">
                 <v-progress-linear :color="progressBarColor" indeterminate />
+                <v-btn v-if="showDismissButton" text small color="primary" class="mt-4" @click="dismissDialog">
+                    Continue to Dashboard
+                </v-btn>
             </v-card-text>
         </panel>
     </v-dialog>
@@ -104,6 +107,23 @@ export default class TheConnectingDialog extends Mixins(BaseMixin, ThemeMixin) {
         if (!this.$store.state.socket.connectionFailedMessage) return null
 
         return `https://docs.mainsail.xyz/faq/mainsail_errors/connection-${this.connectionFailedMessage?.toLowerCase()}`
+    }
+
+    showDismissButton = false
+    dismissTimer: number | null = null
+
+    mounted() {
+        this.dismissTimer = window.setTimeout(() => {
+            this.showDismissButton = true
+        }, 5000)
+    }
+
+    beforeDestroy() {
+        if (this.dismissTimer) window.clearTimeout(this.dismissTimer)
+    }
+
+    dismissDialog() {
+        this.$store.commit('socket/clearInitializationList')
     }
 
     reconnect() {

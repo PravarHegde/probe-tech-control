@@ -19,65 +19,510 @@
     <meta name="msapplication-TileImage" content="/img/icons/favicon.svg" />
     <meta name="msapplication-TileColor" content="#d51f26" />
 
-  <script type="module" crossorigin src="/assets/index-Bks_zwNO.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/overlayscrollbars-CiKU261J.js">
-  <link rel="modulepreload" crossorigin href="/assets/vuetify-HSJperxJ.js">
-  <link rel="modulepreload" crossorigin href="/assets/echarts-Ce9dz-GT.js">
-  <link rel="modulepreload" crossorigin href="/assets/codemirror-Dbba2-Wz.js">
-  <link rel="stylesheet" crossorigin href="/assets/overlayscrollbars-BJn_P54_.css">
-  <link rel="stylesheet" crossorigin href="/assets/vuetify-BSwS9o2d.css">
-  <link rel="stylesheet" crossorigin href="/assets/index-BPou373M.css">
-<link rel="manifest" href="/manifest.webmanifest">  <style>
-    /* ProBharath Probe Tech Control Layout & Solid Top Bar Fix */
-    header,
+    <!-- ProConnect Cloud Adaptor -->
+  <script>
+    (function() {
+      try {
+        var host = window.location.hostname || "";
+        var isIp = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(host) || host === "localhost" || host.endsWith(".local");
+        var isCloud = host.indexOf("probharath.com") !== -1 || (!isIp && window.location.protocol === "https:");
+
+        if (isCloud) {
+          // Extract claimCode from query param, parent query param, or cookie
+          var urlParams = new URLSearchParams(window.location.search);
+          var activeClaim = urlParams.get("claimCode") || "";
+          if (!activeClaim) {
+            try {
+              if (window.parent && window.parent.location) {
+                var parentParams = new URLSearchParams(window.parent.location.search);
+                activeClaim = parentParams.get("claimCode") || "";
+              }
+            } catch(e) {}
+          }
+          if (!activeClaim) {
+            var match = document.cookie.match(/(?:^|;\s*)ptc_claim=([^;]+)/);
+            if (match) activeClaim = match[1];
+          }
+
+          // 1. Monkey-patch fetch to handle config.json and any stray :7125 requests
+          var origFetch = window.fetch;
+          window.fetch = function(url, options) {
+            if (typeof url === "string") {
+              if (url.indexOf("config.json") !== -1) {
+                return origFetch.apply(this, arguments).then(function(res) {
+                  return res.json().then(function(data) {
+                    data.hostname = host;
+                    data.port = 80;
+                    data.path = "";
+                    data.instancesDB = "moonraker";
+                    return new Response(JSON.stringify(data), {
+                      status: 200,
+                      headers: { "Content-Type": "application/json" }
+                    });
+                  });
+                }).catch(function() {
+                  var cfg = {
+                    defaultLocale: "en",
+                    defaultMode: "dark",
+                    defaultTheme: "futuristic",
+                    hostname: host,
+                    port: 80,
+                    path: "",
+                    instancesDB: "moonraker",
+                    instances: []
+                  };
+                  return new Response(JSON.stringify(cfg), {
+                    status: 200,
+                    headers: { "Content-Type": "application/json" }
+                  });
+                });
+              }
+              if (url.indexOf(":7125") !== -1) {
+                url = url.replace(/:7125(?=\/|$)/, "");
+                if (activeClaim && url.indexOf("claimCode=") === -1) {
+                  url += (url.indexOf("?") === -1 ? "?" : "&") + "claimCode=" + encodeURIComponent(activeClaim);
+                }
+                arguments[0] = url;
+              }
+            }
+            return origFetch.apply(this, arguments);
+          };
+
+          // 2. Monkey-patch XMLHttpRequest to redirect :7125
+          var origOpen = XMLHttpRequest.prototype.open;
+          XMLHttpRequest.prototype.open = function(method, url) {
+            if (typeof url === "string" && url.indexOf(":7125") !== -1) {
+              url = url.replace(/:7125(?=\/|$)/, "");
+              if (activeClaim && url.indexOf("claimCode=") === -1) {
+                url += (url.indexOf("?") === -1 ? "?" : "&") + "claimCode=" + encodeURIComponent(activeClaim);
+              }
+              arguments[1] = url;
+            }
+            return origOpen.apply(this, arguments);
+          };
+
+          // 3. Monkey-patch WebSocket to redirect :7125 to wss://probharath.com/websocket AND decode binary messages
+          var OrigWebSocket = window.WebSocket;
+          window.WebSocket = function(url, protocols) {
+            if (typeof url === "string") {
+              url = url.replace(/:7125(?=\/|$)/, "");
+              if (window.location.protocol === "https:") {
+                url = url.replace(/^ws:\/\//, "wss://");
+              }
+              if (activeClaim && url.indexOf("claimCode=") === -1) {
+                url += (url.indexOf("?") === -1 ? "?" : "&") + "claimCode=" + encodeURIComponent(activeClaim);
+              }
+            }
+            var ws = protocols !== undefined ? new OrigWebSocket(url, protocols) : new OrigWebSocket(url);
+
+            var _onmessage = null;
+            Object.defineProperty(ws, "onmessage", {
+              configurable: true,
+              enumerable: true,
+              get: function() { return _onmessage; },
+              set: function(fn) {
+                _onmessage = fn;
+                if (!fn) {
+                  ws.removeEventListener("message", internalHandler);
+                  return;
+                }
+                ws.addEventListener("message", internalHandler);
+              }
+            });
+
+            function internalHandler(event) {
+              if (!_onmessage) return;
+              var d = event.data;
+              if (d && typeof d !== "string") {
+                if (typeof d.text === "function") {
+                  d.text().then(function(txt) {
+                    dispatchDecoded(txt, event);
+                  }).catch(function() {
+                    dispatchDecoded(d, event);
+                  });
+                  return;
+                } else if (d instanceof ArrayBuffer || d.buffer) {
+                  try {
+                    var txt = new TextDecoder("utf-8").decode(d);
+                    dispatchDecoded(txt, event);
+                    return;
+                  } catch(e) {}
+                }
+              }
+              dispatchDecoded(d, event);
+            }
+
+            function dispatchDecoded(txt, event) {
+              try {
+                var evt = new MessageEvent("message", {
+                  data: txt,
+                  origin: event.origin,
+                  lastEventId: event.lastEventId,
+                  source: event.source,
+                  ports: event.ports
+                });
+                _onmessage.call(ws, evt);
+              } catch(e) {
+                var proxy = {
+                  data: txt,
+                  type: "message",
+                  target: ws,
+                  currentTarget: ws,
+                  origin: event.origin
+                };
+                _onmessage.call(ws, proxy);
+              }
+            }
+
+            return ws;
+          };
+          window.WebSocket.prototype = OrigWebSocket.prototype;
+          window.WebSocket.CONNECTING = OrigWebSocket.CONNECTING;
+          window.WebSocket.OPEN = OrigWebSocket.OPEN;
+          window.WebSocket.CLOSING = OrigWebSocket.CLOSING;
+          window.WebSocket.CLOSED = OrigWebSocket.CLOSED;
+        }
+      } catch(err) {
+        console.error("ProConnect Cloud Adaptor Error:", err);
+      }
+    })();
+  </script>
+<link rel="manifest" href="/assets/manifest-DGhN8tcV.webmanifest">            <style>
+    /* Theme Backgrounds: Dark & Light */
+    .theme--dark.v-application {
+      background: #080d1a url('/img/themes/mainBackground-futuristic.png') no-repeat center top fixed !important;
+      background-size: cover !important;
+      background-color: #080d1a !important;
+    }
+    .theme--light.v-application {
+      background: #f1f5f9 url('/img/themes/mainBackground-futuristic-light.png') no-repeat center top fixed !important;
+      background-size: cover !important;
+      background-color: #f1f5f9 !important;
+    }
+
+    /* True Glassmorphic Top Bar - Narrow 56px height (Locked in) */
+    header.v-app-bar.topbar,
     header.v-app-bar,
-    header.v-toolbar,
-    header.topbar,
-    .v-app-bar,
+    .topbar.v-sheet,
     .topbar {
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
       right: 0 !important;
-      z-index: 2000000 !important;
-      background-color: #121622 !important;
-      background: linear-gradient(180deg, #151a28 0%, #0f131f 100%) !important;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.95) !important;
+      height: 56px !important;
+      max-height: 56px !important;
+      z-index: 1000 !important;
       transform: none !important;
+      overflow: visible !important;
     }
+
+    .theme--dark header.v-app-bar.topbar,
+    .theme--dark .topbar {
+      background: rgba(8, 14, 26, 0.65) !important;
+      background-color: rgba(8, 14, 26, 0.65) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+      border-bottom: 1px solid rgba(0, 229, 255, 0.3) !important;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(0, 229, 255, 0.15) !important;
+    }
+
+    .theme--light header.v-app-bar.topbar,
+    .theme--light .topbar {
+      background: rgba(255, 255, 255, 0.85) !important;
+      background-color: rgba(255, 255, 255, 0.85) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    header.v-app-bar.topbar .v-toolbar__content,
+    header.v-app-bar .v-toolbar__content {
+      background: transparent !important;
+      background-color: transparent !important;
+      height: 56px !important;
+      max-height: 56px !important;
+      overflow: visible !important;
+    }
+
+    /* ProBharath Logo: Exact 68px size with glow matching user specification */
+    header.v-app-bar .v-toolbar__title img,
+    header.v-app-bar .v-toolbar__content img,
+    header.v-app-bar .nav-logo,
+    .topbar .nav-logo,
+    .nav-logo {
+      height: 68px !important;
+      max-height: 68px !important;
+      width: auto !important;
+      object-fit: contain !important;
+      filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.55)) !important;
+    }
+
+    /* Topbar Title: Exact retrieved font from original reference photo (Roboto 400 1.25rem) */
+    .topbar .v-toolbar__title,
+    header.v-app-bar .v-toolbar__title,
+    .v-toolbar__title {
+      font-family: Roboto, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif !important;
+      font-size: 1.25rem !important;
+      font-weight: 400 !important;
+      line-height: 1.5 !important;
+      letter-spacing: normal !important;
+      text-transform: none !important;
+      display: flex !important;
+      align-items: center !important;
+      padding-left: 12px !important;
+    }
+    .theme--dark .topbar .v-toolbar__title,
+    .theme--dark header.v-app-bar .v-toolbar__title {
+      color: #ffffff !important;
+    }
+    .theme--light .topbar .v-toolbar__title,
+    .theme--light header.v-app-bar .v-toolbar__title {
+      color: #0f172a !important;
+    }
+
+    /* Original borderless 3-line hamburger icon (clean, no square box) */
+    .topbar .v-app-bar__nav-icon,
+    header.v-app-bar .v-app-bar__nav-icon,
+    .topbar .v-btn.v-btn--icon.v-app-bar__nav-icon,
+    .v-app-bar .v-app-bar__nav-icon {
+      background: transparent !important;
+      background-color: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
+      border-radius: 4px !important;
+    }
+    .theme--dark .topbar .v-app-bar__nav-icon .v-icon,
+    .theme--dark header.v-app-bar .v-app-bar__nav-icon .v-icon {
+      font-size: 24px !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+    .theme--light .topbar .v-app-bar__nav-icon .v-icon,
+    .theme--light header.v-app-bar .v-app-bar__nav-icon .v-icon {
+      font-size: 24px !important;
+      color: #0f172a !important;
+    }
+    .topbar .v-app-bar__nav-icon:hover {
+      background: rgba(0, 229, 255, 0.12) !important;
+      color: #00e5ff !important;
+    }
+
+    /* Card Old Charm Restoration: subtle glassmorphic styling, borders, and headers */
+    .v-card,
+    .glass-panel,
+    .v-sheet.panel {
+      position: relative !important;
+      border-radius: 8px !important;
+      transition: all 0.25s ease !important;
+    }
+    .theme--dark .v-card,
+    .theme--dark .glass-panel,
+    .theme--dark .v-sheet.panel {
+      background-color: rgba(14, 22, 34, 0.75) !important;
+      border: 1px solid rgba(0, 229, 255, 0.18) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
+    }
+    .theme--dark .v-card:hover,
+    .theme--dark .glass-panel:hover {
+      border-color: rgba(0, 229, 255, 0.4) !important;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 229, 255, 0.15) !important;
+    }
+
+    .theme--light .v-card,
+    .theme--light .glass-panel,
+    .theme--light .v-sheet.panel {
+      background-color: rgba(255, 255, 255, 0.85) !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06) !important;
+    }
+
+    /* Cards & Panel Toolbars: Keep strictly in normal document flow with clean bottom border */
+    .panel-toolbar,
+    header.panel-toolbar,
+    .v-card header,
+    .v-card .v-toolbar {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      z-index: 1 !important;
+      box-shadow: none !important;
+      transform: none !important;
+      background: transparent !important;
+      background-color: transparent !important;
+    }
+    .theme--dark .panel-toolbar,
+    .theme--dark .v-card .v-toolbar {
+      border-bottom: 1px solid rgba(0, 229, 255, 0.12) !important;
+    }
+    .theme--light .panel-toolbar,
+    .theme--light .v-card .v-toolbar {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    }
+
+            /* Left Sidebar Drawer - Dark / Charcoal-Gray Feel with ZERO Gap beneath Topbar */
     .v-navigation-drawer {
-      z-index: 1999000 !important;
+      z-index: 999 !important;
+      top: 0 !important;
+      height: 100vh !important;
+      max-height: 100vh !important;
+      padding-top: 56px !important;
+      box-sizing: border-box !important;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
+    .v-navigation-drawer.v-navigation-drawer--open {
+      transform: translateX(0) !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
+    }
+    .v-navigation-drawer.v-navigation-drawer--close {
+      transform: translateX(-220px) !important;
+      pointer-events: none !important;
+    }
+
+    /* Dark mode sidebar: comfortable dark/charcoal gray tone */
+    .theme--dark.v-navigation-drawer,
+    .theme--dark .v-navigation-drawer {
+      background: rgba(14, 20, 30, 0.90) !important;
+      background-color: rgba(14, 20, 30, 0.90) !important;
+      backdrop-filter: blur(20px) saturate(160%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+      border-right: 1px solid rgba(0, 229, 255, 0.15) !important;
+      box-shadow: 4px 0 25px rgba(0, 0, 0, 0.45) !important;
+    }
+    .theme--dark.v-navigation-drawer .v-list,
+    .theme--dark .v-navigation-drawer .v-list {
+      border-bottom: 1px solid rgba(0, 229, 255, 0.12) !important;
+    }
+    .theme--dark.v-navigation-drawer .v-list-item .v-list-item__title,
+    .theme--dark .v-navigation-drawer .v-list-item .v-list-item__title {
+      color: rgba(255, 255, 255, 0.88) !important;
+    }
+    .theme--dark.v-navigation-drawer .v-list-item .v-icon,
+    .theme--dark .v-navigation-drawer .v-list-item .v-icon {
+      color: rgba(255, 255, 255, 0.88) !important;
+    }
+    .theme--dark.v-navigation-drawer .v-list-item:hover,
+    .theme--dark .v-navigation-drawer .v-list-item:hover {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    .theme--dark.v-navigation-drawer .v-list-item:hover .v-list-item__title,
+    .theme--dark.v-navigation-drawer .v-list-item:hover .v-icon,
+    .theme--dark .v-navigation-drawer .v-list-item:hover .v-list-item__title,
+    .theme--dark .v-navigation-drawer .v-list-item:hover .v-icon {
+      color: #ffffff !important;
+    }
+    .theme--dark.v-navigation-drawer .v-list-item.v-list-item--active,
+    .theme--dark .v-navigation-drawer .v-list-item.v-list-item--active {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      border-right: 4px solid #00e5ff !important;
+    }
+    .theme--dark.v-navigation-drawer .v-list-item.v-list-item--active *,
+    .theme--dark .v-navigation-drawer .v-list-item.v-list-item--active * {
+      color: #ffffff !important;
+    }
+
+    /* Light mode sidebar */
+    .theme--light.v-navigation-drawer,
+    .theme--light .v-navigation-drawer {
+      background: rgba(248, 250, 252, 0.90) !important;
+      background-color: rgba(248, 250, 252, 0.90) !important;
+      backdrop-filter: blur(20px) saturate(160%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+      border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+      box-shadow: 2px 0 15px rgba(0, 0, 0, 0.06) !important;
+    }
+    .theme--light.v-navigation-drawer .v-list,
+    .theme--light .v-navigation-drawer .v-list {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+    }
+    .theme--light.v-navigation-drawer .v-list-item .v-list-item__title,
+    .theme--light .v-navigation-drawer .v-list-item .v-list-item__title {
+      color: #334155 !important;
+    }
+    .theme--light.v-navigation-drawer .v-list-item .v-icon,
+    .theme--light .v-navigation-drawer .v-list-item .v-icon {
+      color: #475569 !important;
+    }
+    .theme--light.v-navigation-drawer .v-list-item:hover,
+    .theme--light .v-navigation-drawer .v-list-item:hover {
+      background-color: rgba(0, 0, 0, 0.05) !important;
+    }
+    .theme--light.v-navigation-drawer .v-list-item:hover .v-list-item__title,
+    .theme--light.v-navigation-drawer .v-list-item:hover .v-icon,
+    .theme--light .v-navigation-drawer .v-list-item:hover .v-list-item__title,
+    .theme--light .v-navigation-drawer .v-list-item:hover .v-icon {
+      color: #0f172a !important;
+    }
+    .theme--light.v-navigation-drawer .v-list-item.v-list-item--active,
+    .theme--light .v-navigation-drawer .v-list-item.v-list-item--active {
+      background-color: rgba(0, 180, 216, 0.12) !important;
+      border-right: 4px solid #00b4d8 !important;
+    }
+    .theme--light.v-navigation-drawer .v-list-item.v-list-item--active *,
+    .theme--light .v-navigation-drawer .v-list-item.v-list-item--active * {
+      color: #0369a1 !important;
+      font-weight: 700 !important;
+    }
+
+    /* Common Sidebar List Item styling - zero top padding removes black gap */
+    .v-navigation-drawer .v-navigation-drawer__content {
+      padding-top: 0 !important;
+      margin-top: 0 !important;
+      background: transparent !important;
+    }
+    .v-navigation-drawer .v-list {
+      padding-top: 0 !important;
+      padding-bottom: 8px !important;
+      background: transparent !important;
+    }
+    .v-navigation-drawer .v-list-item {
+      min-height: 44px !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      transition: background-color 0.15s ease, color 0.15s ease !important;
+    }
+    .v-navigation-drawer .v-list-item:before {
+      display: none !important;
+    }
+    .v-navigation-drawer .v-list-item .v-list-item__title {
+      font-size: 13.5px !important;
+      font-weight: 600 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+    }
+    .v-navigation-drawer .v-list-item .v-icon {
+      font-size: 20px !important;
+    }
+
+    /* NO Elephant Medallion Emblem */
+    .v-navigation-drawer::after,
+    .v-navigation-drawer .v-navigation-drawer__content::after {
+      display: none !important;
+      content: none !important;
+    }
+
+        /* Dialogs, Menus, Overlays - top layer */
     .v-dialog__content,
     .v-menu__content,
     .v-overlay {
       z-index: 2500000 !important;
     }
-    /* Strictly neutralize rogue z-index on dashboard cards, scrollbars and list items */
-    .v-main,
-    .v-main *,
-    .v-main .os-host,
-    .v-main .os-padding,
-    .v-main .os-viewport,
-    .v-main .os-content,
-    .v-main .v-list-item,
-    .v-main .v-list-item__content,
-    .v-main .v-list-item__icon,
-    .v-main .v-card,
-    .v-main .glass-panel,
-    .v-main .v-sheet {
-      z-index: 1 !important;
-    }
+
+    /* Main view proper top padding matching 56px narrow header */
     .v-main {
-      padding-top: 104px !important;
-      z-index: 1 !important;
+      padding-top: 56px !important;
     }
-    .v-main__wrap {
-      padding-top: 20px !important;
-    }
+
     /* ProBharath Ecosystem Ambient Elephant Watermark */
-    .v-main::before {
+    .theme--dark .v-main::before {
       content: '';
       position: fixed;
       bottom: 24px;
@@ -90,35 +535,35 @@
       background-position: center;
       opacity: 0.10;
       pointer-events: none;
-      z-index: 1;
+      z-index: 0;
       filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.12));
     }
-    .v-navigation-drawer .v-navigation-drawer__content::after {
-      content: '';
-      display: block;
-      position: absolute;
-      bottom: 56px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 44px;
-      height: 44px;
-      background-image: url('/img/elephant-watermark-dark.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      opacity: 0.16;
-      pointer-events: none;
-    }
   </style>
-  <script>
-    // Ensure default page always lands directly on Dashboard
+    <script>
+    // Ensure default page always lands directly on Dashboard and drawer is open
     (function() {
-      if (!window.location.hash || window.location.hash === '' || window.location.hash === '#/dashboard') {
-        window.location.hash = '#/';
-      }
+      try {
+        if (!window.location.hash || window.location.hash === '' || window.location.hash === '#/dashboard') {
+          window.location.hash = '#/';
+        }
+        if (localStorage.getItem('naviDrawer') === 'false' || localStorage.getItem('naviDrawer') === null) {
+          localStorage.setItem('naviDrawer', 'true');
+        }
+      } catch (_) {}
     })();
   </script>
-</head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/assets/index-BoRr4x8i.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/overlayscrollbars-CiKU261J.js">
+  <link rel="modulepreload" crossorigin href="/assets/vuetify-HSJperxJ.js">
+  <link rel="modulepreload" crossorigin href="/assets/echarts-Ce9dz-GT.js">
+  <link rel="modulepreload" crossorigin href="/assets/codemirror-Dbba2-Wz.js">
+  <link rel="stylesheet" crossorigin href="/assets/overlayscrollbars-BJn_P54_.css">
+  <link rel="stylesheet" crossorigin href="/assets/vuetify-BSwS9o2d.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-CAe4YP-E.css">
+<link rel="manifest" href="/manifest.webmanifest"></head>
 
 <body style="background-color: #121212">
     <noscript>

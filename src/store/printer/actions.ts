@@ -52,36 +52,39 @@ export const actions: ActionTree<PrinterState, RootState> = {
     },
 
     async initSubscripts({ dispatch }) {
-        const payload = await Vue.$socket.emitAndWait('printer.objects.list')
+        try {
+            const payload = await Vue.$socket.emitAndWait('printer.objects.list')
 
-        let subscripts = {}
-        const blocklist = ['menu']
+            let subscripts = {}
+            const blocklist = ['menu']
 
-        payload.objects.forEach((key: string) => {
-            const nameSplit = key.split(' ')
+            payload.objects.forEach((key: string) => {
+                const nameSplit = key.split(' ')
 
-            if (!blocklist.includes(nameSplit[0])) subscripts = { ...subscripts, [key]: null }
-        })
+                if (!blocklist.includes(nameSplit[0])) subscripts = { ...subscripts, [key]: null }
+            })
 
-        if (Object.keys(subscripts).length > 0) {
-            const result = await Vue.$socket.emitAndWait('printer.objects.subscribe', { objects: subscripts }, {})
+            if (Object.keys(subscripts).length > 0) {
+                const result = await Vue.$socket.emitAndWait('printer.objects.subscribe', { objects: subscripts }, {})
 
-            // reset screws_tilt_adjust if it exists
-            if ('screws_tilt_adjust' in result.status) {
-                result.status.screws_tilt_adjust.error = false
-                result.status.screws_tilt_adjust.results = {}
+                // reset screws_tilt_adjust if it exists
+                if ('screws_tilt_adjust' in result.status) {
+                    result.status.screws_tilt_adjust.error = false
+                    result.status.screws_tilt_adjust.results = {}
+                }
+
+                dispatch('getData', result)
+
+                setTimeout(() => {
+                    dispatch('initExtruderCanExtrude')
+                }, 200)
             }
-
-            dispatch('getData', result)
-
-            setTimeout(() => {
-                dispatch('initExtruderCanExtrude')
-            }, 200)
+        } catch (err) {
+            window.console.warn('initSubscripts error or timeout:', err)
+        } finally {
+            Vue.$socket.emit('server.temperature_store', { include_monitors: true }, { action: 'printer/tempHistory/init' })
+            dispatch('socket/removeInitModule', 'printer/initSubscripts', { root: true })
         }
-
-        Vue.$socket.emit('server.temperature_store', { include_monitors: true }, { action: 'printer/tempHistory/init' })
-
-        dispatch('socket/removeInitModule', 'printer/initSubscripts', { root: true })
     },
 
     getData({ commit, dispatch, state }, payload) {

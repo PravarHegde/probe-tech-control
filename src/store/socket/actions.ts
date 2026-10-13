@@ -162,8 +162,15 @@ export const actions: ActionTree<SocketState, RootState> = {
         commit('clearLoadings')
     },
 
-    addInitModule({ commit }, payload: string) {
+    addInitModule({ commit, dispatch, state }, payload: string) {
         commit('addInitModule', payload)
+        // Safety watchdog: ensure no initialization module ever permanently freezes the UI on cloud proxies or slow reboots
+        setTimeout(() => {
+            if (state.initializationList.includes(payload)) {
+                window.console.warn(`Watchdog: auto-clearing stuck init module: ${payload}`)
+                dispatch('removeInitModule', payload)
+            }
+        }, 7000)
     },
 
     // remove only one module from init component like 'server/spoolman/getActiveSpoolId'

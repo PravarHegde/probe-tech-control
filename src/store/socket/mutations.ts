@@ -87,4 +87,8 @@ export const mutations: MutationTree<SocketState> = {
 
         Vue.set(state, 'initializationList', list)
     },
+
+    clearInitializationList(state) {
+        Vue.set(state, 'initializationList', [])
+    },
 }

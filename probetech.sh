@@ -41,39 +41,31 @@ if ! host github.com >/dev/null 2>&1 && ! ping -c 1 -W 2 github.com >/dev/null 2
     sleep 1
 fi
 
-# Robust clone with retry
-echo -e "${BLUE}Fetching installer repository...${NC}"
+# Fetch scripts directly via archive tarball (fast, reliable, no git filter issues)
+echo -e "${BLUE}Fetching installer files...${NC}"
 mkdir -p "$TARGET_DIR"
 
-CLONE_SUCCESS=0
-for attempt in 1 2 3; do
-    if git clone -b "${PROBETECH_BRANCH:-develop}" --depth 1 --filter=blob:none --sparse https://github.com/PravarHegde/probe-tech-control.git "$TARGET_DIR"; then
-        CLONE_SUCCESS=1
-        break
-    else
-        echo -e "${GOLD}Git clone attempt $attempt failed. Retrying in 2 seconds...${NC}"
-        rm -rf "$TARGET_DIR"
-        mkdir -p "$TARGET_DIR"
-        sleep 2
+FETCH_SUCCESS=0
+if curl -fsSL "https://codeload.github.com/PravarHegde/probe-tech-control/tar.gz/refs/heads/${PROBETECH_BRANCH:-develop}" | tar -xz -C "$TARGET_DIR" --strip-components=1 2>/dev/null; then
+    FETCH_SUCCESS=1
+elif wget -qO- "https://codeload.github.com/PravarHegde/probe-tech-control/tar.gz/refs/heads/${PROBETECH_BRANCH:-develop}" | tar -xz -C "$TARGET_DIR" --strip-components=1 2>/dev/null; then
+    FETCH_SUCCESS=1
+else
+    echo -e "${GOLD}Tarball download failed, falling back to git clone...${NC}"
+    rm -rf "$TARGET_DIR"
+    mkdir -p "$TARGET_DIR"
+    if git clone --depth 1 -b "${PROBETECH_BRANCH:-develop}" https://github.com/PravarHegde/probe-tech-control.git "$TARGET_DIR"; then
+        FETCH_SUCCESS=1
     fi
-done
+fi
 
-if [ "$CLONE_SUCCESS" -ne 1 ]; then
-    echo -e "${RED}Failed to clone repository from GitHub. Please check your internet connection.${NC}"
+if [ "$FETCH_SUCCESS" -ne 1 ] || [ ! -f "$TARGET_DIR/install.sh" ]; then
+    echo -e "${RED}Failed to download installer files. Please check your network connection.${NC}"
     exit 1
 fi
 
 cd "$TARGET_DIR" || exit 1
 
-# Explicitly select only the files we need (Ignoring everything else, like the big zip)
-echo -e "${BLUE}Checking out scripts...${NC}"
-git sparse-checkout init --no-cone
-git sparse-checkout set /install.sh /scripts/* /probe_tech.cfg /requirements.txt /probe-tech-control.zip
-
-if [ ! -f "install.sh" ]; then
-    echo -e "${RED}Error: install.sh not found after sparse-checkout.${NC}"
-    exit 1
-fi
 
 # Run the installer
 chmod +x install.sh

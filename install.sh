@@ -604,9 +604,11 @@ EOF
          echo -e "${BLUE}Selected Web Port: ${WEB_PORT}${NC}"
 
          sed "s/{USER}/${USER}/g" "${SCRIPT_DIR}/scripts/probe-tech.service" > "/tmp/${SERVICE_NAME}.service"
-         # Replace PORT and DIR
+         # Replace HOME_DIR, PORT, and DIR
+         sed -i "s|{HOME_DIR}|${HOME_DIR}|g" "/tmp/${SERVICE_NAME}.service"
          sed -i "s|{PORT}|${WEB_PORT}|g" "/tmp/${SERVICE_NAME}.service"
          sed -i "s|{DIR}|${WEB_DIR}|g" "/tmp/${SERVICE_NAME}.service"
+         sed -i "s|WorkingDirectory=.*|WorkingDirectory=${WEB_DIR}|g" "/tmp/${SERVICE_NAME}.service"
          
          # Sanity check: ensure Description is unique slightly
          sed -i "s|Probe Tech Control Web Interface|PTC Web Interface (${inst_name:-default})|g" "/tmp/${SERVICE_NAME}.service"

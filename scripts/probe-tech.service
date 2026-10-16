@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 Type=simple
-User=pravar
-WorkingDirectory=/home/pravar/probe-tech-control
+User={USER}
+WorkingDirectory={HOME_DIR}/probe-tech-control
 ExecStart=/usr/bin/python3 spa_server.py --port {PORT} --dir {DIR}
 Restart=always
 RestartSec=10

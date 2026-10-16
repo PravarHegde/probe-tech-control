@@ -11,6 +11,19 @@ echo -e "${BLUE}================================================================
 echo -e "${GOLD}           PROBE TECH CONTROL - QUICK INSTALLER              ${NC}"
 echo -e "${BLUE}=====================================================================${NC}"
 
+# Ensure core prerequisites exist on fresh Raspberry Pi OS Lite
+MISSING_PKGS=()
+for pkg in git curl wget build-essential python3 python3-pip python3-venv; do
+    if ! dpkg -s "$pkg" >/dev/null 2>&1; then
+        MISSING_PKGS+=("$pkg")
+    fi
+done
+
+if [ ${#MISSING_PKGS[@]} -gt 0 ]; then
+    echo -e "${GOLD}Fresh OS detected. Installing system prerequisites: ${MISSING_PKGS[*]}...${NC}"
+    sudo apt update -y && sudo apt install -y "${MISSING_PKGS[@]}"
+fi
+
 # Target directory
 TARGET_DIR="${HOME}/ptc"
 
@@ -20,22 +33,10 @@ if [ -d "$TARGET_DIR" ]; then
     rm -rf "$TARGET_DIR"
 fi
 
-# Clone the repository
-echo -e "${BLUE}Cloning repository (Shallow)...${NC}"
-# Clone the repository
-# Clone repository (Optimized <1MB)
-echo -e "${BLUE}Fetching installer...${NC}"
-mkdir -p "$TARGET_DIR"
-
-if [ -d "$TARGET_DIR" ]; then
-    # Clear directory to ensure clean clone
-    rm -rf "$TARGET_DIR"
-    mkdir -p "$TARGET_DIR"
-fi
-
 # Use modern partial clone to download ONLY the needed scripts (no history, no blobs/files initially)
-echo -e "${BLUE}Initializing partial clone...${NC}"
-git clone -b "${PROBETECH_BRANCH:-3.48v}" --depth 1 --filter=blob:none --sparse https://github.com/PravarHegde/probe-tech-control.git "$TARGET_DIR"
+echo -e "${BLUE}Fetching installer repository...${NC}"
+mkdir -p "$TARGET_DIR"
+git clone -b "${PROBETECH_BRANCH:-develop}" --depth 1 --filter=blob:none --sparse https://github.com/PravarHegde/probe-tech-control.git "$TARGET_DIR"
 
 cd "$TARGET_DIR" || exit 1
 

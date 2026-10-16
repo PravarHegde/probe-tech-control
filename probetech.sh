@@ -33,20 +33,49 @@ if [ -d "$TARGET_DIR" ]; then
     rm -rf "$TARGET_DIR"
 fi
 
-# Use modern partial clone to download ONLY the needed scripts (no history, no blobs/files initially)
+# Ensure DNS resolution is ready
+echo -e "${BLUE}Verifying internet connection and DNS...${NC}"
+if ! host github.com >/dev/null 2>&1 && ! ping -c 1 -W 2 github.com >/dev/null 2>&1; then
+    echo -e "${GOLD}Adding public DNS fallback (8.8.8.8, 1.1.1.1)...${NC}"
+    echo -e "nameserver 8.8.8.8\nnameserver 1.1.1.1" | sudo tee -a /etc/resolv.conf >/dev/null 2>&1 || true
+    sleep 1
+fi
+
+# Robust clone with retry
 echo -e "${BLUE}Fetching installer repository...${NC}"
 mkdir -p "$TARGET_DIR"
-git clone -b "${PROBETECH_BRANCH:-develop}" --depth 1 --filter=blob:none --sparse https://github.com/PravarHegde/probe-tech-control.git "$TARGET_DIR"
+
+CLONE_SUCCESS=0
+for attempt in 1 2 3; do
+    if git clone -b "${PROBETECH_BRANCH:-develop}" --depth 1 --filter=blob:none --sparse https://github.com/PravarHegde/probe-tech-control.git "$TARGET_DIR"; then
+        CLONE_SUCCESS=1
+        break
+    else
+        echo -e "${GOLD}Git clone attempt $attempt failed. Retrying in 2 seconds...${NC}"
+        rm -rf "$TARGET_DIR"
+        mkdir -p "$TARGET_DIR"
+        sleep 2
+    fi
+done
+
+if [ "$CLONE_SUCCESS" -ne 1 ]; then
+    echo -e "${RED}Failed to clone repository from GitHub. Please check your internet connection.${NC}"
+    exit 1
+fi
 
 cd "$TARGET_DIR" || exit 1
 
-# Explicitly select only the files we need (Ignoring everything else, like the big zip)
 # Explicitly select only the files we need (Ignoring everything else, like the big zip)
 echo -e "${BLUE}Checking out scripts...${NC}"
 git sparse-checkout init --no-cone
 git sparse-checkout set /install.sh /scripts/* /probe_tech.cfg /requirements.txt /probe-tech-control.zip
 
+if [ ! -f "install.sh" ]; then
+    echo -e "${RED}Error: install.sh not found after sparse-checkout.${NC}"
+    exit 1
+fi
+
 # Run the installer
-cd "$TARGET_DIR"
 chmod +x install.sh
 ./install.sh "$@"
+

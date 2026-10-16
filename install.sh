@@ -70,14 +70,21 @@ get_next_port() {
 get_free_web_port() {
     local port=8080
     while true; do
-        # Check if port is in use (using python as it is guaranteed to be installed)
-        if python3 -c "import socket; s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); s.bind(('', $port))" 2>/dev/null; then
+        # Check if already assigned in any existing /etc/systemd/system/probe-tech*.service
+        local already_configured=0
+        if grep -rqs "--port $port" /etc/systemd/system/probe-tech*.service 2>/dev/null; then
+            already_configured=1
+        fi
+
+        # Check if socket is open
+        if [ $already_configured -eq 0 ] && python3 -c "import socket; s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); s.bind(('', $port))" 2>/dev/null; then
             echo "$port"
             break
         fi
         ((port++))
     done
 }
+
 
 
 # Shows a list of valid config directories to pick from

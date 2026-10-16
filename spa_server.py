@@ -52,14 +52,16 @@ class SPAHandler(http.server.SimpleHTTPRequestHandler):
         self.path = '/index.html'
         super().do_GET()
 
+class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    allow_reuse_address = True
+    daemon_threads = True
+
 if __name__ == "__main__":
     Handler = SPAHandler
-    # Allow address reuse to prevent "Address already in use" on quick restarts
-    socketserver.TCPServer.allow_reuse_address = True
     
     try:
-        with socketserver.TCPServer(("", PORT), Handler) as httpd:
-            print(f"Serving SPA at port {PORT} from {DIRECTORY}")
+        with ThreadedTCPServer(("", PORT), Handler) as httpd:
+            print(f"Serving SPA at port {PORT} from {DIRECTORY} (multi-threaded)")
             httpd.serve_forever()
     except OSError as e:
         if e.errno == 98:

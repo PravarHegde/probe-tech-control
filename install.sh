@@ -277,9 +277,19 @@ install_klipper() {
     sudo apt-get update -qq
     sudo apt-get install -y python3-venv python3-pip virtualenv git build-essential > /dev/null
     
-    if [ ! -d "${HOME}/klipper" ]; then
+    if [ ! -d "${HOME}/klipper" ] || [ ! -f "${HOME}/klipper/scripts/klippy-requirements.txt" ]; then
         cd "${HOME}"
-        git clone --depth 1 https://github.com/Klipper3d/klipper.git
+        rm -rf "${HOME}/klipper"
+        echo -e "${BLUE}Cloning Klipper repository...${NC}"
+        for attempt in 1 2 3; do
+            if git clone --depth 1 https://github.com/Klipper3d/klipper.git "${HOME}/klipper"; then
+                break
+            else
+                echo -e "${GOLD}Klipper clone failed (attempt $attempt). Retrying in 2s...${NC}"
+                rm -rf "${HOME}/klipper"
+                sleep 2
+            fi
+        done
     fi
 
     # Ensure virtualenv exists (Fix for Ubuntu 24.04 and others)
@@ -332,9 +342,19 @@ install_moonraker() {
     # Ensure dependencies
     sudo apt-get install -y python3-venv python3-pip virtualenv git > /dev/null
 
-    if [ ! -d "${HOME}/moonraker" ]; then
+    if [ ! -d "${HOME}/moonraker" ] || [ ! -f "${HOME}/moonraker/scripts/moonraker-requirements.txt" ]; then
         cd "${HOME}"
-        git clone --depth 1 https://github.com/Arksine/moonraker.git
+        rm -rf "${HOME}/moonraker"
+        echo -e "${BLUE}Cloning Moonraker repository...${NC}"
+        for attempt in 1 2 3; do
+            if git clone --depth 1 https://github.com/Arksine/moonraker.git "${HOME}/moonraker"; then
+                break
+            else
+                echo -e "${GOLD}Moonraker clone failed (attempt $attempt). Retrying in 2s...${NC}"
+                rm -rf "${HOME}/moonraker"
+                sleep 2
+            fi
+        done
     fi
 
     # Ensure virtualenv (Fix for newer distros)

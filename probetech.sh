@@ -33,12 +33,15 @@ if [ -d "$TARGET_DIR" ]; then
     rm -rf "$TARGET_DIR"
 fi
 
-# Ensure DNS resolution is ready
-echo -e "${BLUE}Verifying internet connection and DNS...${NC}"
-if ! host github.com >/dev/null 2>&1 && ! ping -c 1 -W 2 github.com >/dev/null 2>&1; then
-    echo -e "${GOLD}Adding public DNS fallback (8.8.8.8, 1.1.1.1)...${NC}"
-    echo -e "nameserver 8.8.8.8\nnameserver 1.1.1.1" | sudo tee -a /etc/resolv.conf >/dev/null 2>&1 || true
-    sleep 1
+# Ensure reliable DNS (prefers 8.8.8.8 and 1.1.1.1 to avoid router ISP DNS timeouts)
+if ! ping -c 1 -W 2 8.8.8.8 >/dev/null 2>&1; then
+    echo -e "${RED}Warning: No external network ping available.${NC}"
+else
+    # Prepend reliable DNS servers if not already present
+    if ! grep -q "8.8.8.8" /etc/resolv.conf 2>/dev/null; then
+        echo -e "${BLUE}Configuring high-speed DNS resolvers...${NC}"
+        sudo sed -i '1s/^/nameserver 8.8.8.8\nnameserver 1.1.1.1\n/' /etc/resolv.conf 2>/dev/null || true
+    fi
 fi
 
 # Fetch scripts directly via archive tarball (fast, reliable, no git filter issues)

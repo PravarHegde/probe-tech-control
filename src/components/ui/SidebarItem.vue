@@ -15,8 +15,14 @@ A Probharath Technologies Product
             role="button"
             tabindex="0">
             
-            <div class="my-3 mr-3 menu-item-icon">
-                <v-icon>{{ icon }}</v-icon>
+            <div class="my-3 mr-3 menu-item-icon d-flex align-center justify-center">
+                <img
+                    v-if="to === '/agent' || (item && item.name === 'agent')"
+                    src="/img/probharath_elephant_silver.png"
+                    alt="AI Agent"
+                    class="nav-elephant-icon"
+                />
+                <v-icon v-else>{{ icon }}</v-icon>
             </div>
             
             <div class="menu-item-content">
@@ -110,6 +116,23 @@ export default class SidebarItem extends Mixins(BaseMixin) {
 
 .menu-item-icon {
     opacity: 0.85;
+}
+
+.nav-elephant-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.45));
+}
+
+.custom-sidebar-item:hover .nav-elephant-icon {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.95)) brightness(1.2);
+}
+
+.active-nav-item .nav-elephant-icon {
+    filter: drop-shadow(0 0 8px rgba(0, 229, 255, 1)) brightness(1.25);
 }
 
 .menu-item-title {

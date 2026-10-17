@@ -9,8 +9,8 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
         <!-- Top Status Banner -->
         <div class="mb-4 d-flex flex-wrap align-center justify-space-between">
             <div class="d-flex align-center">
-                <div class="mr-3 pa-1 rounded-circle pulse-glow-avatar d-flex align-center justify-center" style="background: rgba(168, 85, 247, 0.18); border: 2px solid rgba(168, 85, 247, 0.6); box-shadow: 0 0 16px rgba(168, 85, 247, 0.5); width: 44px; height: 44px; min-width: 44px;">
-                    <img src="/img/probharath_elephant.png" alt="ProBharath Elephant" style="width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.9));" />
+                <div class="mr-3 pa-1 rounded-circle pulse-glow-avatar d-flex align-center justify-center" style="background: rgba(168, 85, 247, 0.2); border: 2px solid rgba(168, 85, 247, 0.7); box-shadow: 0 0 18px rgba(168, 85, 247, 0.6); width: 46px; height: 46px; min-width: 46px;">
+                    <img src="/img/probharath_elephant_silver.png" alt="ProBharath Elephant" style="width: 36px; height: 36px; object-fit: contain; filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.95)) brightness(1.2);" />
                 </div>
                 <div>
                     <div class="text-h5 font-weight-bold white--text d-flex align-center">
@@ -45,7 +45,7 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                     <!-- Terminal Header -->
                     <div class="d-flex align-center justify-space-between px-4 py-3" style="background: rgba(168, 85, 247, 0.08); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
                         <div class="d-flex align-center">
-                            <img src="/img/probharath_elephant.png" alt="ProBharath AI" style="width: 22px; height: 22px; object-fit: contain; margin-right: 8px; filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.7));" />
+                            <img src="/img/probharath_elephant_silver.png" alt="ProBharath AI" style="width: 24px; height: 24px; object-fit: contain; margin-right: 8px; filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.8)) brightness(1.15);" />
                             <span class="subtitle-2 font-weight-bold white--text">Factory Command Link</span>
                             <span class="caption grey--text ml-2">({{ activeAgentName }})</span>
                         </div>
@@ -58,7 +58,7 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                     <div class="chat-viewport pa-4 flex-grow-1 overflow-y-auto" style="height: 420px;">
                         <div v-for="msg in messages" :key="msg.id" class="d-flex mb-3" :class="{ 'justify-end': msg.sender === 'user' }">
                             <v-avatar v-if="msg.sender === 'ai'" size="36" color="rgba(168, 85, 247, 0.25)" class="mr-2 border-purple my-auto pa-1">
-                                <img src="/img/probharath_elephant.png" alt="Elephant AI" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.8));" />
+                                <img src="/img/probharath_elephant_silver.png" alt="Elephant AI" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.9)) brightness(1.2);" />
                             </v-avatar>
 
                             <!-- User Message Bubble -->
@@ -97,7 +97,7 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                         <!-- Typing Indicator -->
                         <div v-if="processing" class="d-flex align-center mb-2">
                             <v-avatar size="36" color="rgba(168, 85, 247, 0.25)" class="mr-2 border-purple pa-1">
-                                <img src="/img/probharath_elephant.png" alt="Elephant AI" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.8));" />
+                                <img src="/img/probharath_elephant_silver.png" alt="Elephant AI" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.9)) brightness(1.2);" />
                             </v-avatar>
                             <div class="ai-bubble pa-2 px-3 rounded-xl d-flex align-center">
                                 <v-progress-circular indeterminate color="purple lighten-2" size="18" width="2" class="mr-2"></v-progress-circular>

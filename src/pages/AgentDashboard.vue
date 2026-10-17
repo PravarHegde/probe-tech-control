@@ -9,13 +9,13 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
         <!-- Top Status Banner -->
         <div class="mb-4 d-flex flex-wrap align-center justify-space-between">
             <div class="d-flex align-center">
-                <div class="mr-3 pa-1 rounded-circle pulse-glow-avatar d-flex align-center justify-center" style="background: rgba(168, 85, 247, 0.2); border: 2px solid rgba(168, 85, 247, 0.7); box-shadow: 0 0 18px rgba(168, 85, 247, 0.6); width: 46px; height: 46px; min-width: 46px;">
-                    <img src="/img/probharath_elephant_silver.png" alt="ProBharath Elephant" style="width: 36px; height: 36px; object-fit: contain; filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.95)) brightness(1.2);" />
+                <div class="mr-3 pa-1 rounded-circle pulse-glow-avatar d-flex align-center justify-center" style="background: rgba(226, 232, 240, 0.12); border: 2px solid rgba(226, 232, 240, 0.6); box-shadow: 0 0 18px rgba(226, 232, 240, 0.4); width: 46px; height: 46px; min-width: 46px;">
+                    <img src="/img/probharath_elephant_silver.png" alt="ProBharath Elephant" style="width: 36px; height: 36px; object-fit: contain; filter: drop-shadow(0 0 6px rgba(226, 232, 240, 0.95)) brightness(1.25);" />
                 </div>
                 <div>
                     <div class="text-h5 font-weight-bold white--text d-flex align-center">
                         ProBharath AI Core
-                        <v-chip x-small color="purple darken-1" class="ml-2 font-weight-bold text-uppercase px-2">
+                        <v-chip x-small class="ml-2 px-2 silver-chip">
                             Fleet Co-Pilot
                         </v-chip>
                         <v-chip x-small color="cyan darken-3" class="ml-1 px-2 font-weight-bold">
@@ -43,9 +43,9 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
             <v-col cols="12" lg="8">
                 <v-card class="glass-panel rounded-xl overflow-hidden d-flex flex-column" style="min-height: 580px;">
                     <!-- Terminal Header -->
-                    <div class="d-flex align-center justify-space-between px-4 py-3" style="background: rgba(168, 85, 247, 0.08); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+                    <div class="d-flex align-center justify-space-between px-4 py-3" style="background: rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                         <div class="d-flex align-center">
-                            <img src="/img/probharath_elephant_silver.png" alt="ProBharath AI" style="width: 24px; height: 24px; object-fit: contain; margin-right: 8px; filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.8)) brightness(1.15);" />
+                            <img src="/img/probharath_elephant_silver.png" alt="ProBharath AI" style="width: 24px; height: 24px; object-fit: contain; margin-right: 8px; filter: drop-shadow(0 0 5px rgba(226, 232, 240, 0.8)) brightness(1.2);" />
                             <span class="subtitle-2 font-weight-bold white--text">Factory Command Link</span>
                             <span class="caption grey--text ml-2">({{ activeAgentName }})</span>
                         </div>
@@ -57,8 +57,8 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                     <!-- Messages Viewport -->
                     <div class="chat-viewport pa-4 flex-grow-1 overflow-y-auto" style="height: 420px;">
                         <div v-for="msg in messages" :key="msg.id" class="d-flex mb-3" :class="{ 'justify-end': msg.sender === 'user' }">
-                            <v-avatar v-if="msg.sender === 'ai'" size="36" color="rgba(168, 85, 247, 0.25)" class="mr-2 border-purple my-auto pa-1">
-                                <img src="/img/probharath_elephant_silver.png" alt="Elephant AI" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.9)) brightness(1.2);" />
+                            <v-avatar v-if="msg.sender === 'ai'" size="36" class="mr-2 border-silver my-auto pa-1">
+                                <img src="/img/probharath_elephant_silver.png" alt="Elephant AI" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 5px rgba(226, 232, 240, 0.9)) brightness(1.25);" />
                             </v-avatar>
 
                             <!-- User Message Bubble -->
@@ -89,18 +89,18 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                                 </div>
                             </div>
 
-                            <v-avatar v-if="msg.sender === 'user'" size="36" color="purple darken-3" class="ml-2 my-auto elevation-2">
+                            <v-avatar v-if="msg.sender === 'user'" size="36" class="ml-2 my-auto silver-user-avatar">
                                 <v-icon small color="white">{{ mdiAccount }}</v-icon>
                             </v-avatar>
                         </div>
 
                         <!-- Typing Indicator -->
                         <div v-if="processing" class="d-flex align-center mb-2">
-                            <v-avatar size="36" color="rgba(168, 85, 247, 0.25)" class="mr-2 border-purple pa-1">
-                                <img src="/img/probharath_elephant_silver.png" alt="Elephant AI" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.9)) brightness(1.2);" />
+                            <v-avatar size="36" class="mr-2 border-silver pa-1">
+                                <img src="/img/probharath_elephant_silver.png" alt="Elephant AI" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 5px rgba(226, 232, 240, 0.9)) brightness(1.25);" />
                             </v-avatar>
                             <div class="ai-bubble pa-2 px-3 rounded-xl d-flex align-center">
-                                <v-progress-circular indeterminate color="purple lighten-2" size="18" width="2" class="mr-2"></v-progress-circular>
+                                <v-progress-circular indeterminate color="grey lighten-1" size="18" width="2" class="mr-2"></v-progress-circular>
                                 <span class="caption grey--text">ProBharath AI is reasoning...</span>
                             </div>
                         </div>
@@ -134,7 +134,7 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                                 dense
                                 hide-details
                                 rounded
-                                color="purple"
+                                color="grey lighten-1"
                                 background-color="rgba(255, 255, 255, 0.05)"
                                 class="custom-chat-input"
                                 :disabled="processing"
@@ -143,13 +143,12 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                             <v-btn
                                 fab
                                 small
-                                color="purple darken-1"
-                                class="ml-2 elevation-4"
+                                class="ml-2 elevation-4 silver-send-btn"
                                 :loading="processing"
                                 :disabled="!newMessage.trim()"
                                 @click="sendMessage"
                             >
-                                <v-icon>{{ mdiSend }}</v-icon>
+                                <v-icon color="#090d16">{{ mdiSend }}</v-icon>
                             </v-btn>
                         </div>
                     </div>
@@ -240,7 +239,7 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                             <span class="caption grey--text">RAM Usage</span>
                             <span class="caption white--text font-weight-medium">{{ ramUsage }}%</span>
                         </div>
-                        <v-progress-linear :value="ramUsage" color="purple" height="5" rounded class="mb-3"></v-progress-linear>
+                        <v-progress-linear :value="ramUsage" color="grey lighten-1" height="5" rounded class="mb-3"></v-progress-linear>
 
                         <div class="d-flex justify-space-between align-center mb-1">
                             <span class="caption grey--text">Network Latency</span>
@@ -520,8 +519,30 @@ export default class AgentDashboard extends Vue {
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.border-purple {
-    border: 1px solid rgba(168, 85, 247, 0.4);
+.silver-chip {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #94a3b8 100%) !important;
+    color: #090d16 !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 0 12px rgba(226, 232, 240, 0.4);
+}
+
+.border-silver {
+    border: 1.5px solid rgba(226, 232, 240, 0.45) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 0 12px rgba(226, 232, 240, 0.25);
+}
+
+.silver-user-avatar {
+    background: linear-gradient(135deg, #475569, #334155) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.silver-send-btn {
+    background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%) !important;
+    box-shadow: 0 0 15px rgba(226, 232, 240, 0.5) !important;
 }
 
 .border-top-glass {
@@ -529,43 +550,25 @@ export default class AgentDashboard extends Vue {
 }
 
 .pulse-glow-avatar {
-    animation: pulseAvatar 2.5s infinite ease-in-out;
+    animation: pulseAvatarSilver 2.5s infinite ease-in-out;
 }
 
-@keyframes pulseAvatar {
+@keyframes pulseAvatarSilver {
     0%, 100% {
-        box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
-        border-color: rgba(168, 85, 247, 0.5);
+        box-shadow: 0 0 12px rgba(226, 232, 240, 0.35);
+        border-color: rgba(226, 232, 240, 0.5);
     }
     50% {
-        box-shadow: 0 0 22px rgba(168, 85, 247, 0.85);
-        border-color: rgba(168, 85, 247, 0.9);
-    }
-}
-
-.pulse-indicator {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: #a855f7;
-    box-shadow: 0 0 12px #a855f7;
-    animation: pulse 2s infinite ease-in-out;
-}
-
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 0.9;
-    }
-    50% {
-        transform: scale(1.3);
-        opacity: 0.4;
+        box-shadow: 0 0 24px rgba(226, 232, 240, 0.85);
+        border-color: rgba(226, 232, 240, 0.95);
     }
 }
 
 .user-bubble {
-    background: linear-gradient(135deg, #7c3aed, #4f46e5) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(148, 163, 184, 0.25) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.28) !important;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .ai-bubble {
@@ -575,11 +578,11 @@ export default class AgentDashboard extends Vue {
 }
 
 .custom-chat-input ::v-deep .v-input__slot {
-    border: 1px solid rgba(168, 85, 247, 0.3) !important;
+    border: 1px solid rgba(226, 232, 240, 0.3) !important;
     transition: all 0.2s ease;
 }
 
 .custom-chat-input ::v-deep .v-input__slot:hover {
-    border-color: rgba(168, 85, 247, 0.6) !important;
+    border-color: rgba(226, 232, 240, 0.7) !important;
 }
 </style>

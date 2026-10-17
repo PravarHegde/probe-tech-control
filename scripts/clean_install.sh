@@ -202,6 +202,15 @@ server {
 }
 EOF
 
+# 6. ENABLING POWER LOSS RECOVERY (PLR)
+if [ ! -f "${HOME_DIR}/printer_data/config/plr.cfg" ]; then
+    echo -e "${GOLD}[+] Installing Hardware Power Loss Recovery (PLR)...${NC}"
+    if git clone https://github.com/bigtreetech/KlipperPLR.git /tmp/KlipperPLR 2>/dev/null; then
+        cd /tmp/KlipperPLR && chmod +x *.sh && ./install.sh || true
+        rm -rf /tmp/KlipperPLR
+    fi
+fi
+
 sudo systemctl daemon-reload
 sudo systemctl enable --now klipper.service
 sudo systemctl enable --now moonraker.service

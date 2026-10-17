@@ -1,0 +1,1 @@
+rm /home/probharath/printer_data/gcodes/plr -rf

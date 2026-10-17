@@ -217,7 +217,7 @@ A Probharath Technologies Product - ProConnect & Zero-Config Network Engine
                                     </v-list-item-subtitle>
                                 </v-list-item-content>
                                 <v-list-item-action>
-                                    <v-switch v-model="btBeaconEnabled" color="blue" hide-details></v-switch>
+                                    <v-switch v-model="btBeaconEnabled" color="blue" hide-details @change="toggleBeacon"></v-switch>
                                 </v-list-item-action>
                             </v-list-item>
 
@@ -240,16 +240,27 @@ A Probharath Technologies Product - ProConnect & Zero-Config Network Engine
 
                         <v-divider class="my-3" />
 
-                        <!-- Hotspot Customization Info -->
+                        <!-- Hotspot Customization Info Sector -->
                         <div class="pa-3 rounded-lg" style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05);">
-                            <div class="caption font-weight-bold grey--text text--lighten-1 mb-1">
-                                FALLBACK HOTSPOT PARAMETERS:
+                            <div class="d-flex justify-space-between align-center mb-1">
+                                <div class="caption font-weight-bold grey--text text--lighten-1">
+                                    HOTSPOT CONFIGURATION SECTOR:
+                                </div>
+                                <v-btn x-small text color="cyan" class="px-1 text-none" @click="openHotspotConfig">
+                                    <v-icon x-small left>mdi-cog</v-icon> Configure
+                                </v-btn>
                             </div>
                             <div class="caption cyan--text">
-                                SSID: <strong>ProBharath-Setup-{{ macSuffix }}</strong>
+                                SSID: <strong>{{ customHotspotSsid || `ProBharath-Setup-${macSuffix}` }}</strong>
+                                <v-chip x-small class="ml-1 px-1 font-weight-bold" :color="hotspotPassword ? 'purple' : 'teal'">
+                                    {{ hotspotPassword ? 'WPA2 SECURED' : 'OPEN (1-TAP ONBOARD)' }}
+                                </v-chip>
                             </div>
                             <div class="caption grey--text">
                                 Access Point IP: <strong>192.168.4.1</strong> (or <strong>http://probharath.local</strong>)
+                            </div>
+                            <div class="caption grey--text" v-if="hotspotPassword">
+                                Password: <strong class="white--text">{{ hotspotPassword }}</strong>
                             </div>
                         </div>
                     </v-card-text>
@@ -359,6 +370,52 @@ A Probharath Technologies Product - ProConnect & Zero-Config Network Engine
             </v-card>
         </v-dialog>
 
+        <!-- Hotspot Configuration Dialog -->
+        <v-dialog v-model="hotspotConfigDialog" max-width="420">
+            <v-card class="glass-panel rounded-xl pa-2">
+                <v-card-title class="headline orange--text pb-1">
+                    <v-icon left color="orange">mdi-access-point</v-icon>
+                    Hotspot Settings
+                </v-card-title>
+                <v-card-text class="pt-2">
+                    <p class="caption grey--text mb-3">
+                        Configure emergency fallback hotspot SSID and security. Leave password blank for Open (1-Tap onboarding).
+                    </p>
+                    <v-text-field
+                        v-model="tempHotspotSsid"
+                        label="Hotspot SSID"
+                        outlined
+                        dense
+                        color="orange"
+                        prepend-inner-icon="mdi-wifi"
+                        class="mb-2"
+                    ></v-text-field>
+                    <v-text-field
+                        v-model="tempHotspotPassword"
+                        label="Hotspot Password (Optional)"
+                        :type="showHotspotPassword ? 'text' : 'password'"
+                        outlined
+                        dense
+                        color="orange"
+                        prepend-inner-icon="mdi-lock"
+                        :append-icon="showHotspotPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                        @click:append="showHotspotPassword = !showHotspotPassword"
+                        class="mb-2"
+                        placeholder="Leave blank for Open (Recommended)"
+                        hint="Minimum 8 characters if setting a password"
+                        persistent-hint
+                    ></v-text-field>
+                </v-card-text>
+                <v-card-actions class="px-4 pb-4">
+                    <v-spacer></v-spacer>
+                    <v-btn text color="grey lighten-1" @click="hotspotConfigDialog = false">Cancel</v-btn>
+                    <v-btn color="orange darken-1" class="font-weight-bold white--text px-4" @click="saveHotspotConfig">
+                        Save Hotspot
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
         <!-- Snackbar Notification -->
         <v-snackbar v-model="snackbar" :color="snackbarColor" timeout="2500" top>
             {{ snackbarText }}
@@ -403,6 +460,14 @@ export default class Connectivity extends Vue {
     dialogSsid = ''
     dialogPassword = ''
     dialogPriority = 1
+
+    // Hotspot Configuration Sector
+    hotspotConfigDialog = false
+    customHotspotSsid = ''
+    hotspotPassword = ''
+    tempHotspotSsid = ''
+    tempHotspotPassword = ''
+    showHotspotPassword = false
 
     snackbar = false
     snackbarText = ''
@@ -452,6 +517,10 @@ export default class Connectivity extends Vue {
 
     async mounted() {
         this.localIp = window.location.hostname || '192.168.1.19'
+        const savedSsid = localStorage.getItem('probharath_hotspot_ssid')
+        if (savedSsid) this.customHotspotSsid = savedSsid
+        const savedPw = localStorage.getItem('probharath_hotspot_pw')
+        if (savedPw) this.hotspotPassword = savedPw
         await Promise.all([
             this.fetchNetworkStatus(),
             this.fetchSavedNetworks(),
@@ -644,6 +713,52 @@ export default class Connectivity extends Vue {
             }
         } catch (e) {
             this.showToast('Failed to toggle hotspot state', 'error')
+        }
+    }
+
+    openHotspotConfig() {
+        this.tempHotspotSsid = this.customHotspotSsid || `ProBharath-Setup-${this.macSuffix}`
+        this.tempHotspotPassword = this.hotspotPassword
+        this.hotspotConfigDialog = true
+    }
+
+    async saveHotspotConfig() {
+        try {
+            const res = await fetch('/api/network/hotspot/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ssid: this.tempHotspotSsid.trim(),
+                    password: this.tempHotspotPassword.trim()
+                })
+            })
+            const data = await res.json()
+            if (data.success) {
+                this.customHotspotSsid = this.tempHotspotSsid.trim()
+                this.hotspotPassword = this.tempHotspotPassword.trim()
+                localStorage.setItem('probharath_hotspot_ssid', this.customHotspotSsid)
+                localStorage.setItem('probharath_hotspot_pw', this.hotspotPassword)
+                this.hotspotConfigDialog = false
+                this.showToast(`Hotspot configuration saved: ${this.customHotspotSsid}`, 'orange')
+            }
+        } catch (e: any) {
+            this.showToast('Failed to save hotspot config: ' + e.message, 'error')
+        }
+    }
+
+    async toggleBeacon(enabled: boolean) {
+        try {
+            const res = await fetch('/api/network/beacon', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ enabled })
+            })
+            const data = await res.json()
+            if (data.success) {
+                this.showToast(enabled ? 'Bluetooth BLE URL Beacon broadcasting active!' : 'Bluetooth BLE Beacon stopped.', 'blue')
+            }
+        } catch (e) {
+            this.showToast('Failed to toggle Bluetooth beacon', 'error')
         }
     }
 

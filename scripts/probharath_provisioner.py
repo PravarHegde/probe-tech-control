@@ -172,21 +172,48 @@ def delete_saved_connection(name):
         run_cmd(f"nmcli connection delete '{short_name}' 2>/dev/null")
     return True
 
-def start_fallback_hotspot():
+def start_fallback_hotspot(custom_ssid=None, custom_password=None):
     mac_suffix = get_mac_suffix()
-    hotspot_ssid = f"ProBharath-Setup-{mac_suffix}"
-    logger.warning(f"Starting Emergency Hotspot '{hotspot_ssid}'...")
+    hotspot_ssid = custom_ssid or f"ProBharath-Setup-{mac_suffix}"
+    logger.warning(f"Starting Emergency Hotspot '{hotspot_ssid}' (secured: {bool(custom_password)})...")
     run_cmd("nmcli connection delete 'ProBharath-Hotspot' 2>/dev/null")
-    cmd = (
-        f"nmcli connection add type wifi ifname wlan0 con-name 'ProBharath-Hotspot' "
-        f"autoconnect no ssid '{hotspot_ssid}' 802-11-wireless.mode ap 802-11-wireless.band bg "
-        f"ipv4.method shared ipv4.addresses 192.168.4.1/24"
-    )
+    if custom_password and len(custom_password) >= 8:
+        cmd = (
+            f"nmcli connection add type wifi ifname wlan0 con-name 'ProBharath-Hotspot' "
+            f"autoconnect no ssid '{hotspot_ssid}' 802-11-wireless.mode ap 802-11-wireless.band bg "
+            f"wifi-sec.key-mgmt wpa-psk wifi-sec.psk '{custom_password}' "
+            f"ipv4.method shared ipv4.addresses 192.168.4.1/24"
+        )
+    else:
+        cmd = (
+            f"nmcli connection add type wifi ifname wlan0 con-name 'ProBharath-Hotspot' "
+            f"autoconnect no ssid '{hotspot_ssid}' 802-11-wireless.mode ap 802-11-wireless.band bg "
+            f"ipv4.method shared ipv4.addresses 192.168.4.1/24"
+        )
     run_cmd(cmd)
-    run_cmd("nmcli connection up 'ProBharath-Hotspot'")
+    res = run_cmd("nmcli connection up 'ProBharath-Hotspot' 2>&1")
+    return res
 
 def stop_fallback_hotspot():
     run_cmd("nmcli connection down 'ProBharath-Hotspot' 2>/dev/null")
+
+def set_ble_beacon(enabled=True):
+    try:
+        run_cmd("echo 1 > /sys/class/rfkill/rfkill0/state 2>/dev/null")
+        run_cmd("hciconfig hci0 up 2>/dev/null")
+        mac_suffix = get_mac_suffix()
+        device_name = f"ProBharath-{mac_suffix}"
+        run_cmd(f"hciconfig hci0 name '{device_name}' 2>/dev/null")
+        if enabled:
+            run_cmd("hciconfig hci0 leadv 3 2>/dev/null")
+            logger.info(f"BLE Beacon broadcasting active: {device_name}")
+        else:
+            run_cmd("hciconfig hci0 noleadv 2>/dev/null")
+            logger.info("BLE Beacon advertising stopped.")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to set BLE beacon: {e}")
+        return False
 
 class NetworkApiHandler(BaseHTTPRequestHandler):
     def _send_cors(self):
@@ -247,6 +274,15 @@ class NetworkApiHandler(BaseHTTPRequestHandler):
             else:
                 stop_fallback_hotspot()
             self._respond_json({"success": True, "hotspot_enabled": enabled})
+        elif self.path == '/api/network/hotspot/config':
+            ssid = payload.get('ssid', '')
+            password = payload.get('password', '')
+            res = start_fallback_hotspot(custom_ssid=ssid if ssid else None, custom_password=password if password else None)
+            self._respond_json({"success": True, "ssid": ssid, "has_password": bool(password), "output": res})
+        elif self.path == '/api/network/beacon':
+            enabled = payload.get('enabled', False)
+            success = set_ble_beacon(enabled)
+            self._respond_json({"success": success, "beacon_enabled": enabled})
         else:
             self.send_response(404)
             self.end_headers()

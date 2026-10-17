@@ -555,14 +555,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="/assets/index-BoRr4x8i.js"></script>
+  <script type="module" crossorigin src="/assets/index-DX1beqkw.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/overlayscrollbars-CiKU261J.js">
   <link rel="modulepreload" crossorigin href="/assets/vuetify-HSJperxJ.js">
   <link rel="modulepreload" crossorigin href="/assets/echarts-Ce9dz-GT.js">
   <link rel="modulepreload" crossorigin href="/assets/codemirror-Dbba2-Wz.js">
   <link rel="stylesheet" crossorigin href="/assets/overlayscrollbars-BJn_P54_.css">
   <link rel="stylesheet" crossorigin href="/assets/vuetify-BSwS9o2d.css">
-  <link rel="stylesheet" crossorigin href="/assets/index-CAe4YP-E.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-Ch__Rfss.css">
 <link rel="manifest" href="/manifest.webmanifest"></head>
 
 <body style="background-color: #121212">
@@ -573,6 +573,59 @@
         </strong>
     </noscript>
     <div id="app"></div>
+
+<style id="topbar-front-layer-override">
+  header.v-app-bar.topbar,
+  header.v-app-bar,
+  .v-app-bar.topbar,
+  .v-app-bar,
+  .topbar {
+    z-index: 100000 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 56px !important;
+    max-height: 56px !important;
+    transform: none !important;
+    background: rgba(8, 14, 26, 0.85) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.3) !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6) !important;
+  }
+  header.v-app-bar .v-toolbar__content,
+  .topbar .v-toolbar__content {
+    height: 56px !important;
+    max-height: 56px !important;
+    background: transparent !important;
+  }
+  .v-navigation-drawer,
+  aside.v-navigation-drawer,
+  .v-navigation-drawer--clipped,
+  .v-navigation-drawer--fixed {
+    z-index: 9999 !important;
+    top: 56px !important;
+    height: calc(100vh - 56px) !important;
+    max-height: calc(100vh - 56px) !important;
+    padding-top: 0 !important;
+    box-sizing: border-box !important;
+  }
+  main.v-main,
+  .v-main,
+  #content {
+    padding-top: 56px !important;
+  }
+  header.v-app-bar .nav-logo,
+  .topbar .nav-logo,
+  .nav-logo {
+    height: 60px !important;
+    max-height: 60px !important;
+    width: auto !important;
+    filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.55)) !important;
+  }
+</style>
+
 </body>
 
 </html>

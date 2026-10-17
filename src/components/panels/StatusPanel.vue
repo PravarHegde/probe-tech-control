@@ -94,6 +94,42 @@ A Probharath Technologies Product
                 </v-container>
                 <v-divider class="mt-0 mb-0" />
             </template>
+            <template v-if="isPowerLossDetected">
+                <v-card
+                    class="mx-4 my-3 pa-3 rounded-lg"
+                    style="background: rgba(255, 152, 0, 0.14); border: 1px solid rgba(255, 152, 0, 0.5); backdrop-filter: blur(8px);">
+                    <div class="d-flex align-center flex-wrap">
+                        <v-icon color="warning" class="mr-3" size="32">{{ mdiLightningBolt }}</v-icon>
+                        <div class="flex-grow-1 mr-2">
+                            <div class="subtitle-2 font-weight-bold warning--text">
+                                Power Loss Recovery Detected
+                            </div>
+                            <div class="caption white--text text--lighten-1">
+                                Interrupted at <strong>Z={{ interruptedZ }}mm</strong> ({{ interruptedFile }})
+                            </div>
+                        </div>
+                        <div class="d-flex align-center mt-2 mt-sm-0">
+                            <v-btn
+                                small
+                                color="success"
+                                class="mr-2 font-weight-bold px-3"
+                                :loading="loadings.includes('statusResumeInterrupted')"
+                                @click="btnResumeInterrupted">
+                                <v-icon left small>{{ mdiPlay }}</v-icon>
+                                Resume Print
+                            </v-btn>
+                            <v-btn
+                                x-small
+                                text
+                                color="grey lighten-1"
+                                @click="btnClearInterrupted">
+                                Discard
+                            </v-btn>
+                        </div>
+                    </div>
+                </v-card>
+                <v-divider class="my-0" />
+            </template>
             <v-tabs v-model="activeTab" fixed-tabs>
                 <v-tab v-if="current_filename" href="#status">
                     <v-icon>{{ mdiSpeedometer }}</v-icon>
@@ -160,6 +196,7 @@ import {
     mdiHistory,
     mdiInformation,
     mdiLayersPlus,
+    mdiLightningBolt,
     mdiMessageProcessingOutline,
     mdiPause,
     mdiPlay,
@@ -195,6 +232,7 @@ export default class StatusPanel extends Mixins(BaseMixin) {
     mdiFileDocumentMultipleOutline = mdiFileDocumentMultipleOutline
     mdiInformation = mdiInformation
     mdiHistory = mdiHistory
+    mdiLightningBolt = mdiLightningBolt
     mdiMessageProcessingOutline = mdiMessageProcessingOutline
     mdiSpeedometer = mdiSpeedometer
     mdiStopCircleOutline = mdiStopCircleOutline
@@ -323,6 +361,14 @@ export default class StatusPanel extends Mixins(BaseMixin) {
                 loadingName: 'statusPrintReprint',
                 status: () => ['error', 'complete', 'cancelled'].includes(this.printer_state),
                 click: this.btnReprintJob,
+            },
+            {
+                text: 'Resume Interrupted Print (Power Loss)',
+                color: 'warning',
+                icon: mdiLightningBolt,
+                loadingName: 'statusResumeInterrupted',
+                status: () => this.isPowerLossDetected,
+                click: this.btnResumeInterrupted,
             },
         ]
     }
@@ -464,6 +510,38 @@ export default class StatusPanel extends Mixins(BaseMixin) {
 
     btnReprintJob() {
         this.$socket.emit('printer.print.start', { filename: this.current_filename }, { loading: 'statusPrintReprint' })
+    }
+
+    get save_variables() {
+        return this.$store.state.printer.save_variables?.variables ?? {}
+    }
+
+    get isPowerLossDetected() {
+        const sv = this.save_variables
+        const was_interrupted =
+            sv.was_interrupted === true || sv.was_interrupted === 'True' || sv.was_interrupted === 'true'
+        const z = parseFloat(sv.power_resume_z ?? 0)
+        return was_interrupted && z > 0 && ['standby', 'error', 'cancelled', 'complete'].includes(this.printer_state)
+    }
+
+    get interruptedFile() {
+        return this.save_variables.last_file ?? ''
+    }
+
+    get interruptedZ() {
+        return this.save_variables.power_resume_z ?? '0'
+    }
+
+    btnResumeInterrupted() {
+        this.$socket.emit(
+            'printer.gcode.script',
+            { script: 'RESUME_INTERRUPTED' },
+            { loading: 'statusResumeInterrupted' }
+        )
+    }
+
+    btnClearInterrupted() {
+        this.$socket.emit('printer.gcode.script', { script: 'clear_last_file' })
     }
 }
 </script>

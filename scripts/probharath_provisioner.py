@@ -92,12 +92,12 @@ def setup_networks_from_json(config_data):
 def start_fallback_hotspot():
     mac_suffix = get_mac_suffix()
     hotspot_ssid = f"ProBharath-Setup-{mac_suffix}"
-    logger.warning(f"No reachable WiFi detected. Starting Setup Hotspot: '{hotspot_ssid}'...")
+    logger.warning(f"No reachable router detected. Starting Persistent Setup Hotspot: '{hotspot_ssid}'...")
     
     # Clean up any existing hotspot
     run_cmd("nmcli connection delete 'ProBharath-Hotspot' 2>/dev/null")
     
-    # Create open hotspot on wlan0
+    # Create persistent open hotspot on wlan0 (no 5-minute timeout so Master Pi / worker farm stays connected)
     cmd = (
         f"nmcli connection add type wifi ifname wlan0 con-name 'ProBharath-Hotspot' "
         f"autoconnect no ssid '{hotspot_ssid}' 802-11-wireless.mode ap 802-11-wireless.band bg "
@@ -105,7 +105,7 @@ def start_fallback_hotspot():
     )
     run_cmd(cmd)
     run_cmd("nmcli connection up 'ProBharath-Hotspot'")
-    logger.info("✓ Setup Hotspot activated at 192.168.4.1")
+    logger.info("✓ Persistent Setup & Emergency Hotspot activated at 192.168.4.1")
 
 def start_ble_beacon():
     mac_suffix = get_mac_suffix()
@@ -119,7 +119,7 @@ def start_ble_beacon():
         logger.error(f"BLE Beacon failed: {e}")
 
 def main():
-    logger.info("Initializing ProBharath Provisioner Daemon...")
+    logger.info("Initializing ProBharath Provisioner Daemon (Farm-Ready)...")
     
     # Step 1: Check for bootfs setup file
     for path in BOOT_PATHS:
@@ -144,11 +144,11 @@ def main():
     while time.time() - start_time < 22:
         if is_online():
             connected = True
-            logger.info("✓ Primary WiFi connection verified and internet reachable!")
+            logger.info("✓ WiFi connection verified and network reachable!")
             break
         time.sleep(2)
 
-    # Step 3: Fallback if offline
+    # Step 3: Fallback if offline (Persistent hotspot for Master Pi / Rescue)
     if not connected:
         start_fallback_hotspot()
         start_ble_beacon()

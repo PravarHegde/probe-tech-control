@@ -10,7 +10,13 @@ import { RootState } from '@/store/types'
 
 export const getters: GetterTree<SocketState, RootState> = {
     getUrl: (state) => {
-        const port = state.port !== 80 ? ':' + state.port : ''
+        const isStandardPort = state.port === 80 || state.port === 443
+        const isCloudRelay = typeof window !== 'undefined' && (
+            window.location.hostname.includes('probharath.com') ||
+            window.location.pathname.startsWith('/relay') ||
+            (typeof document !== 'undefined' && document.cookie.includes('ptc_claim'))
+        )
+        const port = (isCloudRelay || isStandardPort) ? '' : (state.port ? ':' + state.port : '')
         let path = '/' + state.path.replace(/^\/|\/$/g, '')
 
         // remove last / in path

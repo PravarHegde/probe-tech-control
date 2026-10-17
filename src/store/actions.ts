@@ -57,8 +57,14 @@ export const actions: ActionTree<RootState, RootState> = {
             return
         }
 
-        if (payload.hostname) commit('socket/setData', { hostname: payload.hostname })
-        if (payload.port) commit('socket/setData', { port: parseInt(payload.port.toString()) })
-        if (payload.path) commit('socket/setData', { route_prefix: payload.path })
+        const isCloudRelay = typeof window !== 'undefined' && (
+            window.location.hostname.includes('probharath.com') ||
+            window.location.pathname.startsWith('/relay') ||
+            (typeof document !== 'undefined' && document.cookie.includes('ptc_claim'))
+        )
+
+        if (payload.hostname && !isCloudRelay) commit('socket/setData', { hostname: payload.hostname })
+        if (payload.port && !isCloudRelay) commit('socket/setData', { port: parseInt(payload.port.toString()) })
+        if (payload.path && !isCloudRelay) commit('socket/setData', { route_prefix: payload.path })
     },
 }

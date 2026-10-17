@@ -213,7 +213,264 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
 
             <!-- Right Column: Analytics & Ecosystem Widgets (Matching Website AIFactoryAgent) -->
             <v-col cols="12" lg="4">
-                <!-- Widget 1: Downtime Harvesting (AI) Card -->
+                <!-- Widget 1: Machine Dynamics & Telemetry Console (Priority #1) -->
+                <v-card class="supercar-console mb-4 rounded-xl overflow-hidden elevation-8">
+                    <!-- Console Top Bezel: Carbon Mesh + Title + Machine Name + Controls -->
+                    <div class="supercar-bezel px-4 py-2.5 d-flex align-center justify-space-between">
+                        <div class="d-flex align-center">
+                            <img
+                                src="/img/probharath_elephant_silver.png"
+                                alt="ProBharath"
+                                style="width: 17px; height: 17px; object-fit: contain; margin-right: 7px; filter: drop-shadow(0 0 5px rgba(0, 229, 255, 0.4));"
+                            />
+                            <span class="cockpit-title white--text font-weight-black tracking-wider">
+                                MACHINE DYNAMICS
+                            </span>
+                            <span class="cockpit-sub-badge ml-2 px-1.5 py-0.5 rounded text-uppercase">
+                                {{ activePrinterName }}
+                            </span>
+                        </div>
+                        <div class="d-flex align-center">
+                            <span class="caption grey--text mr-2 font-mono" style="font-size: 10px;">{{ liveUptimeFormatted }}</span>
+                            <v-btn icon x-small color="cyan" class="mr-1" @click="fetchLiveSystemData" :loading="telemetryLoading" title="Refresh Live Sensors">
+                                <v-icon x-small>{{ mdiRefresh }}</v-icon>
+                            </v-btn>
+                            <v-btn
+                                icon
+                                x-small
+                                color="grey lighten-1"
+                                @click="telemetryMinimized = !telemetryMinimized"
+                                :title="telemetryMinimized ? 'Expand Telemetry' : 'Minimize Telemetry'"
+                            >
+                                <v-icon x-small>{{ telemetryMinimized ? mdiChevronDown : mdiChevronUp }}</v-icon>
+                            </v-btn>
+                        </div>
+                    </div>
+
+                    <!-- Minimized Compact Summary Ribbon -->
+                    <div
+                        v-if="telemetryMinimized"
+                        class="px-3 py-2 d-flex align-center justify-space-between font-mono"
+                        style="background: rgba(0, 0, 0, 0.35); font-size: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);"
+                    >
+                        <span class="d-flex align-center">
+                            <span class="cyan--text font-weight-bold mr-1">CPU:</span>
+                            <span class="white--text mr-2">{{ liveCpuUsage.toFixed(1) }}% ({{ liveCpuTemp }}°C)</span>
+                        </span>
+                        <span class="d-flex align-center">
+                            <span class="cyan--text font-weight-bold mr-1">RAM:</span>
+                            <span class="white--text mr-2">{{ liveRamPercent.toFixed(0) }}%</span>
+                        </span>
+                        <span class="d-flex align-center">
+                            <span class="cyan--text font-weight-bold mr-1">FEEDRATE:</span>
+                            <span class="white--text mr-2">{{ liveSpeed }} mm/s</span>
+                        </span>
+                        <v-chip x-small color="rgba(0, 229, 255, 0.15)" class="cyan--text font-weight-bold" style="height: 18px; font-size: 8px;">
+                            {{ printerMotionStatus }}
+                        </v-chip>
+                    </div>
+
+                    <!-- Full Gauges & Kinematics (Collapsible) -->
+                    <v-expand-transition>
+                        <div v-show="!telemetryMinimized">
+                            <!-- Dynamic Shift-Light RPM Bar -->
+                            <div class="shift-light-bar d-flex align-center px-4 py-1.5 justify-space-between">
+                                <div
+                                    v-for="i in 10"
+                                    :key="i"
+                                    class="shift-led"
+                                    :class="getShiftLedClass(i)"
+                                ></div>
+                            </div>
+
+                            <v-card-text class="pa-4 pt-2">
+                                <!-- Dual Digital Cluster Pods: CPU & RAM -->
+                                <div class="d-flex align-center justify-space-around mb-3">
+                                    <!-- Left Pod: CPU Power & Temperature -->
+                                    <div class="gauge-pod d-flex flex-column align-center text-center">
+                                        <div class="gauge-container relative">
+                                            <svg viewBox="0 0 100 100" class="gauge-svg">
+                                                <defs>
+                                                    <linearGradient id="cpuGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                                                        <stop offset="0%" stop-color="#00e5ff" />
+                                                        <stop offset="70%" stop-color="#38bdf8" />
+                                                        <stop offset="100%" stop-color="#f43f5e" />
+                                                    </linearGradient>
+                                                </defs>
+                                                <!-- Track Arc -->
+                                                <path
+                                                    d="M 18 82 A 42 42 0 1 1 82 82"
+                                                    fill="none"
+                                                    stroke="rgba(255, 255, 255, 0.08)"
+                                                    stroke-width="7"
+                                                    stroke-linecap="round"
+                                                />
+                                                <!-- Value Arc -->
+                                                <path
+                                                    d="M 18 82 A 42 42 0 1 1 82 82"
+                                                    fill="none"
+                                                    stroke="url(#cpuGrad)"
+                                                    stroke-width="7"
+                                                    stroke-linecap="round"
+                                                    :stroke-dasharray="198"
+                                                    :stroke-dashoffset="198 - (198 * Math.min(liveCpuUsage, 100) / 100)"
+                                                    class="gauge-active-path"
+                                                />
+                                            </svg>
+                                            <div class="gauge-center-content">
+                                                <div class="gauge-value font-weight-black white--text font-mono">
+                                                    {{ liveCpuUsage.toFixed(1) }}
+                                                </div>
+                                                <div class="gauge-unit cyan--text font-weight-bold">%</div>
+                                                <div class="gauge-label grey--text">CPU LOAD</div>
+                                            </div>
+                                        </div>
+                                        <div class="pod-footer mt-1 d-flex align-center">
+                                            <v-icon x-small :color="liveCpuTempColor" class="mr-1">{{ mdiThermometer }}</v-icon>
+                                            <span class="font-mono caption font-weight-bold" :class="liveCpuTempClass">
+                                                {{ liveCpuTemp }}°C
+                                            </span>
+                                            <span class="text-caption grey--text ml-1" style="font-size: 9px;">CORE</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Center Divider: Kinematics HUD & Machine Status -->
+                                    <div class="hud-center-pod px-2 text-center d-flex flex-column justify-center align-center">
+                                        <div class="drive-mode-pill mb-1">
+                                            <span class="mode-text">{{ printerMotionStatus }}</span>
+                                        </div>
+                                        <div class="speed-readout font-mono font-weight-black white--text">
+                                            {{ liveSpeed }}
+                                            <span class="speed-unit">mm/s</span>
+                                        </div>
+                                        <div class="speed-sub grey--text font-weight-medium">FEEDRATE</div>
+
+                                        <!-- Axis Coordinates HUD -->
+                                        <div class="coords-strip mt-2 px-2 py-1 rounded d-flex align-center justify-space-between">
+                                            <span class="coord-item"><strong class="cyan--text">X</strong> {{ liveCoords.x }}</span>
+                                            <span class="coord-item mx-1"><strong class="cyan--text">Y</strong> {{ liveCoords.y }}</span>
+                                            <span class="coord-item"><strong class="cyan--text">Z</strong> {{ liveCoords.z }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right Pod: RAM Memory Buffer -->
+                                    <div class="gauge-pod d-flex flex-column align-center text-center">
+                                        <div class="gauge-container relative">
+                                            <svg viewBox="0 0 100 100" class="gauge-svg">
+                                                <defs>
+                                                    <linearGradient id="ramGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                                                        <stop offset="0%" stop-color="#94a3b8" />
+                                                        <stop offset="50%" stop-color="#e2e8f0" />
+                                                        <stop offset="100%" stop-color="#38bdf8" />
+                                                    </linearGradient>
+                                                </defs>
+                                                <!-- Track Arc -->
+                                                <path
+                                                    d="M 18 82 A 42 42 0 1 1 82 82"
+                                                    fill="none"
+                                                    stroke="rgba(255, 255, 255, 0.08)"
+                                                    stroke-width="7"
+                                                    stroke-linecap="round"
+                                                />
+                                                <!-- Value Arc -->
+                                                <path
+                                                    d="M 18 82 A 42 42 0 1 1 82 82"
+                                                    fill="none"
+                                                    stroke="url(#ramGrad)"
+                                                    stroke-width="7"
+                                                    stroke-linecap="round"
+                                                    :stroke-dasharray="198"
+                                                    :stroke-dashoffset="198 - (198 * Math.min(liveRamPercent, 100) / 100)"
+                                                    class="gauge-active-path"
+                                                />
+                                            </svg>
+                                            <div class="gauge-center-content">
+                                                <div class="gauge-value font-weight-black white--text font-mono">
+                                                    {{ liveRamPercent.toFixed(0) }}
+                                                </div>
+                                                <div class="gauge-unit grey--text text--lighten-2 font-weight-bold">%</div>
+                                                <div class="gauge-label grey--text">RAM USED</div>
+                                            </div>
+                                        </div>
+                                        <div class="pod-footer mt-1 font-mono caption grey--text text--lighten-1" style="font-size: 10px;">
+                                            {{ liveRamUsedMb }} / {{ liveRamTotalGb }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 4-Core ARM Cortex A72 Telemetry -->
+                                <div class="cpu-cores-telemetry pa-2.5 rounded-lg mb-3">
+                                    <div class="d-flex align-center justify-space-between mb-1.5">
+                                        <span class="caption grey--text text-uppercase font-weight-bold" style="font-size: 9px; letter-spacing: 0.5px;">
+                                            4-CORE ARM CORTEX A72 TELEMETRY
+                                        </span>
+                                        <span class="caption cyan--text font-weight-bold font-mono" style="font-size: 9px;">
+                                            LOAD: {{ liveSysLoad }}
+                                        </span>
+                                    </div>
+                                    <div class="d-flex align-center justify-space-between">
+                                        <div v-for="(load, idx) in liveCoreLoads" :key="idx" class="core-cell flex-grow-1 mx-1">
+                                            <div class="d-flex align-center justify-space-between caption font-mono" style="font-size: 8px;">
+                                                <span class="grey--text">C{{ idx }}</span>
+                                                <span class="white--text font-weight-bold">{{ load }}%</span>
+                                            </div>
+                                            <v-progress-linear
+                                                :value="load"
+                                                height="4"
+                                                rounded
+                                                :color="getCoreColor(load)"
+                                                class="mt-1"
+                                            ></v-progress-linear>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Twin Heat Monometer: Hotend Nozzle & Bed -->
+                                <div class="twin-boost-strip pa-2 rounded-lg d-flex align-center justify-space-between">
+                                    <div class="d-flex align-center flex-grow-1 mr-2">
+                                        <v-avatar size="24" color="rgba(244, 63, 94, 0.15)" class="mr-2">
+                                            <v-icon x-small color="#f43f5e">{{ mdiFire }}</v-icon>
+                                        </v-avatar>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-center justify-space-between">
+                                                <span class="caption grey--text" style="font-size: 10px;">NOZZLE</span>
+                                                <span class="caption font-mono font-weight-bold white--text">{{ liveExtruderTemp }}°C / {{ liveExtruderTarget }}°C</span>
+                                            </div>
+                                            <v-progress-linear
+                                                :value="liveExtruderTarget > 0 ? (liveExtruderTemp / liveExtruderTarget) * 100 : (liveExtruderTemp / 260) * 100"
+                                                color="#f43f5e"
+                                                height="3"
+                                                rounded
+                                                class="mt-0.5"
+                                            ></v-progress-linear>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex align-center flex-grow-1 ml-2">
+                                        <v-avatar size="24" color="rgba(245, 158, 11, 0.15)" class="mr-2">
+                                            <v-icon x-small color="#f59e0b">{{ mdiRadiator }}</v-icon>
+                                        </v-avatar>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-center justify-space-between">
+                                                <span class="caption grey--text" style="font-size: 10px;">BED</span>
+                                                <span class="caption font-mono font-weight-bold white--text">{{ liveBedTemp }}°C / {{ liveBedTarget }}°C</span>
+                                            </div>
+                                            <v-progress-linear
+                                                :value="liveBedTarget > 0 ? (liveBedTemp / liveBedTarget) * 100 : (liveBedTemp / 100) * 100"
+                                                color="#f59e0b"
+                                                height="3"
+                                                rounded
+                                                class="mt-0.5"
+                                            ></v-progress-linear>
+                                        </div>
+                                    </div>
+                                </div>
+                            </v-card-text>
+                        </div>
+                    </v-expand-transition>
+                </v-card>
+
+                <!-- Widget 2: Downtime Harvesting (AI) Card -->
                 <v-card class="harvesting-card mb-4 rounded-xl pa-5 elevation-6 relative overflow-hidden">
                     <div class="d-flex justify-space-between align-start mb-2">
                         <div>
@@ -242,7 +499,7 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                     </div>
                 </v-card>
 
-                <!-- Widget 2: Predictive Maintenance Card -->
+                <!-- Widget 3: Predictive Maintenance Card -->
                 <v-card class="glass-panel mb-4 rounded-xl overflow-hidden">
                     <div class="d-flex align-center px-4 py-3" style="background: rgba(255, 152, 0, 0.08); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
                         <v-icon left small color="orange">{{ mdiShieldAlert }}</v-icon>
@@ -268,222 +525,6 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                             </div>
                             <div class="caption grey--text mt-1">
                                 X and Y axes belt resonance frequencies are balanced and within nominal limits.
-                            </div>
-                        </div>
-                    </v-card-text>
-                </v-card>
-
-                <!-- Widget 3: Supercar Cockpit Telemetry Console -->
-                <v-card class="supercar-console mb-4 rounded-xl overflow-hidden elevation-8">
-                    <!-- Console Top Bezel: Carbon Mesh + Shift Lights + Diagnostics Trigger -->
-                    <div class="supercar-bezel px-4 py-2.5 d-flex align-center justify-space-between">
-                        <div class="d-flex align-center">
-                            <v-icon x-small color="cyan" class="mr-1.5">{{ mdiCarSports }}</v-icon>
-                            <span class="cockpit-title white--text font-weight-black tracking-wider">
-                                COCKPIT TELEMETRY
-                            </span>
-                            <span class="cockpit-sub-badge ml-2 px-1.5 py-0.5 rounded text-uppercase">
-                                GT SPORT
-                            </span>
-                        </div>
-                        <div class="d-flex align-center">
-                            <span class="caption grey--text mr-2 font-mono" style="font-size: 10px;">{{ liveUptimeFormatted }}</span>
-                            <v-btn icon x-small color="cyan" @click="fetchLiveSystemData" :loading="telemetryLoading" title="Refresh Live Sensors">
-                                <v-icon x-small>{{ mdiRefresh }}</v-icon>
-                            </v-btn>
-                        </div>
-                    </div>
-
-                    <!-- F1 / GT3 Shift-Light RPM Bar -->
-                    <div class="shift-light-bar d-flex align-center px-4 py-1.5 justify-space-between">
-                        <div
-                            v-for="i in 10"
-                            :key="i"
-                            class="shift-led"
-                            :class="getShiftLedClass(i)"
-                        ></div>
-                    </div>
-
-                    <v-card-text class="pa-4 pt-2">
-                        <!-- Dual Digital Cluster Pods: CPU Tachometer & RAM Dyno -->
-                        <div class="d-flex align-center justify-space-around mb-3">
-                            <!-- Left Pod: CPU Power & Temperature -->
-                            <div class="gauge-pod d-flex flex-column align-center text-center">
-                                <div class="gauge-container relative">
-                                    <svg viewBox="0 0 100 100" class="gauge-svg">
-                                        <defs>
-                                            <linearGradient id="cpuGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-                                                <stop offset="0%" stop-color="#00e5ff" />
-                                                <stop offset="70%" stop-color="#38bdf8" />
-                                                <stop offset="100%" stop-color="#f43f5e" />
-                                            </linearGradient>
-                                        </defs>
-                                        <!-- Track Arc -->
-                                        <path
-                                            d="M 18 82 A 42 42 0 1 1 82 82"
-                                            fill="none"
-                                            stroke="rgba(255, 255, 255, 0.08)"
-                                            stroke-width="7"
-                                            stroke-linecap="round"
-                                        />
-                                        <!-- Value Arc -->
-                                        <path
-                                            d="M 18 82 A 42 42 0 1 1 82 82"
-                                            fill="none"
-                                            stroke="url(#cpuGrad)"
-                                            stroke-width="7"
-                                            stroke-linecap="round"
-                                            :stroke-dasharray="198"
-                                            :stroke-dashoffset="198 - (198 * Math.min(liveCpuUsage, 100) / 100)"
-                                            class="gauge-active-path"
-                                        />
-                                    </svg>
-                                    <div class="gauge-center-content">
-                                        <div class="gauge-value font-weight-black white--text font-mono">
-                                            {{ liveCpuUsage.toFixed(1) }}
-                                        </div>
-                                        <div class="gauge-unit cyan--text font-weight-bold">%</div>
-                                        <div class="gauge-label grey--text">CPU LOAD</div>
-                                    </div>
-                                </div>
-                                <div class="pod-footer mt-1 d-flex align-center">
-                                    <v-icon x-small :color="liveCpuTempColor" class="mr-1">{{ mdiThermometer }}</v-icon>
-                                    <span class="font-mono caption font-weight-bold" :class="liveCpuTempClass">
-                                        {{ liveCpuTemp }}°C
-                                    </span>
-                                    <span class="text-caption grey--text ml-1" style="font-size: 9px;">CORE</span>
-                                </div>
-                            </div>
-
-                            <!-- Center Divider: Supercar Tachometer HUD & Kinematics -->
-                            <div class="hud-center-pod px-2 text-center d-flex flex-column justify-center align-center">
-                                <div class="drive-mode-pill mb-1">
-                                    <span class="mode-text">{{ printerMotionStatus }}</span>
-                                </div>
-                                <div class="speed-readout font-mono font-weight-black white--text">
-                                    {{ liveSpeed }}
-                                    <span class="speed-unit">mm/s</span>
-                                </div>
-                                <div class="speed-sub grey--text font-weight-medium">VELOCITY</div>
-
-                                <!-- Axis Coordinates HUD -->
-                                <div class="coords-strip mt-2 px-2 py-1 rounded d-flex align-center justify-space-between">
-                                    <span class="coord-item"><strong class="cyan--text">X</strong> {{ liveCoords.x }}</span>
-                                    <span class="coord-item mx-1"><strong class="cyan--text">Y</strong> {{ liveCoords.y }}</span>
-                                    <span class="coord-item"><strong class="cyan--text">Z</strong> {{ liveCoords.z }}</span>
-                                </div>
-                            </div>
-
-                            <!-- Right Pod: RAM Dyno & Memory Buffer -->
-                            <div class="gauge-pod d-flex flex-column align-center text-center">
-                                <div class="gauge-container relative">
-                                    <svg viewBox="0 0 100 100" class="gauge-svg">
-                                        <defs>
-                                            <linearGradient id="ramGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-                                                <stop offset="0%" stop-color="#94a3b8" />
-                                                <stop offset="50%" stop-color="#e2e8f0" />
-                                                <stop offset="100%" stop-color="#38bdf8" />
-                                            </linearGradient>
-                                        </defs>
-                                        <!-- Track Arc -->
-                                        <path
-                                            d="M 18 82 A 42 42 0 1 1 82 82"
-                                            fill="none"
-                                            stroke="rgba(255, 255, 255, 0.08)"
-                                            stroke-width="7"
-                                            stroke-linecap="round"
-                                        />
-                                        <!-- Value Arc -->
-                                        <path
-                                            d="M 18 82 A 42 42 0 1 1 82 82"
-                                            fill="none"
-                                            stroke="url(#ramGrad)"
-                                            stroke-width="7"
-                                            stroke-linecap="round"
-                                            :stroke-dasharray="198"
-                                            :stroke-dashoffset="198 - (198 * Math.min(liveRamPercent, 100) / 100)"
-                                            class="gauge-active-path"
-                                        />
-                                    </svg>
-                                    <div class="gauge-center-content">
-                                        <div class="gauge-value font-weight-black white--text font-mono">
-                                            {{ liveRamPercent.toFixed(0) }}
-                                        </div>
-                                        <div class="gauge-unit grey--text text--lighten-2 font-weight-bold">%</div>
-                                        <div class="gauge-label grey--text">RAM USED</div>
-                                    </div>
-                                </div>
-                                <div class="pod-footer mt-1 font-mono caption grey--text text--lighten-1" style="font-size: 10px;">
-                                    {{ liveRamUsedMb }} / {{ liveRamTotalGb }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 4-Cylinder CPU Core Bars (Supercar Engine Telemetry) -->
-                        <div class="cpu-cores-telemetry pa-2.5 rounded-lg mb-3">
-                            <div class="d-flex align-center justify-space-between mb-1.5">
-                                <span class="caption grey--text text-uppercase font-weight-bold" style="font-size: 9px; letter-spacing: 0.5px;">
-                                    4-CORE ARM CORTEX A72 TELEMETRY
-                                </span>
-                                <span class="caption cyan--text font-weight-bold font-mono" style="font-size: 9px;">
-                                    LOAD: {{ liveSysLoad }}
-                                </span>
-                            </div>
-                            <div class="d-flex align-center justify-space-between">
-                                <div v-for="(load, idx) in liveCoreLoads" :key="idx" class="core-cell flex-grow-1 mx-1">
-                                    <div class="d-flex align-center justify-space-between caption font-mono" style="font-size: 8px;">
-                                        <span class="grey--text">C{{ idx }}</span>
-                                        <span class="white--text font-weight-bold">{{ load }}%</span>
-                                    </div>
-                                    <v-progress-linear
-                                        :value="load"
-                                        height="4"
-                                        rounded
-                                        :color="getCoreColor(load)"
-                                        class="mt-1"
-                                    ></v-progress-linear>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Twin Boost Heat Monometer: Hotend Nozzle & Bed -->
-                        <div class="twin-boost-strip pa-2 rounded-lg d-flex align-center justify-space-between">
-                            <div class="d-flex align-center flex-grow-1 mr-2">
-                                <v-avatar size="24" color="rgba(244, 63, 94, 0.15)" class="mr-2">
-                                    <v-icon x-small color="#f43f5e">{{ mdiFire }}</v-icon>
-                                </v-avatar>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-center justify-space-between">
-                                        <span class="caption grey--text" style="font-size: 10px;">NOZZLE</span>
-                                        <span class="caption font-mono font-weight-bold white--text">{{ liveExtruderTemp }}°C / {{ liveExtruderTarget }}°C</span>
-                                    </div>
-                                    <v-progress-linear
-                                        :value="liveExtruderTarget > 0 ? (liveExtruderTemp / liveExtruderTarget) * 100 : (liveExtruderTemp / 260) * 100"
-                                        color="#f43f5e"
-                                        height="3"
-                                        rounded
-                                        class="mt-0.5"
-                                    ></v-progress-linear>
-                                </div>
-                            </div>
-
-                            <div class="d-flex align-center flex-grow-1 ml-2">
-                                <v-avatar size="24" color="rgba(245, 158, 11, 0.15)" class="mr-2">
-                                    <v-icon x-small color="#f59e0b">{{ mdiRadiator }}</v-icon>
-                                </v-avatar>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-center justify-space-between">
-                                        <span class="caption grey--text" style="font-size: 10px;">BED</span>
-                                        <span class="caption font-mono font-weight-bold white--text">{{ liveBedTemp }}°C / {{ liveBedTarget }}°C</span>
-                                    </div>
-                                    <v-progress-linear
-                                        :value="liveBedTarget > 0 ? (liveBedTemp / liveBedTarget) * 100 : (liveBedTemp / 100) * 100"
-                                        color="#f59e0b"
-                                        height="3"
-                                        rounded
-                                        class="mt-0.5"
-                                    ></v-progress-linear>
-                                </div>
                             </div>
                         </div>
                     </v-card-text>
@@ -549,10 +590,10 @@ import {
     mdiTrendingUp,
     mdiHome,
     mdiChevronDown,
+    mdiChevronUp,
     mdiCpu64Bit,
     mdiCloud,
     mdiServerNetwork,
-    mdiCarSports,
     mdiFire,
     mdiRadiator,
     mdiGauge
@@ -590,10 +631,10 @@ export default class AgentDashboard extends Vue {
     mdiRefresh = mdiRefresh
     mdiCashSync = mdiCashSync
     mdiChevronDown = mdiChevronDown
+    mdiChevronUp = mdiChevronUp
     mdiCpu64Bit = mdiCpu64Bit
     mdiCloud = mdiCloud
     mdiServerNetwork = mdiServerNetwork
-    mdiCarSports = mdiCarSports
     mdiFire = mdiFire
     mdiRadiator = mdiRadiator
     mdiGauge = mdiGauge
@@ -698,6 +739,7 @@ export default class AgentDashboard extends Vue {
     liveUptimeFormatted = '4h 48m up'
     telemetryLoading = false
     telemetryTimer: any = null
+    telemetryMinimized = false
 
     snackbar = false
     snackbarText = ''
@@ -899,9 +941,21 @@ export default class AgentDashboard extends Vue {
 
     get printerMotionStatus() {
         const state = this.$store.state.printer?.print_stats?.state
-        if (state === 'printing') return 'SPORT PRINTING'
-        if (state === 'paused') return 'PIT STOP PAUSED'
-        return 'GT SPORT IDLE'
+        if (state === 'printing') {
+            const pct = Math.round((this.$store.getters['printer/getPrintPercent'] || 0) * 100)
+            return `PRINTING ${pct}%`
+        }
+        if (state === 'paused') return 'PRINT PAUSED'
+        if (state === 'busy') return 'MACHINE BUSY'
+        return 'STANDBY IDLE'
+    }
+
+    get activePrinterName() {
+        const pName = this.$store.state.gui?.general?.printername
+        if (pName && pName.trim() && !pName.toLowerCase().includes('probharath') && !pName.toLowerCase().includes('mainsail')) {
+            return pName.toUpperCase()
+        }
+        return 'ENDER 3'
     }
 
     get liveExtruderTemp() {
@@ -1146,6 +1200,11 @@ export default class AgentDashboard extends Vue {
     font-size: 8px;
     font-weight: 900;
     letter-spacing: 0.5px;
+    white-space: nowrap;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
 }
 
 .shift-light-bar {

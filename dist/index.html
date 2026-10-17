@@ -28,6 +28,20 @@
         var isCloud = host.indexOf("probharath.com") !== -1 || (!isIp && window.location.protocol === "https:");
 
         if (isCloud) {
+          // Clear stale PWA service worker and caches on cloud domain so user always gets the latest UI build
+          try {
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(function(regs) {
+                for (var r of regs) r.unregister();
+              });
+            }
+            if ('caches' in window) {
+              caches.keys().then(function(keys) {
+                for (var k of keys) caches.delete(k);
+              });
+            }
+          } catch(e) {}
+
           // Extract claimCode from query param, parent query param, or cookie
           var urlParams = new URLSearchParams(window.location.search);
           var activeClaim = urlParams.get("claimCode") || "";

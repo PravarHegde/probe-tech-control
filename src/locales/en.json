@@ -749,7 +749,7 @@
         },
         "MiniconsolePanel": {
             "Autoscroll": "Autoscroll",
-            "Headline": "Console",
+            "Headline": "G-Code Console",
             "HideTemperatures": "Hide temperatures",
             "HideTimelapse": "Hide Timelapse",
             "RawOutput": "RAW-Output (for debugging)",
@@ -1093,7 +1093,7 @@
         "TurnDeviceOn": "Turn {device} on"
     },
     "Router": {
-        "Console": "Console",
+        "Console": "G-Code Console",
         "Dashboard": "Dashboard",
         "G-Code Files": "G-Code Files",
         "G-Code Viewer": "G-Code Viewer",

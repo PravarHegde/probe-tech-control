@@ -207,6 +207,14 @@ sudo systemctl enable --now klipper.service
 sudo systemctl enable --now moonraker.service
 sudo systemctl restart nginx
 
+# Seed Moonraker database with ProBharath branding & topbar defaults
+sleep 2
+curl -s -X POST -H "Content-Type: application/json" -d '{"namespace": "mainsail", "key": "general.printername", "value": "ProBharath Technologies"}' "http://127.0.0.1:7125/server/database/item" >/dev/null 2>&1 || true
+curl -s -X POST -H "Content-Type: application/json" -d '{"namespace": "mainsail", "key": "general.logo", "value": "/img/logo.png"}' "http://127.0.0.1:7125/server/database/item" >/dev/null 2>&1 || true
+curl -s -X POST -H "Content-Type: application/json" -d '{"namespace": "mainsail", "key": "general.defaultLocale", "value": "en"}' "http://127.0.0.1:7125/server/database/item" >/dev/null 2>&1 || true
+curl -s -X POST -H "Content-Type: application/json" -d '{"namespace": "mainsail", "key": "theme", "value": {"theme": "futuristic", "mode": "dark"}}' "http://127.0.0.1:7125/server/database/item" >/dev/null 2>&1 || true
+curl -s -X POST -H "Content-Type: application/json" -d '{"namespace": "mainsail", "key": "view.topbar", "value": {"showEmergencyStop": true, "showUploadAndPrint": true, "showSaveConfig": true}}' "http://127.0.0.1:7125/server/database/item" >/dev/null 2>&1 || true
+
 echo -e "${BLUE}=====================================================================${NC}"
 echo -e "${GREEN}✓ PROBE TECH CONTROL CLEAN INSTALL COMPLETE!${NC}"
 echo -e "${BLUE}=====================================================================${NC}"

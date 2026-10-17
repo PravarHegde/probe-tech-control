@@ -1,0 +1,15 @@
+[Unit]
+Description=ProBharath Machine OS Provisioner & Fallback Daemon
+After=network.target NetworkManager.service
+Wants=NetworkManager.service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/python3 /home/probharath/probe-tech-control/scripts/probharath_provisioner.py
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -9,7 +9,9 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
         <!-- Top Status Banner -->
         <div class="mb-4 d-flex flex-wrap align-center justify-space-between">
             <div class="d-flex align-center">
-                <div class="pulse-indicator mr-3"></div>
+                <div class="mr-3 pa-1 rounded-circle pulse-glow-avatar d-flex align-center justify-center" style="background: rgba(168, 85, 247, 0.18); border: 2px solid rgba(168, 85, 247, 0.6); box-shadow: 0 0 16px rgba(168, 85, 247, 0.5); width: 44px; height: 44px; min-width: 44px;">
+                    <img src="/img/probharath_elephant.png" alt="ProBharath Elephant" style="width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.9));" />
+                </div>
                 <div>
                     <div class="text-h5 font-weight-bold white--text d-flex align-center">
                         ProBharath AI Core
@@ -27,11 +29,11 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
             </div>
             <div class="mt-2 mt-sm-0 d-flex align-center">
                 <v-chip small outlined color="cyan" class="mr-2 font-weight-medium">
-                    <v-icon left x-small color="cyan">mdi-chip</v-icon>
+                    <v-icon left x-small color="cyan">{{ mdiChip }}</v-icon>
                     AirLLM / DeepSeek-33B Ready
                 </v-chip>
                 <v-btn small outlined color="primary" class="text-none" @click="showManager = true">
-                    <v-icon left small>mdi-cog</v-icon> Manage Agents
+                    <v-icon left small>{{ mdiCog }}</v-icon> Manage Agents
                 </v-btn>
             </div>
         </div>
@@ -43,20 +45,20 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                     <!-- Terminal Header -->
                     <div class="d-flex align-center justify-space-between px-4 py-3" style="background: rgba(168, 85, 247, 0.08); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
                         <div class="d-flex align-center">
-                            <v-icon left small color="purple lighten-1">mdi-terminal</v-icon>
+                            <img src="/img/probharath_elephant.png" alt="ProBharath AI" style="width: 22px; height: 22px; object-fit: contain; margin-right: 8px; filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.7));" />
                             <span class="subtitle-2 font-weight-bold white--text">Factory Command Link</span>
                             <span class="caption grey--text ml-2">({{ activeAgentName }})</span>
                         </div>
                         <v-btn x-small text color="grey lighten-1" class="text-none" @click="clearChat">
-                            <v-icon x-small left>mdi-trash-can-outline</v-icon> Clear
+                            <v-icon x-small left>{{ mdiTrashCanOutline }}</v-icon> Clear
                         </v-btn>
                     </div>
 
                     <!-- Messages Viewport -->
                     <div class="chat-viewport pa-4 flex-grow-1 overflow-y-auto" style="height: 420px;">
                         <div v-for="msg in messages" :key="msg.id" class="d-flex mb-3" :class="{ 'justify-end': msg.sender === 'user' }">
-                            <v-avatar v-if="msg.sender === 'ai'" size="34" color="rgba(168, 85, 247, 0.2)" class="mr-2 border-purple my-auto">
-                                <v-icon small color="purple lighten-2">mdi-robot</v-icon>
+                            <v-avatar v-if="msg.sender === 'ai'" size="36" color="rgba(168, 85, 247, 0.25)" class="mr-2 border-purple my-auto pa-1">
+                                <img src="/img/probharath_elephant.png" alt="Elephant AI" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.8));" />
                             </v-avatar>
 
                             <!-- User Message Bubble -->
@@ -79,23 +81,23 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                                 <!-- Actionable G-Code Execution Chip if provided -->
                                 <div v-if="msg.action" class="mt-2 pt-2 border-top-glass d-flex align-center justify-space-between">
                                     <span class="caption cyan--text font-weight-medium">
-                                        <v-icon x-small color="cyan">mdi-code-braces</v-icon> {{ msg.action.label }}
+                                        <v-icon x-small color="cyan">{{ mdiCodeBraces }}</v-icon> {{ msg.action.label }}
                                     </span>
                                     <v-btn x-small rounded color="cyan darken-2" class="text-none font-weight-bold px-3" @click="executeAiAction(msg.action)">
-                                        <v-icon x-small left>mdi-flash</v-icon> Execute on Machine
+                                        <v-icon x-small left>{{ mdiFlash }}</v-icon> Execute on Machine
                                     </v-btn>
                                 </div>
                             </div>
 
-                            <v-avatar v-if="msg.sender === 'user'" size="34" color="purple darken-3" class="ml-2 my-auto elevation-2">
-                                <v-icon small color="white">mdi-account</v-icon>
+                            <v-avatar v-if="msg.sender === 'user'" size="36" color="purple darken-3" class="ml-2 my-auto elevation-2">
+                                <v-icon small color="white">{{ mdiAccount }}</v-icon>
                             </v-avatar>
                         </div>
 
                         <!-- Typing Indicator -->
                         <div v-if="processing" class="d-flex align-center mb-2">
-                            <v-avatar size="34" color="rgba(168, 85, 247, 0.2)" class="mr-2 border-purple">
-                                <v-icon small color="purple lighten-2">mdi-robot</v-icon>
+                            <v-avatar size="36" color="rgba(168, 85, 247, 0.25)" class="mr-2 border-purple pa-1">
+                                <img src="/img/probharath_elephant.png" alt="Elephant AI" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.8));" />
                             </v-avatar>
                             <div class="ai-bubble pa-2 px-3 rounded-xl d-flex align-center">
                                 <v-progress-circular indeterminate color="purple lighten-2" size="18" width="2" class="mr-2"></v-progress-circular>
@@ -147,7 +149,7 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                                 :disabled="!newMessage.trim()"
                                 @click="sendMessage"
                             >
-                                <v-icon>mdi-send</v-icon>
+                                <v-icon>{{ mdiSend }}</v-icon>
                             </v-btn>
                         </div>
                     </div>
@@ -169,7 +171,7 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                             </div>
                         </div>
                         <v-avatar color="rgba(255, 255, 255, 0.2)" size="42">
-                            <v-icon color="white">mdi-currency-inr</v-icon>
+                            <v-icon color="white">{{ mdiCurrencyInr }}</v-icon>
                         </v-avatar>
                     </div>
                     <p class="caption white--text text--darken-1 mb-4" style="opacity: 0.9;">
@@ -180,7 +182,7 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                             Manage Queue
                         </v-btn>
                         <v-chip x-small color="rgba(0,0,0,0.25)" class="white--text font-weight-bold">
-                            <v-icon x-small left color="green accent-2">mdi-check-circle</v-icon> 3 JOBS QUEUED
+                            <v-icon x-small left color="green accent-2">{{ mdiCheckCircle }}</v-icon> 3 JOBS QUEUED
                         </v-chip>
                     </div>
                 </v-card>
@@ -188,7 +190,7 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                 <!-- Widget 2: Predictive Maintenance Card -->
                 <v-card class="glass-panel mb-4 rounded-xl overflow-hidden">
                     <div class="d-flex align-center px-4 py-3" style="background: rgba(255, 152, 0, 0.08); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
-                        <v-icon left small color="orange">mdi-shield-alert</v-icon>
+                        <v-icon left small color="orange">{{ mdiShieldAlert }}</v-icon>
                         <span class="subtitle-2 font-weight-bold white--text">Predictive Maintenance</span>
                     </div>
                     <v-card-text class="pa-4">
@@ -220,11 +222,11 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
                 <v-card class="glass-panel rounded-xl overflow-hidden">
                     <div class="d-flex align-center justify-space-between px-4 py-3" style="background: rgba(0, 229, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
                         <div class="d-flex align-center">
-                            <v-icon left small color="cyan">mdi-speedometer</v-icon>
+                            <v-icon left small color="cyan">{{ mdiSpeedometer }}</v-icon>
                             <span class="subtitle-2 font-weight-bold white--text">Machine Telemetry</span>
                         </div>
                         <v-btn x-small text color="cyan" class="text-none" @click="runDiagnostics">
-                            <v-icon x-small left>mdi-refresh</v-icon> Diagnostics
+                            <v-icon x-small left>{{ mdiRefresh }}</v-icon> Diagnostics
                         </v-btn>
                     </div>
                     <v-card-text class="pa-4">
@@ -256,7 +258,7 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
         <v-dialog v-model="showHarvestingDialog" max-width="480">
             <v-card class="glass-panel rounded-xl pa-2">
                 <v-card-title class="headline green--text text--lighten-2 pb-1">
-                    <v-icon left color="green">mdi-cash-sync</v-icon> Downtime Harvesting
+                    <v-icon left color="green">{{ mdiCashSync }}</v-icon> Downtime Harvesting
                 </v-card-title>
                 <v-card-text class="pt-2">
                     <p class="caption grey--text mb-3">
@@ -286,6 +288,27 @@ A Probharath Technologies Product - ProBharath AI Core & Fleet Co-Pilot
 import { Component, Vue } from 'vue-property-decorator'
 import { agentRegistry } from '@/agents/AgentRegistry'
 import AgentManagerDialog from '@/components/agent/AgentManagerDialog.vue'
+import {
+    mdiAccount,
+    mdiSend,
+    mdiElephant,
+    mdiChip,
+    mdiCog,
+    mdiTrashCanOutline,
+    mdiCodeBraces,
+    mdiFlash,
+    mdiCurrencyInr,
+    mdiCheckCircle,
+    mdiShieldAlert,
+    mdiSpeedometer,
+    mdiRefresh,
+    mdiCashSync,
+    mdiGrid,
+    mdiThermometer,
+    mdiShieldCheck,
+    mdiTrendingUp,
+    mdiHome
+} from '@mdi/js'
 
 interface ChatMessage {
     id: number
@@ -303,6 +326,22 @@ interface ChatMessage {
     }
 })
 export default class AgentDashboard extends Vue {
+    // Icons
+    mdiAccount = mdiAccount
+    mdiSend = mdiSend
+    mdiElephant = mdiElephant
+    mdiChip = mdiChip
+    mdiCog = mdiCog
+    mdiTrashCanOutline = mdiTrashCanOutline
+    mdiCodeBraces = mdiCodeBraces
+    mdiFlash = mdiFlash
+    mdiCurrencyInr = mdiCurrencyInr
+    mdiCheckCircle = mdiCheckCircle
+    mdiShieldAlert = mdiShieldAlert
+    mdiSpeedometer = mdiSpeedometer
+    mdiRefresh = mdiRefresh
+    mdiCashSync = mdiCashSync
+
     newMessage = ''
     messages: ChatMessage[] = []
     
@@ -320,12 +359,12 @@ export default class AgentDashboard extends Vue {
     snackbarColor = 'success'
 
     quickPrompts = [
-        { label: 'Run Adaptive Mesh', text: 'Run adaptive mesh calibration', icon: 'mdi-grid', color: 'cyan' },
-        { label: 'Preheat (PLA 210°/60°)', text: 'Preheat nozzle to 210 and bed to 60', icon: 'mdi-fire', color: 'orange' },
-        { label: 'Predict Clogs', text: 'Analyze nozzle health and clog risk', icon: 'mdi-shield-check', color: 'green' },
-        { label: 'Downtime Bidding', text: 'How much has downtime harvesting earned?', icon: 'mdi-currency-inr', color: 'green' },
-        { label: 'Home All (G28)', text: 'Home all axes safely', icon: 'mdi-home', color: 'purple' },
-        { label: 'AirLLM Specs', text: 'Explain AirLLM local offline reasoning', icon: 'mdi-chip', color: 'cyan' },
+        { label: 'Run Adaptive Mesh', text: 'Run adaptive mesh calibration', icon: mdiGrid, color: 'cyan' },
+        { label: 'Preheat (PLA 210°/60°)', text: 'Preheat nozzle to 210 and bed to 60 for PLA', icon: mdiThermometer, color: 'orange' },
+        { label: 'Predict Clogs', text: 'Analyze nozzle health and clog risk', icon: mdiShieldCheck, color: 'green' },
+        { label: 'Downtime Bidding', text: 'How much has downtime harvesting earned?', icon: mdiTrendingUp, color: 'teal' },
+        { label: 'Home All (G28)', text: 'Home all axes G28', icon: mdiHome, color: 'purple' },
+        { label: 'AirLLM Specs', text: 'What are the AirLLM specs on this machine?', icon: mdiChip, color: 'cyan' },
     ]
 
     created() {
@@ -487,6 +526,21 @@ export default class AgentDashboard extends Vue {
 
 .border-top-glass {
     border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pulse-glow-avatar {
+    animation: pulseAvatar 2.5s infinite ease-in-out;
+}
+
+@keyframes pulseAvatar {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+        border-color: rgba(168, 85, 247, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 22px rgba(168, 85, 247, 0.85);
+        border-color: rgba(168, 85, 247, 0.9);
+    }
 }
 
 .pulse-indicator {

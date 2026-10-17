@@ -29,7 +29,7 @@ import {
     mdiHistory,
     mdiTimelapse,
     mdiWrench,
-    mdiRobot,
+    mdiElephant,
     mdiQrcodeScan,
     mdiShopping,
 } from '@mdi/js'
@@ -50,7 +50,7 @@ const routes: AppRoute[] = [
         name: 'agent',
         title: 'AI Agent',
         path: '/agent',
-        icon: mdiRobot,
+        icon: mdiElephant,
         component: AgentDashboard,
         alwaysShow: true,
         showInNavi: true,

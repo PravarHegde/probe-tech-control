@@ -129,6 +129,7 @@ WantedBy=multi-user.target
 [Service]
 Type=simple
 User=${USER}
+SupplementaryGroups=moonraker-admin
 WorkingDirectory=${HOME_DIR}/moonraker
 ExecStart=${HOME_DIR}/moonraker-env/bin/python ${HOME_DIR}/moonraker/moonraker/moonraker.py -d ${HOME_DIR}/printer_data
 Restart=always
@@ -209,6 +210,16 @@ if [ ! -f "${HOME_DIR}/printer_data/config/plr.cfg" ]; then
         cd /tmp/KlipperPLR && chmod +x *.sh && ./install.sh || true
         rm -rf /tmp/KlipperPLR
     fi
+fi
+
+# 7. CONFIGURE POLICYKIT RULES FOR MOONRAKER
+if [ -f "${HOME_DIR}/moonraker/scripts/set-policykit-rules.sh" ]; then
+    echo -e "${GOLD}[+] Configuring PolicyKit permissions for Moonraker...${NC}"
+    sudo groupadd -f moonraker-admin || true
+    sudo usermod -a -G moonraker-admin "${USER}" || true
+    sudo "${HOME_DIR}/moonraker/scripts/set-policykit-rules.sh" --root >/dev/null 2>&1 || true
+    sudo sed -i "s/subject.user == \"root\"/subject.user == \"${USER}\"/" /usr/share/polkit-1/rules.d/moonraker.rules 2>/dev/null || true
+    sudo sed -i "s/subject.user == \"root\"/subject.user == \"${USER}\"/" /etc/polkit-1/rules.d/moonraker.rules 2>/dev/null || true
 fi
 
 sudo systemctl daemon-reload

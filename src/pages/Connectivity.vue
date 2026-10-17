@@ -73,10 +73,17 @@ A Probharath Technologies Product - ProConnect & Zero-Config Network Engine
                             Saved Wi-Fi Profiles (Ranked Failover)
                         </div>
 
-                        <v-list class="transparent-list pa-0 mb-4" rounded>
+                        <!-- Empty State if no saved profiles -->
+                        <div v-if="savedNetworks.length === 0" class="text-center py-4 my-2 rounded-lg" style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(0,229,255,0.2);">
+                            <v-icon color="grey lighten-1" class="mb-1">mdi-wifi-off</v-icon>
+                            <div class="caption grey--text">No saved Wi-Fi profiles found.</div>
+                            <div class="caption cyan--text mt-1">Select a network from nearby below or click "+ Add Wi-Fi".</div>
+                        </div>
+
+                        <v-list v-else class="transparent-list pa-0 mb-4" rounded>
                             <v-list-item
                                 v-for="(net, idx) in savedNetworks"
-                                :key="net.ssid"
+                                :key="net.name || net.ssid"
                                 class="network-item mb-2 rounded-lg"
                                 :style="net.active ? 'border-left: 3px solid #00e5ff;' : ''">
                                 <v-list-item-avatar size="36" class="my-0 mr-3">
@@ -121,7 +128,11 @@ A Probharath Technologies Product - ProConnect & Zero-Config Network Engine
                         </div>
 
                         <v-sheet max-height="240" class="overflow-y-auto transparent-list pa-0 rounded-lg">
-                            <v-list class="transparent-list pa-0" dense>
+                            <div v-if="scannedNetworks.length === 0" class="text-center py-6 grey--text caption">
+                                <v-progress-circular v-if="isScanning" indeterminate size="24" color="cyan" class="mb-2"></v-progress-circular>
+                                <div>{{ isScanning ? 'Scanning nearby Wi-Fi via nmcli...' : 'No networks detected. Click "Scan Nearby Wi-Fi" above.' }}</div>
+                            </div>
+                            <v-list v-else class="transparent-list pa-0" dense>
                                 <v-list-item
                                     v-for="wifi in scannedNetworks"
                                     :key="wifi.ssid"
@@ -131,15 +142,16 @@ A Probharath Technologies Product - ProConnect & Zero-Config Network Engine
                                         <v-icon :color="getSignalColor(wifi.signal)">{{ getSignalIcon(wifi.signal) }}</v-icon>
                                     </v-list-item-icon>
                                     <v-list-item-content>
-                                        <v-list-item-title class="white--text font-weight-medium">
+                                        <v-list-item-title class="white--text font-weight-medium d-flex align-center">
                                             {{ wifi.ssid }}
+                                            <v-chip v-if="wifi.active" x-small color="success" class="ml-2 font-weight-bold">CONNECTED</v-chip>
                                         </v-list-item-title>
                                         <v-list-item-subtitle class="caption grey--text">
                                             Signal: {{ wifi.signal }}% &bull; {{ wifi.security }}
                                         </v-list-item-subtitle>
                                     </v-list-item-content>
                                     <v-list-item-action class="my-auto">
-                                        <v-btn x-small rounded color="cyan" class="text-none font-weight-bold">
+                                        <v-btn x-small rounded color="cyan" class="text-none font-weight-bold" @click.stop="selectScannedWifi(wifi)">
                                             Connect
                                         </v-btn>
                                     </v-list-item-action>
@@ -173,7 +185,7 @@ A Probharath Technologies Product - ProConnect & Zero-Config Network Engine
                                     </v-list-item-subtitle>
                                 </v-list-item-content>
                                 <v-list-item-action>
-                                    <v-switch v-model="failoverHotspotEnabled" color="orange" hide-details></v-switch>
+                                    <v-switch v-model="failoverHotspotEnabled" color="orange" hide-details @change="toggleHotspot"></v-switch>
                                 </v-list-item-action>
                             </v-list-item>
 
@@ -339,8 +351,8 @@ A Probharath Technologies Product - ProConnect & Zero-Config Network Engine
                 </v-card-text>
                 <v-card-actions class="px-4 pb-4">
                     <v-spacer></v-spacer>
-                    <v-btn text color="grey lighten-1" @click="wifiDialog = false">Cancel</v-btn>
-                    <v-btn color="cyan" class="font-weight-bold px-4" @click="saveWifiNetwork">
+                    <v-btn text color="grey lighten-1" :disabled="isConnecting" @click="wifiDialog = false">Cancel</v-btn>
+                    <v-btn color="cyan" class="font-weight-bold px-4" :loading="isConnecting" :disabled="isConnecting" @click="saveWifiNetwork">
                         Save &amp; Connect
                     </v-btn>
                 </v-card-actions>
@@ -358,18 +370,20 @@ A Probharath Technologies Product - ProConnect & Zero-Config Network Engine
 import { Component, Vue } from 'vue-property-decorator'
 
 interface WifiNetwork {
+    name?: string
     ssid: string
     priority: number
     password?: string
     security?: string
     active?: boolean
+    connected?: boolean
     signal?: number
 }
 
 @Component
 export default class Connectivity extends Vue {
-    localIp = '192.168.1.19'
-    macSuffix = '4A19'
+    localIp = window.location.hostname || '192.168.1.19'
+    macSuffix = 'E2F1'
     claimCode = 'PBT-FACTORY-MK1'
 
     // Status toggles
@@ -382,6 +396,7 @@ export default class Connectivity extends Vue {
 
     // Wi-Fi Scanning & Profiles
     isScanning = false
+    isConnecting = false
     wifiDialog = false
     isEditing = false
     showPassword = false
@@ -393,48 +408,122 @@ export default class Connectivity extends Vue {
     snackbarText = ''
     snackbarColor = 'success'
 
+    currentNetwork: any = {
+        ssid: '',
+        connected: false,
+        signal: 0,
+        priority: 1
+    }
+
+    savedNetworks: WifiNetwork[] = []
+    scannedNetworks: WifiNetwork[] = []
+    pollTimer: any = null
+
     priorityOptions = [
         { text: 'Priority 1 (Primary Home / Workshop Router)', value: 1 },
         { text: 'Priority 2 (Master Pi Farm Hotspot)', value: 2 },
         { text: 'Priority 3 (Mobile Phone Hotspot / Backup)', value: 3 },
     ]
 
-    savedNetworks: WifiNetwork[] = [
-        { ssid: 'ProBharath-Lab-5G', priority: 1, security: 'WPA2/WPA3', active: true },
-        { ssid: 'ProBharath-MasterPi-Farm', priority: 2, security: 'WPA2', active: false },
-        { ssid: 'Founder-Mobile-Hotspot', priority: 3, security: 'WPA2', active: false },
-    ]
-
-    scannedNetworks: WifiNetwork[] = [
-        { ssid: 'ProBharath-Lab-5G', signal: 94, security: 'WPA2/WPA3' },
-        { ssid: 'ProBharath-MasterPi-Farm', signal: 82, security: 'WPA2' },
-        { ssid: 'Airtel_Fiber_5GHz', signal: 68, security: 'WPA2' },
-        { ssid: 'JioFiber-Workshop', signal: 55, security: 'WPA2' },
-        { ssid: 'MakerSpace_Guest', signal: 42, security: 'Open' },
-    ]
-
     get currentWifi(): WifiNetwork {
-        return this.savedNetworks.find((n) => n.active) || { ssid: 'ProBharath-Lab-5G', priority: 1, connected: true }
-    }
-
-    mounted() {
-        this.localIp = window.location.hostname || '192.168.1.19'
-        this.loadSavedProfiles()
-    }
-
-    loadSavedProfiles() {
-        const stored = localStorage.getItem('probharath_wifi_profiles')
-        if (stored) {
-            try {
-                this.savedNetworks = JSON.parse(stored)
-            } catch (e) {
-                // Keep defaults
+        if (this.currentNetwork.connected && this.currentNetwork.ssid) {
+            const saved = this.savedNetworks.find((n) => n.ssid === this.currentNetwork.ssid)
+            return {
+                ssid: this.currentNetwork.ssid,
+                connected: true,
+                priority: saved ? saved.priority : 1,
+                signal: this.currentNetwork.signal,
+                security: saved ? saved.security : 'WPA2/WPA3'
             }
+        }
+        const activeSaved = this.savedNetworks.find((n) => n.active)
+        if (activeSaved) {
+            return {
+                ...activeSaved,
+                connected: true
+            }
+        }
+        return {
+            ssid: '',
+            connected: false,
+            priority: 1
         }
     }
 
-    saveProfilesToStorage() {
-        localStorage.setItem('probharath_wifi_profiles', JSON.stringify(this.savedNetworks))
+    async mounted() {
+        this.localIp = window.location.hostname || '192.168.1.19'
+        await Promise.all([
+            this.fetchNetworkStatus(),
+            this.fetchSavedNetworks(),
+            this.scanWifiNetworks()
+        ])
+
+        // Live polling every 7 seconds
+        this.pollTimer = setInterval(() => {
+            this.fetchNetworkStatus()
+        }, 7000)
+    }
+
+    beforeDestroy() {
+        if (this.pollTimer) {
+            clearInterval(this.pollTimer)
+            this.pollTimer = null
+        }
+    }
+
+    async fetchNetworkStatus() {
+        try {
+            const res = await fetch('/api/network/status')
+            if (res.ok) {
+                const data = await res.json()
+                if (data) {
+                    if (data.ip) this.localIp = data.ip
+                    if (data.mac_suffix) this.macSuffix = data.mac_suffix
+                    this.currentNetwork = {
+                        ssid: data.ssid || '',
+                        connected: !!data.connected,
+                        signal: data.signal || 0,
+                        priority: 1
+                    }
+                }
+            }
+        } catch (e) {
+            // Fail silently on poll
+        }
+    }
+
+    async fetchSavedNetworks() {
+        try {
+            const res = await fetch('/api/network/saved')
+            if (res.ok) {
+                const data = await res.json()
+                if (data.saved) {
+                    this.savedNetworks = data.saved
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load saved networks:', e)
+        }
+    }
+
+    async scanWifiNetworks() {
+        this.isScanning = true
+        try {
+            const res = await fetch('/api/network/scan')
+            if (res.ok) {
+                const data = await res.json()
+                if (data.networks && data.networks.length > 0) {
+                    this.scannedNetworks = data.networks
+                    this.showToast(`Wi-Fi scan complete. Found ${data.networks.length} live networks.`, 'cyan')
+                } else {
+                    this.showToast('No nearby Wi-Fi networks found.', 'warning')
+                }
+            }
+        } catch (e: any) {
+            this.showToast('Error scanning Wi-Fi: ' + (e.message || e), 'error')
+        } finally {
+            this.isScanning = false
+        }
     }
 
     getPriorityDescription(priority: number) {
@@ -455,14 +544,6 @@ export default class Connectivity extends Vue {
         if (signal >= 50) return 'cyan lighten-1'
         if (signal >= 25) return 'amber'
         return 'grey'
-    }
-
-    scanWifiNetworks() {
-        this.isScanning = true
-        setTimeout(() => {
-            this.isScanning = false
-            this.showToast('Wi-Fi scan complete. Found 5 networks.', 'cyan')
-        }, 1200)
     }
 
     openAddNetworkModal() {
@@ -492,39 +573,77 @@ export default class Connectivity extends Vue {
         this.wifiDialog = true
     }
 
-    saveWifiNetwork() {
+    async saveWifiNetwork() {
         if (!this.dialogSsid.trim()) {
             this.showToast('Please enter an SSID', 'error')
             return
         }
 
-        const existingIdx = this.savedNetworks.findIndex((n) => n.ssid === this.dialogSsid)
-        if (existingIdx !== -1) {
-            this.savedNetworks[existingIdx].priority = this.dialogPriority
-            this.savedNetworks[existingIdx].password = this.dialogPassword
-        } else {
-            this.savedNetworks.push({
-                ssid: this.dialogSsid,
-                priority: this.dialogPriority,
-                password: this.dialogPassword,
-                security: this.dialogPassword ? 'WPA2' : 'Open',
-                active: false,
+        const ssid = this.dialogSsid.trim()
+        const password = this.dialogPassword
+        const priority = this.dialogPriority
+
+        this.isConnecting = true
+        try {
+            const res = await fetch('/api/network/connect', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ssid, password, priority })
             })
+            const data = await res.json()
+            if (data.success) {
+                this.showToast(data.message || `Saved '${ssid}' at Priority ${priority}`, data.connected ? 'success' : 'info')
+                this.wifiDialog = false
+                // Refresh data from Pi
+                setTimeout(() => {
+                    this.fetchNetworkStatus()
+                    this.fetchSavedNetworks()
+                    this.scanWifiNetworks()
+                }, 2000)
+            } else {
+                this.showToast(`Failed: ${data.message || 'Unknown error'}`, 'error')
+            }
+        } catch (e: any) {
+            this.showToast('Error saving network: ' + (e.message || e), 'error')
+        } finally {
+            this.isConnecting = false
         }
-
-        // Sort by priority (1 first)
-        this.savedNetworks.sort((a, b) => a.priority - b.priority)
-        this.saveProfilesToStorage()
-
-        this.wifiDialog = false
-        this.showToast(`Saved Wi-Fi '${this.dialogSsid}' at Priority ${this.dialogPriority}`, 'success')
     }
 
-    deleteNetwork(idx: number) {
-        const deleted = this.savedNetworks.splice(idx, 1)
-        this.saveProfilesToStorage()
-        if (deleted.length > 0) {
-            this.showToast(`Removed Wi-Fi profile '${deleted[0].ssid}'`, 'info')
+    async deleteNetwork(idx: number) {
+        const net = this.savedNetworks[idx]
+        if (!net) return
+        try {
+            const res = await fetch('/api/network/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: net.name || net.ssid })
+            })
+            const data = await res.json()
+            if (data.success) {
+                this.showToast(`Removed Wi-Fi profile '${net.ssid}'`, 'info')
+                this.savedNetworks.splice(idx, 1)
+                this.fetchSavedNetworks()
+                this.fetchNetworkStatus()
+            }
+        } catch (e) {
+            this.showToast('Failed to delete network profile', 'error')
+        }
+    }
+
+    async toggleHotspot(enabled: boolean) {
+        try {
+            const res = await fetch('/api/network/hotspot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ enabled })
+            })
+            const data = await res.json()
+            if (data.success) {
+                this.showToast(enabled ? 'Emergency Hotspot enabled!' : 'Emergency Hotspot disabled.', enabled ? 'warning' : 'info')
+            }
+        } catch (e) {
+            this.showToast('Failed to toggle hotspot state', 'error')
         }
     }
 

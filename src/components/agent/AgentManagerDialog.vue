@@ -239,7 +239,9 @@ export default class AgentManagerDialog extends Vue {
 
     get activeAgentUrl() {
         const agent = agentRegistry.getActiveAgent()
-        return agent && agent.url ? agent.url.replace(/\/$/, "") : 'http://192.168.1.15:8255'
+        const isHttps = typeof window !== 'undefined' && (window.location.protocol === 'https:' || window.location.hostname.includes('probharath.com'))
+        const defaultUrl = isHttps ? '/api/network' : 'http://192.168.1.15:8255'
+        return agent && agent.url ? agent.url.replace(/\/$/, "") : defaultUrl
     }
 
     async saveGlobalSettings() {

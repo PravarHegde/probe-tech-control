@@ -1016,7 +1016,9 @@ export default class AgentDashboard extends Vue {
 
             // Direct live fetch from Moonraker proc_stats for real-time accuracy
             const host = window.location.hostname || '192.168.1.19'
-            const res = await fetch(`http://${host}:7125/machine/proc_stats`)
+            const isHttps = window.location.protocol === 'https:' || host.includes('probharath.com')
+            const procUrl = isHttps ? '/machine/proc_stats' : `http://${host}:7125/machine/proc_stats`
+            const res = await fetch(procUrl)
             if (res.ok) {
                 const data = await res.json()
                 const r = data?.result

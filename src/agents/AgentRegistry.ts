@@ -10,13 +10,20 @@ import { CustomAgent } from './CustomAgent'
 import { CloudAgent } from './CloudAgent'
 import { LocalLLMAgent } from './LocalLLMAgent'
 
+function getLocalChatUrl(): string {
+    if (typeof window === 'undefined') return ''
+    const isHttps = window.location.protocol === 'https:' || window.location.hostname.includes('probharath.com')
+    if (isHttps) return '/api/network/api/chat/local'
+    return `http://${window.location.hostname}:8255/api/chat/local`
+}
+
 class LlamaAgent implements Agent {
     id = 'llama-local'
     name = 'Llama 3 Local'
     description = 'High-performance general reasoning model'
     async process(input: string, context: any): Promise<string> {
         try {
-            const url = `http://${window.location.hostname}:8255/api/chat/local`
+            const url = getLocalChatUrl()
             const res = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -36,7 +43,7 @@ class GemmaAgent implements Agent {
     description = 'Lightweight, highly-efficient embedded AI'
     async process(input: string, context: any): Promise<string> {
         try {
-            const url = `http://${window.location.hostname}:8255/api/chat/local`
+            const url = getLocalChatUrl()
             const res = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -56,7 +63,7 @@ class ProBharathGemmaAgent implements Agent {
     description = 'Custom trained text briefing for manufacturing (Farm-Grade)'
     async process(input: string, context: any): Promise<string> {
         try {
-            const url = `http://${window.location.hostname}:8255/api/chat/local`
+            const url = getLocalChatUrl()
             const res = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -76,7 +83,7 @@ class TinyLlamaAgent implements Agent {
     description = 'Highly compressed 600MB model for Raspberry Pi & Android'
     async process(input: string, context: any): Promise<string> {
         try {
-            const url = `http://${window.location.hostname}:8255/api/chat/local`
+            const url = getLocalChatUrl()
             const res = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -127,8 +134,10 @@ class AgentRegistry {
         this.installedAgents.set(this.coreAgent.id, this.coreAgent)
 
         // 1.5 Register Built-In MK1 Agent Exception
-        const localHost = window.location.hostname
-        const mk1Agent = new CustomAgent('mk1-builtin', 'Built-in MK1 Agent', `http://${localHost}:8255`)
+        const localHost = typeof window !== 'undefined' ? window.location.hostname : '127.0.0.1'
+        const isHttps = typeof window !== 'undefined' && (window.location.protocol === 'https:' || localHost.includes('probharath.com'))
+        const mk1Url = isHttps ? '/api/network' : `http://${localHost}:8255`
+        const mk1Agent = new CustomAgent('mk1-builtin', 'Built-in MK1 Agent', mk1Url)
         this.installedAgents.set(mk1Agent.id, mk1Agent)
 
         // 2. Define Marketplace Templates

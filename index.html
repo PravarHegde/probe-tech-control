@@ -58,6 +58,24 @@
             if (match) activeClaim = match[1];
           }
 
+          function routeUrl(u) {
+            if (typeof u !== "string") return u;
+            if (u.indexOf(":7125") !== -1) {
+              u = u.replace(/:7125(?=\/|$)/, "");
+            }
+            if (activeClaim && u.indexOf("claimCode=") === -1) {
+              var isMoonrakerPath = u.indexOf("/server") !== -1 ||
+                                   u.indexOf("/printer") !== -1 ||
+                                   u.indexOf("/machine") !== -1 ||
+                                   u.indexOf("/access") !== -1 ||
+                                   u.indexOf("/websocket") !== -1;
+              if (isMoonrakerPath) {
+                u += (u.indexOf("?") === -1 ? "?" : "&") + "claimCode=" + encodeURIComponent(activeClaim);
+              }
+            }
+            return u;
+          }
+
           // 1. Monkey-patch fetch to handle config.json and any stray :7125 requests
           var origFetch = window.fetch;
           window.fetch = function(url, options) {
@@ -91,40 +109,39 @@
                   });
                 });
               }
-              if (url.indexOf(":7125") !== -1) {
-                url = url.replace(/:7125(?=\/|$)/, "");
-                if (activeClaim && url.indexOf("claimCode=") === -1) {
-                  url += (url.indexOf("?") === -1 ? "?" : "&") + "claimCode=" + encodeURIComponent(activeClaim);
-                }
-                arguments[0] = url;
+              arguments[0] = routeUrl(url);
+              if (options && typeof options === "object") {
+                try {
+                  options.headers = options.headers || {};
+                  if (activeClaim && !(options.headers instanceof Headers)) {
+                    options.headers["X-Claim-Code"] = activeClaim;
+                  }
+                } catch(e) {}
               }
             }
             return origFetch.apply(this, arguments);
           };
 
-          // 2. Monkey-patch XMLHttpRequest to redirect :7125
+          // 2. Monkey-patch XMLHttpRequest to redirect Moonraker requests & inject claimCode
           var origOpen = XMLHttpRequest.prototype.open;
           XMLHttpRequest.prototype.open = function(method, url) {
-            if (typeof url === "string" && url.indexOf(":7125") !== -1) {
-              url = url.replace(/:7125(?=\/|$)/, "");
-              if (activeClaim && url.indexOf("claimCode=") === -1) {
-                url += (url.indexOf("?") === -1 ? "?" : "&") + "claimCode=" + encodeURIComponent(activeClaim);
+            arguments[1] = routeUrl(url);
+            var res = origOpen.apply(this, arguments);
+            try {
+              if (activeClaim) {
+                this.setRequestHeader("X-Claim-Code", activeClaim);
               }
-              arguments[1] = url;
-            }
-            return origOpen.apply(this, arguments);
+            } catch(e) {}
+            return res;
           };
 
           // 3. Monkey-patch WebSocket to redirect :7125 to wss://probharath.com/websocket AND decode binary messages
           var OrigWebSocket = window.WebSocket;
           window.WebSocket = function(url, protocols) {
             if (typeof url === "string") {
-              url = url.replace(/:7125(?=\/|$)/, "");
+              url = routeUrl(url);
               if (window.location.protocol === "https:") {
                 url = url.replace(/^ws:\/\//, "wss://");
-              }
-              if (activeClaim && url.indexOf("claimCode=") === -1) {
-                url += (url.indexOf("?") === -1 ? "?" : "&") + "claimCode=" + encodeURIComponent(activeClaim);
               }
             }
             var ws = protocols !== undefined ? new OrigWebSocket(url, protocols) : new OrigWebSocket(url);
@@ -569,7 +586,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <script type="module" src="/src/main.ts"></script>
+  <script type="module" crossorigin src="/assets/index-Hi1C8pkt.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-B-5IpNJQ.css">
 </head>
 
 <body style="background-color: #121212">
